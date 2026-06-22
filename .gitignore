@@ -10,14 +10,6 @@ Proposal/
 *.pdf
 *.docx
 
-# Generated processed artifacts
-**/ser_processed/
-**/baseline_features.npz
-**/metadata.csv
-**/audio_validation_report.csv
-**/acoustic_indicators*.csv
-**/processing_config.json
-
 # Model outputs and packaged results
 models/
 **/outputs/
