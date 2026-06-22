@@ -1,0 +1,44 @@
+# Raw datasets and large audio caches
+datasets/
+**/datasets/
+**/audio_16k/
+**/log_mel/
+
+# Papers / proposal binaries
+Papers/
+Proposal/
+*.pdf
+*.docx
+
+# Generated processed artifacts
+**/ser_processed/
+**/baseline_features.npz
+**/metadata.csv
+**/audio_validation_report.csv
+**/acoustic_indicators*.csv
+**/processing_config.json
+
+# Model outputs and packaged results
+models/
+**/outputs/
+*.pkl
+*.joblib
+*.pt
+*.pth
+*.onnx
+*.zip
+*.rar
+
+# Notebook/runtime noise
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# Local environment
+.env
+.venv/
+venv/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
