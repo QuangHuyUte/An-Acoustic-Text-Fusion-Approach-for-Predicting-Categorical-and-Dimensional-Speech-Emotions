@@ -12,7 +12,14 @@ Proposal/
 
 # Model outputs and packaged results
 models/
+**/models/
 **/outputs/
+*_outputs/
+**/cache/
+**/figures/
+**/reports/
+**/predictions/
+*.npz
 *.pkl
 *.joblib
 *.pt
@@ -23,8 +30,11 @@ models/
 
 # Notebook/runtime noise
 .ipynb_checkpoints/
+**/05-main-*.ipynb
 __pycache__/
 *.pyc
+node_modules/
+**/node_modules/
 
 # Local environment
 .env
