@@ -1,0 +1,434 @@
+SPEECH EMOTION RECOGNITION WITH CO-ATTENTION BASED MULTI-LEVEL
+ACOUSTIC INFORMATION
+Heqing Zou1, Yuke Si2, Chen Chen1, Deepu Rajan1, Eng Siong Chng1
+1Nanyang Technological University, Singapore 2Tianjin University, China
+ABSTRACT
+Speech Emotion Recognition (SER) aims to help the machine
+to understand human’s subjective emotion from only audio in-
+formation. However, extracting and utilizing comprehensive
+in-depth audio information is still a challenging task. In this
+paper, we propose an end-to-end speech emotion recognition
+system using multi-level acoustic information with a newly
+designed co-attention module. We ﬁrstly extract multi-level
+acoustic information, including MFCC, spectrogram, and the
+embedded high-level acoustic information with CNN, BiL-
+STM and wav2vec2, respectively. Then these extracted fea-
+tures are treated as multimodal inputs and fused by the pro-
+posed co-attention mechanism. Experiments are carried on
+the IEMOCAP dataset, and our model achieves competitive
+performance with two different speaker-independent cross-
+validation strategies. Our code is available on GitHub.
+Index Terms— Speech emotion recognition, Multimodal
+fusion, Multi-level acoustic information, Co-attention mech-
+anism
+1. INTRODUCTION
+Automatic recognition of emotions ﬁnds several applications
+such as human-computer interaction [1] and surveillance [2].
+Some researchers propose to combine acoustic information
+with textual information and learn high-level context informa-
+tion to help make the ﬁnal emotion prediction [3]. However,
+the corresponding transcriptions are not always available for
+most emotion recognition applications. Besides, the gener-
+ated text with a current automatic speech recognition (ASR)
+system could also introduce word recognition errors and in-
+terfere with the emotion recognition task. Emotion perception
+from only audio signals is much easier to implement com-
+pared with multimodal emotion recognition with additional
+textual and visual signals because single audio data is easier
+to be obtained. Transforming the speech emotion recogni-
+tion (SER) problem into a multi-level fusion problem by inte-
+grating multiple acoustic information is a potentially effective
+method to utilize the complete audio information.
+The vast majority of SER problems involve extracting
+key audio features like Mel-frequency Cepstral Coefﬁcient
+(MFCC), Constant-Q Transform (CQT) or constructing the
+corresponding spectrogram image to treat the problem as
+an image classiﬁcation problem [4]. Both MFCC and spec-
+trogram reﬂect more information of a speech signal in the
+frequency domain. MFCC can be regarded as a low-level fea-
+ture based on human knowledge. Spectrogram can be further
+processed to obtain high-level information through a deep
+neural network. These methods are intuitive and simple but
+usually ignore time-domain information of the speech signal.
+Various encoders with different architecture details are de-
+signed for different acoustic signals, e.g., CNN for spectro-
+gram and CNN/LSTM for MFCC. The acoustic information
+is mined using a series of CNNs with different kernel sizes
+in [3]. Some methods propose to introduce a combination
+of networks to extract acoustic information, e.g., [5] com-
+bine LSTM and Gated Multi-features Unit (GMU) to extract
+both static and dynamic speech signals. In [6], Gao et al pro-
+pose a domain-adversarial auto-encoder to extract discrimi-
+native representations with pre-trained spectrogram informa-
+tion. Extracting features from different sources requires the
+corresponding source-speciﬁc neural networks.
+Different types of attention mechanisms have been pro-
+posed for processing the extracted features, like the com-
+monly used self-attention [5, 7] and cross-modal attention [8].
+For the models with more complex input combinations, new
+attention mechanisms are introduced. [9] fuses two modali-
+ties and then combines the result with another modality using
+the proposed attentive modality-hop mechanism. In [10],
+a hierarchical attention-based temporal convolutional net-
+work is designed to fuse the inter-channel and intra-channel
+features for spectrogram images.
+In this paper, we introduce three different encoders for
+multiple levels of acoustic information: CNN for spectro-
+gram, BiLSTM for MFCC and the transformer-based acous-
+tic extracting network wav2vec2 [11] for raw audio signals.
+With the designed co-attention module, we optimize to get
+the ﬁnal wav2vec2 embedding (W2E) after weighting each
+frame by utilizing the effective information extracted from
+MFCC and spectrogram features. We concatenate all three
+extracted features and make the ﬁnal emotion prediction with
+this ﬁnally fused information. The proposed model surpasses
+current competitive models on the widely used IEMOCAP
+dataset with the leave-one-speaker-out and leave-one-session-
+out cross-validation strategy.
+arXiv:2203.15326v1  [cs.SD]  29 Mar 2022
+Fig. 1. The overall architecture of our proposed method.
+2. PROPOSED METHOD
+In this section, we describe our co-attention-based SER sys-
+tem by integrating multiple acoustic information. Fig.1 shows
+the overall structure of our proposed method. As illustrated,
+after splitting the raw audio utterance into several segments,
+three levels of acoustic information (MFCC, spectrogram and
+W2E) of a segment are introduced to the respective feature
+encoder networks and fused with the proposed co-attention
+method for the ﬁnal emotion recognition.
+2.1. Model Overview
+We denote the MFCC, spectrogram and wav2vec2, which are
+obtained from the same audio segment, as xm ∈RTm×Dm ,
+xs ∈RTs×Ds and xw ∈RTw×1, respectively. The extracted
+MFCC features x′
+m and spectrogram features x′
+s are concate-
+nated and transformed with linear layers to get the weights
+for different frames of wav2vec outputsx′
+w. After multiplica-
+tion with these generated weights, we get the ﬁnal W2E vec-
+tor from the raw wav2vec outputs. The ﬁnal obtained W2E
+x′′
+w are concatenated with the previous MFCC features x′
+m
+and spectrogram features x′
+s for the ﬁnal emotion recognition
+task. The generated weights of wav2vec frames from MFCC
+and spectrogram features and the ﬁnal feature combination
+are denoted as x′
+coatt and x′, respectively. The target of the
+data is denoted by y and the ﬁnal prediction is denoted as ˆy.
+2.2. Learning with Multi-level Acoustic Information
+Here we deﬁne the multi-level acoustic information as the
+combination of the human knowledge based low-level MFCC,
+deep learning based high-level spectrogram and W2E, thus to
+cover characteristics of the speech signal in both frequency
+and time domain. MFCC sequence is processed by a bidi-
+rectional LSTM with a dropout of 0.5 and ﬂattened. The
+ﬂattened vector is input to a linear layer with ReLU as an
+activation function with a dropout of 0.1 to obtain
+x′
+m = fm(BiLTSM (xm)) (1)
+where x′
+m ∈RD′
+m .
+The spectrogram image is ﬁrst reshaped for the pre-
+trained AlexNet. A similar operation as for MFCC features is
+conducted on the AlexNet extracted features to obtain
+x′
+s = fs(AlexNet(xs)) (2)
+where x′
+s ∈RD′
+s .
+Raw audio segments are sent directly to the corresponding
+wav2vec2 processor and wav2vec2 model to get the target raw
+wav2vec2 outputs as
+x′
+w = Wav 2V ec2(xw) (3)
+where x′
+w ∈RT′
+w×D′
+w .
+2.3. Co-attention-based Fusion
+Considering that all three acoustic information sources play a
+similar role in the ﬁnal emotion prediction, we use the corre-
+lation among them to guide the feature adaptation. Generally,
+the last frame or the average of the wav2vec2 output is used
+to represent the wav2vec2 features. It is obvious that we lose
+some effective information among the sequence dimension.
+Table 1. Performance comparison with 5-fold leave-
+one-session-out [12,7,13] and 10-fold leave-one-speaker-out
+[14,15,16,17,18,5] cross-validation strategy on IEMOCAP.
+Model WA UA
+CNN-ELM+STC attention[12] 61.32 60.43
+Audio25[7] 60.64±1.96 61.32 ±2.26
+IS09 - classiﬁcation [13] 68.1 63.8
+Ours 69.80 71.05
+RNN(prop.)-ELM[14] 62.85 63.89
+3D ACRNN[15] - 64.74 ±5.44
+BLSTM-CTC-CA[16] 69.0 67.0
+CNN GRU-SeqCap[17] 72.73 59.71
+CNN TF Att.pooling[18] 71.75 68.06
+HNSD[5] 70.5 72.5
+Ours 71.64 72.70
+Here, we introduce a kind of co-attention module to combine
+different frames of W2E with frame weights generated by the
+features of MFCC and spectrogram features.
+Firstly, we create a 1-dimension matrix from MFCC fea-
+tures x′
+m and spectrogram features x′
+s with a transformation
+layer given by
+x′
+att = fatt(x′
+m ⊕x′
+s) (4)
+where x′
+att ∈R1×T′
+w .
+The wav2vec2 outputs are multiplied with the previous
+generated weights to get the ﬁnal weighted wav2vec2 features
+as
+x′′
+w = (x′
+att ·x′
+w)T (5)
+where x′′
+w ∈RD′
+w .
+The ﬁnal MFCC, spectrogram features and the weighted
+W2Es are concatenated and the speech emotion prediction is
+written as
+ˆy = f(x′
+m ⊕x′
+s ⊕x′′
+w) (6)
+2.4. Objective
+We use the commonly used cross-entropy loss for emotion
+classiﬁcation and our objective is
+L = Lce(y −ˆy) (7)
+3. EXPERIMENT
+Our proposed method is validated on the Interactive Emo-
+tional Dyadic Motion Capture (IEMOCAP) [19] dataset. In
+this section, we ﬁrstly introduce the dataset processing and
+audio sources used. Then we describe our experimental setup
+and the used validation strategy.
+3.1. Datasets
+IEMOCAP is a widely used emotion recognition dataset,
+recorded from ten different actors with audio, video, tran-
+scriptions and motion-capture information. Following others’
+work [12, 7, 5], we merge “happy” and “excited” into the
+category of “happy” and we consider the 5531 acoustic ut-
+terances from 4 emotions, angry, sad, happy and neutral.
+In order to more accurately evaluate the performance of the
+model, we test our model with the 5-fold leave-one-session-
+out and the 10-fold leave-one-speaker-out cross-validation
+strategy to generate the speaker-independent results. Also,
+we use the commonly used weighted accuracy (W A) and the
+unweighted accuracy (UA) as the evaluation metrics.
+3.2. Experimental Setup
+The used raw audio signals are sampled at 16 kHz. We spilt
+each audio utterance into several segments with a length of 3
+seconds. When a segment is less than 3 seconds, a padding
+operation with 0 will be applied to this segment to keep the
+same length. The ﬁnal prediction result of an audio utterance
+will be decided by all split segments from this utterance.
+To make full use of different levels of speech information,
+we use three kinds of acoustic information in this SER task,
+MFCC, spectrogram and W2E. MFCC is a 40-dimension
+HTK-style Mel frequencies feature that taking into account
+the human auditory characteristics. It is extracted from the
+raw audio segments with librosa library [20]. Spectrogram
+and the W2E are the deep features of audio signals. For spec-
+trogram, a series of 40-ms Hamming windows with a hop
+length of 10 ms is applied and here we treat each windowed
+block as a frame. Each frame is transformed into a frequency
+domain with the Discrete Fourier Transform (DFT) of length
+800. The ﬁrst 200 DFT points are used as input spectrogram
+features. We ﬁnally get a spectrogram image with a size
+of 300*200 for each audio segment. Like the multimodal
+emotion recognition method [21], W2E are obtained from the
+pre-trained transformer-based wav2vec2 network. It is the
+reﬂection of the deep feature of speech in the time domain.
+This SER system is implemented in PyTorch. The opti-
+mizer for the model is AdamW with a learning rate of 1e-5.
+The training batch size is 64 and we set the early stopping
+setting as 8 epochs. Our code will be available on Github1.
+4. RESULTS AND ANALYSIS
+In this section, we present the model performance and design
+an ablation study to evaluate the inﬂuence of different inputs
+and used modules. We also visualize the extracted features of
+our model with t-distributed stochastic neighbour embedding
+(t-SNE) and the ﬁnal normalized confusion matrix.
+1https://github.com/Vincent-ZHQ/CA-MSER
+Table 2. Ablation study on the proposed model.
+Model WA UA
+MFCC 57.60 58.09
+Spectrogram 62.13 62.25
+W2E 64.03 65.67
+MFCC+W2E (w/o co-att) 64.62 65.93
+Spectrogram+W2E (w/o co-att) 66.20 67.22
+MFCC+Spectrogram+W2E (w/o co-att) 67.22 67.81
+W2E (w/ co-att) 67.55 68.65
+MFCC+W2E (w/ co-att) 69.11 70.30
+Spectrogram+W2E (w/ co-att) 70.05 71.30
+MFCC+Spectrogram+W2E (w/ co-att) 71.64 72.70
+4.1. Results and Comparison
+As shown in Table 1, our proposed method could achieve the
+best performance of 69.80% and 71.05% in terms of UA and
+W A for the leave-one-session-out validation strategy. And
+for the leave-one-speaker-out validation strategy, this method
+could also achieve the highest UA with a value of 72.70%.
+At the same time, its performance in W A is also competitive
+with a very similar result of 71.64% compared with UA on
+this unbalanced IEMOCAP dataset.
+4.2. Ablation Study
+Our proposed method utilizes the multiple levels of acoustic
+information, which contains the time domain and frequency
+domain. Table 2 shows the ablation study of model perfor-
+mance with different combinations of acoustic information.
+The ﬁrst three rows are the emotion recognition results with
+only one level of acoustic information: MFCC, spectrogram
+and W2E. W2E provides better performance than the others
+for the ﬁnal emotion recognition. The next three rows sum-
+marize the results from the combination of different features
+with W2E. The last four rows present the results of differ-
+ent combination features with the weighted W2E information
+after co-attention. The combination of multiple acoustic in-
+formation and the proposed co-attention module are observed
+to contribute a lot to improve the whole model’s performance.
+The ablation study also shows the effectiveness of the pro-
+posed co-attention mechanism. From the last two rows of Ta-
+ble 2, the co-attention mechanism further optimizes the fused
+data and performs better than the direct concatenating opera-
+tion with 4.42% and 4.89% improvement on W A and UA, re-
+spectively. As shown in Fig.2, the t-SNE visualization of the
+weighted W2E and ﬁnal combined features after co-attention
+present a much more clear classiﬁcation boundary when com-
+pared with the results of the unweighted W2E and ﬁnal com-
+bined features without co-attention. From Fig. 3, we also ob-
+serve that the ﬁnal classiﬁcation results of the model with co-
+attention are much better than the model without co-attention
+from the ﬁnal normalized confusion matrix.
+(a)W2E w/o co-att
+ (b)W2E w/ co-att
+(c)Final features w/o co-att
+ (d)Final features w/ co-att
+Fig. 2. The t-SNE visualization of feature distribution. (a)
+and (b) are the ﬁnal extracted W2Es in the model trained with
+multi-level acoustic information without and with the pro-
+posed co-attention. (c) and (d) are the ﬁnal combined features
+without and with the proposed co-attention
+(a) w/o co-att
+ (b) w/ co-att
+Fig. 3. The normalized confusion matrix for the ﬁnal
+speech emotion recognition without and with the proposed
+co-attention module.
+5. CONCLUSION
+This paper proposes a co-attention-based SER system utiliz-
+ing multi-level acoustic information. By designing different
+encoders, this model could get feature-speciﬁc information
+from the raw audio signals and enables complementary acous-
+tic information for the SER problem. Also, this method intro-
+duces a co-attention based fusion method for getting weighted
+wav2vec2 embeddings and combining the ﬁnal features. The
+experiments on the IEMOCAP dataset show that our pro-
+posed method achieves competitive performance with differ-
+ent speaker-independent cross-validation methods. In the fu-
+ture, we would like to combine the knowledge from different
+languages or datasets to improve the ﬁnal performance.
+6. REFERENCES
+[1] R. Cowie, E. Douglas-Cowie, N. Tsapatsoulis, G. V ot-
+sis, S. Kollias, W. Fellenz, and J. G. Taylor, “Emo-
+tion recognition in human-computer interaction,” IEEE
+Signal processing magazine, vol. 18, no. 1, pp. 32–80,
+2001.
+[2] C. Clavel, I. Vasilescu, L. Devillers, G. Richard, and
+T. Ehrette, “Fear-type emotion recognition for future
+audio-based surveillance systems,”Speech Communica-
+tion, vol. 50, no. 6, pp. 487–503, 2008.
+[3] Z. Peng, Y . Lu, S. Pan, and Y . Liu, “Efﬁcient speech
+emotion recognition using multi-scale cnn and atten-
+tion,” in2021 IEEE International Conference on Acous-
+tics, Speech and Signal Processing (ICASSP), 2021, pp.
+3020–3024.
+[4] E. Guizzo, T. Weyde, and J. B. Leveson, “Multi-time-
+scale convolution for emotion recognition from speech
+audio signals,” in 2020 IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP),
+2020, pp. 6489–6493.
+[5] Q. Cao, M. Hou, B. Chen, Z. Zhang, and G. Lu, “Hierar-
+chical network based on the fusion of static and dynamic
+features for speech emotion recognition,” in 2021 IEEE
+International Conference on Acoustics, Speech and Sig-
+nal Processing (ICASSP), 2021, pp. 6334–6338.
+[6] Y . Gao, J. Liu, L. Wang, and J. Dang, “Domain-
+adversarial autoencoder with attention based feature
+level fusion for speech emotion recognition,” in 2021
+IEEE International Conference on Acoustics, Speech
+and Signal Processing (ICASSP), 2021, pp. 6314–6318.
+[7] W. Wu, C. Zhang, and P. C. Woodland, “Emotion
+recognition by fusing time synchronous and time asyn-
+chronous representations,” in 2021 IEEE International
+Conference on Acoustics, Speech and Signal Processing
+(ICASSP), 2021, pp. 6269–6273.
+[8] L. Sun, B. Liu, J. Tao, and Z. Lian, “Multimodal cross-
+and self-attention network for speech emotion recogni-
+tion,” in2021 IEEE International Conference on Acous-
+tics, Speech and Signal Processing (ICASSP), 2021, pp.
+4275–4279.
+[9] S. Yoon, S. Dey, H. Lee, and K. Jung, “Attentive modal-
+ity hopping mechanism for speech emotion recogni-
+tion,” in2020 IEEE International Conference on Acous-
+tics, Speech and Signal Processing (ICASSP), 2020, pp.
+3362–3366.
+[10] C. Li, B. Chen, Z. Zhao, N. Cummins, and B. W.
+Schuller, “Hierarchical attention-based temporal convo-
+lutional networks for eeg-based emotion recognition,”
+in 2021 IEEE International Conference on Acoustics,
+Speech and Signal Processing (ICASSP), 2021, pp.
+1240–1244.
+[11] A. Baevski, H. Zhou, A. Mohamed, and M. Auli,
+“wav2vec 2.0: A framework for self-supervised
+learning of speech representations,” arXiv preprint
+arXiv:2006.11477, 2020.
+[12] L. Guo, L. Wang, C. Xu, J. Dang, E. S. Chng, and H. Li,
+“Representation learning with spectro-temporal-channel
+attention for speech emotion recognition,” in2021 IEEE
+International Conference on Acoustics, Speech and Sig-
+nal Processing (ICASSP), 2021, pp. 6304–6308.
+[13] L. Tarantino, P. N. Garner, and A. Lazaridis, “Self-
+attention for speech emotion recognition.” in Inter-
+speech, 2019, pp. 2578–2582.
+[14] J. Lee and I. Tashev, “High-level feature representa-
+tion using recurrent neural network for speech emotion
+recognition,” inInterspeech 2015, 2015.
+[15] M. Chen, X. He, J. Yang, and H. Zhang, “3-d convo-
+lutional recurrent neural networks with attention model
+for speech emotion recognition,” IEEE Signal Process-
+ing Letters, vol. 25, no. 10, pp. 1440–1444, 2018.
+[16] Z. Zhao, Z. Bao, Z. Zhang, N. Cummins, H. Wang, and
+B. Schuller, “Attention-enhanced connectionist tempo-
+ral classiﬁcation for discrete speech emotion recogni-
+tion,” 2019.
+[17] X. Wu, S. Liu, Y . Cao, X. Li, J. Yu, D. Dai, X. Ma,
+S. Hu, Z. Wu, X. Liu et al., “Speech emotion recog-
+nition using capsule networks,” in 2019 IEEE Interna-
+tional Conference on Acoustics, Speech and Signal Pro-
+cessing (ICASSP), 2019, pp. 6695–6699.
+[18] P. Li, Y . Song, I. V . McLoughlin, W. Guo, and L.-R.
+Dai, “An attention pooling based representation learning
+method for speech emotion recognition,” 2018.
+[19] C. Busso, M. Bulut, C.-C. Lee, A. Kazemzadeh,
+E. Mower, S. Kim, J. N. Chang, S. Lee, and S. S.
+Narayanan, “Iemocap: Interactive emotional dyadic
+motion capture database,”Language resources and eval-
+uation, vol. 42, no. 4, pp. 335–359, 2008.
+[20] B. McFee, C. Raffel, D. Liang, D. P. Ellis, M. McVicar,
+E. Battenberg, and O. Nieto, “librosa: Audio and music
+signal analysis in python,” in Proceedings of the 14th
+python in science conference, vol. 8. Citeseer, 2015,
+pp. 18–25.
+[21] X. Cai, J. Yuan, R. Zheng, L. Huang, and K. Church,
+“Speech emotion recognition with multi-task learning,”
+in Interspeech, 2021.

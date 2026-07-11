@@ -1,955 +1,546 @@
 ---
-title: "Roadmap v1 - Voice-Based Presentation Feedback System"
-subtitle: "SER, VAD, Emotion Timeline, Acoustic Indicators, Transcript Metrics and Feedback Engine"
-author: "Nhóm: Nguyễn Minh Cường, Nguyễn Tài Huy, Bùi Quang Huy"
-date: "11/07/2026"
+title: "Roadmap - 06D Strict Speaker-Independent Speech Emotion Recognition"
+subtitle: "Emotion classification first, optional arousal/valence/dominance regression, aligned with final evaluation rubric"
+date: "2026-07-11"
 lang: "vi"
 ---
 
-# Roadmap v1
+# Roadmap - 06D Emotion Recognition and Affective Attribute Regression
 
-## 0. Ghi chú hợp nhất
+## 0. Scope update
 
-File này là **Roadmap v1 chính thức** của đề tài, được hợp nhất từ:
+Huong de tai duoc chot lai:
 
 ```text
-RoadMap/roadmapv1.md
-RoadMap/roadmapv2.md
-RoadMap/roadmapv3.md
+Update and optimize the 06D Emotion2Vec Co-Attention model for
+strict speaker-independent Speech Emotion Recognition, then optionally
+extend it to arousal, valence, and dominance regression on IEMOCAP.
 ```
 
-Phạm vi của Roadmap v1 chỉ hợp nhất roadmap nền từ v1/v2/v3. Chưa tính phần mở rộng trong `bonusv2.md`.
+Khong tiep tuc mo rong thanh full presentation feedback system trong giai doan final, vi huong do can dataset, label va pipeline qua lon. Phan demo van co, nhung demo chi phuc vu minh hoa SER/affective speech analysis:
 
-Kết luận sau khi rà soát:
+```text
+input audio
+-> segment
+-> emotion prediction
+-> optional arousal/valence/dominance curves
+-> simple visualization
+```
 
-| Bản cũ | Trạng thái | Giữ lại gì | Bỏ gì |
+## 1. Ly do doi huong
+
+Ket qua hien tai cua 06D:
+
+| Protocol | Ket qua hien tai | Nhan xet |
+|---|---:|---|
+| Random split | around 80% | Kha on, nhung co the phu thuoc vao speaker/data overlap |
+| Strict speaker split | around 69% | Thap hon nhieu, cho thay model chua generalize tot sang speaker moi |
+
+Van de can giai quyet:
+
+- 06D co kien truc nang cao nhung feature extraction/fusion chua du manh.
+- Random split khong du thuyet phuc vi co nguy co model hoc speaker identity.
+- Final report can chung minh model chay tot trong dieu kien strict speaker-independent.
+- Cac repo manh tren IEMOCAP dung feature/backbone tot hon: emotion2vec, Wav2Vec2, WavLM, HuBERT, co-attention voi MFCC/spectrogram/wav2vec2.
+
+Muc tieu moi:
+
+1. Doc ky feature pipeline cua cac repo tot.
+2. Bat chuoc va nang cap feature extraction cho 06D.
+3. Chay lai strict speaker-independent.
+4. So sanh voi cac model SER co code va paper.
+5. Neu con kip, them regression head cho `EmoAct`, `EmoVal`, `EmoDom`.
+
+## 2. Dataset chinh
+
+### 2.1 IEMOCAP
+
+IEMOCAP la dataset chinh cho giai doan final.
+
+Links:
+
+- Official IEMOCAP: https://sail.usc.edu/iemocap/
+- HuggingFace mirror user da dua: https://huggingface.co/datasets/AbstractTTS/IEMOCAP
+
+Thong tin quan trong:
+
+| Noi dung | Gia tri |
+|---|---|
+| Total utterances | about 10,039 |
+| Common SER subset | 5,531 utterances |
+| Standard emotion labels | angry, sad, neutral, happy + excited |
+| Dimensional labels | activation/arousal, valence, dominance |
+| HF columns | audio, transcription, major_emotion, EmoAct, EmoVal, EmoDom |
+| Main split | leave-one-session-out 5-fold |
+| Stricter split | leave-one-speaker-out 10-fold |
+
+### 2.2 Why IEMOCAP is the right final dataset
+
+- Co raw audio.
+- Co transcript neu can dung nhe cho phan demo/report.
+- Co categorical emotion labels.
+- Co activation/arousal, valence, dominance labels.
+- Duoc dung rat rong rai trong SER benchmark.
+- Phu hop voi muc tieu strict speaker-independent vi co 5 session, 10 speakers.
+
+## 3. Final evaluation rubric alignment
+
+Roadmap nay bam theo cac nhom muc trong `Lasterm_Param`.
+
+### 3.1 Complete System Implementation
+
+Can co:
+
+| Rubric item | Deliverable |
+|---|---|
+| Complete speech processing pipeline | audio loading, resampling 16 kHz, segmentation, feature extraction, cached features |
+| Implement selected model | cleaned 06D model with strict split support |
+| Improvements to model/features/system | improved feature extraction inspired by strong repos |
+| Impact analysis through experiments | ablation table: old 06D vs improved features vs co-attention/multi-task |
+| UI/demo program | simple audio upload/demo notebook or app showing emotion and optional AVD timeline |
+
+### 3.2 Experimental Evaluation
+
+Can co:
+
+| Rubric item | Deliverable |
+|---|---|
+| Dataset/test scenario | IEMOCAP 4-class, LOSO 5-fold; optional LOSpeaker 10-fold |
+| Training/testing/results | CSV metrics per fold, average/std, confusion matrix |
+| Metric analysis | WA, UA, Macro-F1; optional CCC/MAE for AVD |
+| Baseline comparison | emotion2vec, CA-MSER, FT-w2v2 P-TAPT, DST |
+| Extended evaluation | strict speaker split, optional AVD regression, audio demo |
+
+### 3.3 Project Report
+
+Can co:
+
+1. Introduction and motivation.
+2. Dataset and strict speaker-independent protocol.
+3. Related work and baseline comparison.
+4. Proposed 06D improvement.
+5. Feature extraction pipeline.
+6. Experiments and ablation.
+7. Demo.
+8. Discussion: why strict split is harder than random split.
+9. Conclusion and future work.
+
+## 4. Reference folder
+
+Papers and code are stored in:
+
+```text
+Papers/Papers for main models emotion classification and valence arousal, dominance regression
+```
+
+Local contents:
+
+```text
+code/
+  emotion2vec
+  FT-w2v2-ser
+  CA-MSER_co_attention
+  DST_deformable_speech_transformer
+  SpeechFormer
+  TIM-Net_SER
+
+papers/
+  emotion2vec
+  Wav2Vec2 fine-tuning SER
+  CA-MSER co-attention
+  DST
+  TIM-Net
+  SpeechFormer
+  Wav2Vec2/HuBERT benchmark
+  MSTR
+  AVD regression references
+
+tables/
+  model_comparison.md
+  model_comparison.csv
+  bao_cao_tom_tat_vi.md
+```
+
+## 5. Main papers and repos
+
+| Model | Paper | Repo | Vai tro |
 |---|---|---|---|
-| `roadmapv1.md` | Lỗi thời phần lớn | problem framing ban đầu, module EDA/preprocessing/feedback | hướng CNN chung chung, stress-related wording quá rộng, timeline 4 tuần cũ |
-| `roadmapv2.md` | Còn nhiều ý đúng | VAD, smoothing, chunk-based timeline, pressure indicator, Q&A phản biện | phần lặp lại dài, một số cấu trúc notebook cũ |
-| `roadmapv3.md` | Là bản nền tốt nhất | 4-dataset SER, baseline status, 1D-CNN/2D-CNN, strict split, dashboard plan | các đoạn quá dài/lặp lại, path cũ dễ lỗi thời |
-
-Roadmap v1 dùng `roadmapv3` làm xương sống, bổ sung các ý còn đúng từ v1/v2, và loại các phần đã lỗi thời.
-
----
-
-## 1. Hướng đề tài cuối cùng
-
-Tên đề tài nên dùng:
-
-```text
-Voice-Based Presentation Feedback System
-```
-
-Tên tiếng Việt:
-
-```text
-Hệ thống phản hồi luyện thuyết trình dựa trên phân tích giọng nói
-```
-
-Mục tiêu không phải chỉ dự đoán một nhãn cảm xúc cho cả audio. Hệ thống cần:
-
-- nhận audio thuyết trình hoặc luyện nói;
-- dự đoán cảm xúc theo từng đoạn ngắn;
-- tạo emotion timeline;
-- tính các chỉ báo âm học như energy, pitch, silence, pause;
-- phân tích speech rate và filler words nếu có transcript;
-- sinh feedback giúp người dùng cải thiện giọng nói, tốc độ, độ liền mạch và năng lượng khi trình bày.
-
-Một câu mô tả dùng trong báo cáo:
-
-> Đề tài xây dựng một hệ thống phản hồi luyện thuyết trình dựa trên giọng nói. Hệ thống huấn luyện mô hình Speech Emotion Recognition trên các dataset cảm xúc công khai, sau đó áp dụng mô hình theo từng đoạn audio ngắn để tạo emotion timeline. Kết quả emotion được kết hợp với VAD, smoothing, acoustic indicators, speech rate và filler words để sinh feedback giúp người dùng cải thiện độ tự tin, sự liền mạch, năng lượng và ngữ điệu khi trình bày.
-
----
-
-## 2. Những hướng không nên gọi là mục tiêu chính
-
-### 2.1. Không gọi là stress detection
-
-Không nên gọi hệ thống là stress detector vì dataset chính là emotion datasets, không có ground truth stress/non-stress. Nếu gọi là stress detection sẽ dễ bị hỏi:
-
-- stress được gán nhãn thế nào;
-- có self-report hoặc physiological signal không;
-- có rủi ro y khoa/đạo đức không.
-
-Cách gọi an toàn hơn:
-
-```text
-Speaking Pressure Indicator
-Vocal Stability Indicator
-Stress-related Acoustic Indicator
-Confidence/Pressure Indicator for Presentation Feedback
-```
-
-Emotion chỉ là tín hiệu phụ. Speaking pressure phải dựa trên nhiều feature như pause, silence ratio, pitch variation, energy instability, speech rate và filler words.
-
-### 2.2. Không chuyển hẳn sang IELTS Speaking
-
-IELTS Speaking cần grammar, vocabulary, fluency, coherence và pronunciation. Nếu chuyển sang IELTS, project sẽ phụ thuộc nhiều vào ASR, grammar scoring và LLM, làm phần SER trở thành phụ.
-
-Presentation feedback phù hợp hơn vì emotion, energy, pitch, pause, speech rate và filler words liên quan trực tiếp tới cách trình bày.
-
----
-
-## 3. Kiến trúc tổng thể
-
-Project gồm hai pha:
-
-```text
-PHASE A - Training / Model Development
-4 emotion datasets
--> preprocessing
--> feature extraction
--> baseline ML
--> main SER model
--> optional advanced model
--> evaluation
--> save best model
-
-PHASE B - Application / Feedback System
-user presentation audio
--> preprocessing
--> VAD / silence detection
--> sliding-window chunking
--> SER prediction per chunk
--> smoothing
--> emotion timeline
--> acoustic indicators
--> optional transcript metrics
--> speaking pressure score
--> feedback engine
--> dashboard
-```
-
-Không nên xây một model duy nhất đi từ audio thẳng ra feedback. Nên chia thành module nhỏ:
-
-| Module | Vai trò |
-|---|---|
-| SER model | Dự đoán cảm xúc của từng audio/chunk |
-| VAD | Xác định speech/silence, tránh predict emotion trên im lặng |
-| Sliding window | Chia audio dài thành nhiều đoạn ngắn |
-| Smoothing | Làm timeline ổn định, giảm nhảy nhãn |
-| Acoustic indicators | Tính RMS, pitch, silence, pause, continuity |
-| Transcript analysis | Tính WPM và filler words nếu dùng ASR |
-| Feedback engine | Biến chỉ số thành nhận xét dễ hiểu |
-| Dashboard | Hiển thị waveform, spectrogram, timeline, metrics, feedback |
-
----
-
-## 4. Dataset strategy
-
-### 4.1. Dataset chính cho SER
-
-Phiên bản nền của project dùng 4 dataset emotion:
-
-```text
-CREMA-D
-RAVDESS speech-only
-TESS
-SAVEE
-```
-
-Giữ 6 nhãn chung:
-
-```text
-neutral, happy, sad, angry, fear, disgust
-```
-
-Không dùng `calm` và `surprise` trong bản chính vì không xuất hiện đồng đều ở tất cả dataset.
-
-| Dataset | Vai trò | Điểm mạnh | Hạn chế |
-|---|---|---|---|
-| CREMA-D | Dataset lõi quan trọng | Nhiều speaker, 6 emotion khớp tốt | Acted speech, khác presentation thật |
-| RAVDESS speech-only | Dataset học thuật chuẩn | Phổ biến, dễ cite, audio sạch | Ít hơn CREMA-D nếu chỉ lấy speech |
-| TESS | Bổ sung dữ liệu sạch | Nhiều mẫu, dễ train | Chỉ 2 female speakers, dễ làm kết quả ảo cao |
-| SAVEE | Benchmark phụ trong 4-dataset setup | Có male British speakers | Chỉ 4 speakers, nhỏ |
-| EmoDB | Optional/future benchmark | Phổ biến trong SER | Tiếng Đức, nhỏ, không cần cho bản chính |
-
-### 4.2. Label mapping
-
-| Unified label | CREMA-D | RAVDESS | TESS | SAVEE |
-|---|---|---|---|---|
-| neutral | neutral | neutral | neutral | neutral / n |
-| happy | happy | happy | happy | happiness / h |
-| sad | sad | sad | sad | sadness / sa |
-| angry | anger | angry | angry | anger / a |
-| fear | fear | fearful | fear | fear / f |
-| disgust | disgust | disgust | disgust | disgust / d |
-
-### 4.3. Evaluation protocols
-
-Cần báo cáo ít nhất 3 protocol:
-
-| Protocol | Mục đích |
-|---|---|
-| Paper-comparable random split | So sánh với paper/Kaggle, nhưng dễ hơn thực tế |
-| Strict speaker-aware split | Đánh giá nghiêm túc hơn, tránh cùng speaker ở train/test |
-| Cross-dataset evaluation | Kiểm tra generalization giữa corpus |
-
-Nếu strict split thấp hơn random split nhiều, đây không phải lỗi. Đó là bằng chứng về speaker/domain shift trong SER.
-
-### 4.4. Audio tự thu
-
-Audio tự thu không dùng để train SER model. Nó dùng cho demo và kiểm thử feedback.
-
-Nên thu 10-30 file, mỗi file 30-90 giây:
-
-| Case | Mục đích kiểm thử |
-|---|---|
-| nói đều, ít pause | hệ thống báo ổn định |
-| nói quá nhanh | speech rate cao |
-| nói quá chậm | speech rate thấp |
-| nói nhiều pause | silence ratio và pause count cao |
-| nói nhỏ dần | energy decreasing |
-| monotone | pitch variation thấp |
-| nhiều filler | filler count cao |
-| mở đầu tự tin, giữa ngập ngừng | timeline và feedback theo đoạn |
-
----
-
-## 5. Trạng thái nền hiện tại
-
-Theo roadmap v3, project đã có mốc baseline classical ML trên 4 dataset:
-
-| Protocol | Best model | Test accuracy | Test macro-F1 | Ý nghĩa |
-|---|---:|---:|---:|---|
-| Paper-comparable random split | SVM RBF tuned | 66.61% | 66.64% | Dùng để so với paper/Kaggle, nhưng dễ hơn |
-| Strict speaker-aware split | Probability-average ensemble | 47.06% | 46.53% | Khó hơn, thực tế hơn, phản ánh speaker/domain shift |
-
-Cách diễn giải đúng:
-
-> Với random split dùng để so sánh với các paper/Kaggle, SVM RBF đạt 66.61% accuracy và 66.64% macro-F1. Tuy nhiên, khi dùng strict speaker-aware split, kết quả giảm xuống 47.06% accuracy và 46.53% macro-F1. Điều này cho thấy bài toán SER trên nhiều corpus chịu ảnh hưởng mạnh bởi speaker identity, dataset domain, accent và recording condition.
-
-Không nên dùng classical ML baseline làm final model. Nó nên giữ vai trò:
-
-- mốc so sánh truyền thống;
-- bằng chứng handcrafted features có hiệu quả cơ bản;
-- mô hình dự phòng nếu deep learning gặp lỗi;
-- phần giải thích học thuật trong report.
-
----
-
-## 6. Model strategy
-
-### 6.1. Tầng model
-
-| Vai trò | Model | Input | Mục tiêu |
-|---|---|---|---|
-| Completed baseline | SVM/RF/ensemble classical ML | handcrafted mean/std features | Mốc so sánh |
-| Main model | 1D-CNN feature sequence | MFCC + delta + ZCR/RMS/energy theo thời gian | Học temporal acoustic pattern |
-| Comparison model | 2D-CNN log-Mel | log-Mel spectrogram | So sánh representation khác |
-| Advanced optional | CNN-GRU / CNN-BiLSTM / attention | sequence feature hoặc log-Mel | Nếu còn thời gian |
-
-### 6.2. Main model nên ưu tiên 1D-CNN feature sequence
-
-1D-CNN không nên nhận vector mean/std 248 chiều như một chuỗi giả. Nó nên nhận chuỗi feature theo thời gian:
-
-```text
-audio
--> frame-level feature extraction
--> [time_steps, feature_dim]
--> 1D-CNN along time axis
--> pooling
--> dense classifier
--> emotion posterior
-```
-
-Feature gợi ý:
-
-```text
-MFCC
-delta MFCC
-delta-delta MFCC
-RMS / energy
-ZCR
-spectral centroid
-spectral rolloff
-```
-
-1D-CNN hợp với project vì:
-
-- nhẹ hơn transformer/SSL fine-tuning;
-- phù hợp Kaggle/Colab;
-- giữ được temporal pattern;
-- dễ dùng cho sliding-window inference;
-- dễ giải thích hơn model quá lớn.
-
-### 6.3. 2D-CNN log-Mel vẫn nên giữ để so sánh
-
-2D-CNN log-Mel là hướng phổ biến trong SER:
-
-```text
-audio
--> log-Mel spectrogram
--> 2D-CNN
--> emotion posterior
-```
-
-Dùng 2D-CNN để so sánh:
-
-- handcrafted temporal sequence vs spectrogram image;
-- inference time;
-- random split và strict split;
-- khả năng dùng cho demo.
-
-Nếu 2D-CNN tốt hơn 1D-CNN rõ ràng, có thể chọn 2D-CNN làm demo model và giữ 1D-CNN làm comparison.
-
-### 6.4. Advanced model
-
-Chỉ làm advanced model nếu baseline/main/comparison đã ổn:
-
-```text
-CNN-GRU
-CNN-BiLSTM
-Attention pooling
-Wav2Vec2/HuBERT embedding extraction
-```
-
-Không nên để advanced model làm chậm dashboard hoặc khiến demo thiếu ổn định.
-
----
-
-## 7. Preprocessing và feature extraction
-
-### 7.1. Preprocessing
-
-Các bước chuẩn:
-
-```text
-load audio
--> convert mono
--> resample 16 kHz
--> normalize volume
--> optional trim leading/trailing silence
--> pad/crop for short-utterance training
--> save metadata and split
-```
-
-Lưu ý data leakage:
-
-> Split train/validation/test phải làm trước augmentation và trước khi cắt segment mở rộng dữ liệu.
-
-### 7.2. Feature cho baseline
-
-Baseline classical ML có thể dùng:
-
-```text
-MFCC mean/std
-delta mean/std
-RMS mean/std
-ZCR mean/std
-spectral centroid/rolloff/bandwidth
-```
-
-### 7.3. Feature cho main 1D-CNN
-
-Main 1D-CNN cần sequence feature:
-
-```text
-X shape = [num_samples, time_steps, feature_dim]
-```
-
-Không dùng toàn bộ feature đã aggregate thành mean/std cho 1D-CNN.
-
-### 7.4. Feature cho feedback
-
-| Feature | Vai trò feedback |
-|---|---|
-| RMS / energy | Giọng quá nhỏ, quá lớn, giảm dần hoặc thiếu ổn định |
-| Pitch/F0 mean | Cao độ trung bình |
-| Pitch/F0 std/range | Monotone hoặc dao động quá mạnh |
-| Silence ratio | Nhiều khoảng im lặng |
-| Pause count/long pause | Ngập ngừng, đứt đoạn |
-| Speech rate/WPM | Nói quá nhanh hoặc quá chậm |
-| Filler count | Nhiều từ đệm |
-
----
-
-## 8. VAD, sliding window và smoothing
-
-### 8.1. VAD
-
-VAD dùng để xác định speech/silence. Không có VAD, hệ thống có thể predict emotion trên chunk im lặng, làm timeline sai.
-
-Ưu tiên:
-
-| VAD | Ưu điểm | Nhược điểm |
+| emotion2vec | https://arxiv.org/abs/2312.15185 | https://github.com/ddlBoJack/emotion2vec | Main reference for 06D backbone |
+| FT-w2v2-ser / P-TAPT | https://arxiv.org/abs/2110.06309 | https://github.com/b04901014/FT-w2v2-ser | Strong Wav2Vec2 audio-only baseline |
+| CA-MSER Co-Attention | https://arxiv.org/abs/2203.15326 | https://github.com/Vincent-ZHQ/CA-MSER | Closest reference to 06D co-attention |
+| DST | https://arxiv.org/abs/2302.13729 | https://github.com/HappyColor/DST | Strong WavLM/Transformer baseline |
+| TIM-Net | https://arxiv.org/abs/2211.08233 | https://github.com/Jiaxin-Ye/TIM-Net_SER | Lightweight temporal baseline |
+| SpeechFormer | https://arxiv.org/abs/2203.03812 | https://github.com/HappyColor/SpeechFormer | Hierarchical speech transformer |
+| Wav2Vec2/HuBERT benchmark | https://arxiv.org/abs/2111.02735 | official repo not found | SSL fine-tuning reference |
+| MSTR | local PDF downloaded | official repo not found | paper-only transformer reference |
+
+AVD references:
+
+| Paper | Link | Task |
 |---|---|---|
-| WebRTC VAD | nhẹ, nhanh, hợp demo | nhạy với frame/noise |
-| Silero VAD | robust hơn | nặng hơn, thêm dependency |
+| Attention-Augmented End-to-End Multi-Task Learning | local PDF downloaded | A/V/D discretized low-mid-high classification |
+| Contrastive Unsupervised Learning for SER | local PDF downloaded | activation/valence/dominance CCC regression |
+| Cross-modal Conditional Teacher-Student | local PDF downloaded | audio-only A/V/D student from audio+text teacher |
+| AV from Categorical Labels | local PDF downloaded | infer arousal/valence from categorical emotion labels |
 
-Demo có thể bắt đầu bằng WebRTC hoặc silence detection đơn giản; Silero là should-have.
+## 6. Benchmark table for final report
 
-### 8.2. Sliding window
+### 6.1 Emotion classification
 
-Gợi ý:
+| Model | Speaker-independent? | Split | Input | WA | UA | Macro-F1 |
+|---|---:|---|---|---:|---:|---:|
+| emotion2vec linear | yes | LOSO 5-fold / LOSpeaker | audio | around 71.79-72.94 | around 72.69 | WF1 reported |
+| CA-MSER | yes | LOSO / LOSpeaker | audio | 69.80 / 71.64 | 71.05 / 72.70 | not reported |
+| FT-w2v2 P-TAPT | yes | LOSO 5-fold | audio | not reported | 74.3 | not reported |
+| DST | yes | LOSO 5-fold | audio | 71.8 | 73.6 | not reported |
+| Wav2Vec2/HuBERT benchmark | yes | leave-two-speaker-out 10-fold | audio | 73.01 | not reported | not reported |
+| 06D current | yes | strict split | audio | around 69 | to verify | to verify |
+| 06D improved | yes | LOSO 5-fold | audio | target: improve over current | target | target |
 
-```text
-window = 3s
-hop = 1.5s
-```
+### 6.2 Arousal / Valence / Dominance regression
 
-Với audio dài, mỗi chunk được xem như một utterance ngắn. Đây là chunk-based approximation, không phải frame-level ground truth.
+Emotion classification models usually do not report CCC because they predict categories. CCC is used when the output is continuous affect score.
 
-### 8.3. Smoothing
+| Model | Input | Task | Split | CCC-Arousal | CCC-Valence | CCC-Dominance |
+|---|---|---|---|---:|---:|---:|
+| preCPC AVD | audio/CPC | continuous A/V/D regression | IEMOCAP 5-fold | 0.752 | 0.752 | 0.691 |
+| Cross-modal teacher-student | HuBERT audio, BERT teacher | continuous A/V/D regression | 5-fold speaker-independent | 0.667 | 0.582 | 0.545 |
+| AV from categorical labels | WavLM | arousal/valence only | speaker-independent | 0.632-0.672 | 0.529-0.566 | N/A |
+| 06D + AVD head | audio | continuous A/V/D regression | LOSO 5-fold | to measure | to measure | to measure |
 
-Smoothing cần thiết vì prediction từng chunk dễ nhảy. Có thể dùng:
+## 7. What to copy from strong repos
 
-- moving average probability;
-- majority vote theo 3-5 chunks;
-- confidence threshold;
-- giữ nhãn trước nếu confidence quá thấp.
+### 7.1 emotion2vec
 
-Nên hiển thị cả raw timeline và smoothed timeline trong report/demo để chứng minh smoothing có tác dụng.
+Learn:
 
----
+- use pretrained emotion representation instead of weak handcrafted-only feature;
+- cache frame-level and utterance-level embeddings;
+- train simple downstream classifier first;
+- report strict IEMOCAP 4-class metrics.
 
-## 9. Emotion timeline
-
-Output timeline nên gồm:
-
-```text
-start_time
-end_time
-speech_ratio
-predicted_emotion
-emotion_confidence
-top2_emotion
-is_uncertain
-```
-
-Timeline không nên được mô tả là ground-truth emotion boundary. Cách gọi đúng:
+Apply to 06D:
 
 ```text
-VAD-guided chunk-based emotion timeline
+audio -> emotion2vec embedding -> adapter/MLP -> classifier
 ```
 
----
+### 7.2 CA-MSER
 
-## 10. Speaking pressure và acoustic feedback
+Learn:
 
-Speaking pressure không phải stress diagnosis. Nó là điểm tổng hợp từ các chỉ báo âm học.
+- use three feature levels: MFCC, spectrogram, wav2vec2;
+- do not simply concatenate features;
+- use co-attention to weight SSL embedding with acoustic features;
+- run ablation: each feature alone, fusion without attention, fusion with attention.
 
-Feature có thể dùng:
+Apply to 06D:
 
 ```text
-silence_ratio
-pause_count
-long_pause_count
-energy_instability
-pitch_variation
-speech_rate
-filler_count
-emotion_uncertainty
+MFCC branch
+LogMel/spectrogram branch
+Emotion2Vec branch
+-> co-attention / gated fusion
+-> classifier
 ```
 
-Rule ví dụ:
+### 7.3 FT-w2v2-ser
 
-| Dấu hiệu | Feedback |
-|---|---|
-| neutral cao + pitch variance thấp + energy đều | đoạn này có dấu hiệu monotone |
-| silence ratio cao hoặc pause dài | đoạn này có nhiều khoảng ngắt |
-| energy thấp + speech rate thấp | đoạn này thiếu năng lượng |
-| energy cao + high-arousal emotion cao | đoạn này có thể nghe căng/gắt |
-| WPM quá cao | đoạn này nói quá nhanh |
-| WPM quá thấp | đoạn này nói hơi chậm |
-| filler nhiều | nên thay filler bằng pause ngắn có kiểm soát |
+Learn:
 
----
+- strict leave-one-session-out generation;
+- Wav2Vec2 fine-tuning baseline;
+- task adaptive pretraining idea;
+- report UA per fold.
 
-## 11. Transcript analysis
+Apply to 06D:
 
-Transcript là optional/should-have, không phải phần bắt buộc đầu tiên.
+- use as benchmark, not necessarily copy entire training;
+- compare 06D improved against P-TAPT UA 74.3.
 
-Nguồn:
+### 7.4 DST
+
+Learn:
+
+- WavLM features can be strong for SER;
+- attention window should adapt to relevant emotional regions;
+- transformer attention can be upgraded beyond vanilla full attention.
+
+Apply to 06D:
+
+- optional attention upgrade if time remains;
+- not first priority because it may increase complexity.
+
+## 8. Proposed 06D optimization plan
+
+### Stage 1 - Reproduce current result
+
+Goal:
 
 ```text
-Whisper tiny/base
+Confirm current 06D result:
+random split around 80%
+strict split around 69%
 ```
-
-Metrics:
-
-- word count;
-- words per minute;
-- filler words;
-- repeated words/phrases;
-- long silence aligned with transcript;
-- optional Vietnamese filler words.
-
-Filler words tiếng Anh:
-
-```text
-um, uh, er, ah, like, you know, actually, basically, I mean
-```
-
-Filler words tiếng Việt có thể thử:
-
-```text
-ờ, ừm, à, thì, là, kiểu như, nói chung là, thật ra là
-```
-
----
-
-## 12. Feedback engine
-
-Nên bắt đầu bằng rule-based engine, không dùng LLM làm bộ phân tích chính.
-
-Pipeline:
-
-```text
-features + timeline
--> rule detection
--> issue list
--> template feedback
--> optional LLM rewrite for smoother text
-```
-
-Feedback nên có 3 tầng:
-
-1. Overall feedback.
-2. Timeline feedback theo đoạn.
-3. Improvement suggestions cụ thể.
-
-Ví dụ output:
-
-> Bài nói của bạn có nhiều đoạn neutral và pitch variation thấp, đặc biệt ở 00:30-01:00. Đoạn này có thể nghe hơi đều giọng. Bạn nên nhấn mạnh các từ khóa chính và thay đổi cao độ ở phần chuyển ý.
-
----
-
-## 13. Dashboard demo
-
-Ưu tiên Gradio vì dễ upload/record audio.
-
-Dashboard nên có:
-
-| Khối | Nội dung |
-|---|---|
-| Audio input | Upload hoặc record |
-| Waveform | Tín hiệu audio |
-| Spectrogram | Mel/log-Mel |
-| Overall emotion | Emotion chính và confidence |
-| Emotion distribution | Tỷ lệ emotion toàn bài |
-| Raw timeline | Prediction per chunk |
-| Smoothed timeline | Timeline sau smoothing |
-| VAD plot | Speech/silence |
-| Acoustic indicators | RMS, pitch, silence, pause |
-| Transcript | Nếu bật ASR |
-| Speech metrics | WPM, filler |
-| Feedback text | Nhận xét và gợi ý |
-
-Không nên phụ thuộc vào microphone streaming thật khi báo cáo. Upload/record rồi phân tích là ổn định hơn.
-
----
-
-## 14. Evaluation plan
-
-### 14.1. SER model
-
-Báo cáo:
-
-- accuracy;
-- macro-F1;
-- weighted-F1;
-- precision/recall per class;
-- confusion matrix;
-- per-dataset metrics;
-- random vs strict split;
-- optional cross-dataset evaluation.
-
-### 14.2. VAD
-
-Nếu không có ground truth VAD, đánh giá định tính:
-
-- silence chunk có bị predict emotion không;
-- pause count có hợp lý không;
-- timeline có sạch hơn không.
-
-### 14.3. Smoothing
-
-Đánh giá:
-
-- emotion transition count trước/sau smoothing;
-- số uncertain chunks;
-- ví dụ timeline raw vs smoothed;
-- nhận xét định tính.
-
-### 14.4. Feedback
-
-Dùng audio tự thu theo kịch bản:
-
-| Audio test | Kỳ vọng |
-|---|---|
-| nhiều pause | báo pause/silence cao |
-| nói nhanh | báo WPM cao |
-| nói chậm | báo WPM thấp |
-| nói nhỏ dần | báo energy decreasing |
-| monotone | báo pitch variation thấp |
-| nhiều filler | báo filler count cao |
-
-### 14.5. Latency
-
-Đo:
-
-- preprocessing time;
-- feature extraction time per chunk;
-- model inference time per chunk;
-- total processing time for 60s audio;
-- dashboard response time.
-
----
-
-## 15. Notebook roadmap
-
-Tên notebook có thể điều chỉnh theo cấu trúc repo hiện tại, nhưng logic nên giữ như sau:
-
-| Notebook | Nội dung | Output |
-|---|---|---|
-| 01 - Data Preparation | load datasets, parse labels, map 6 classes, split | metadata, label mapping, split config |
-| 02 - EDA | distribution, duration, waveform, MFCC/Mel examples | figures for report |
-| 03 - Feature Extraction | baseline features, sequence features, log-Mel | feature files/config |
-| 04 - Baseline Models | classical ML, random/strict metrics | baseline metrics, confusion matrix |
-| 05 - Main SER Model | 1D-CNN feature sequence hoặc chosen main model | model, metrics |
-| 06 - Comparison Model | 2D-CNN log-Mel comparison | comparison table |
-| 07 - Advanced Optional | CNN-GRU/BiLSTM/attention nếu còn thời gian | optional metrics |
-| 08 - VAD + Timeline | VAD, chunking, smoothing, timeline | timeline figures/csv |
-| 09 - Feedback Engine | acoustic indicators, pressure score, transcript optional | feedback report |
-| 10 - Dashboard | Gradio app | demo |
-
----
-
-## 16. Source structure gợi ý
-
-```text
-voice-presentation-feedback/
-|
-|-- data/
-|   |-- raw/
-|   |-- processed/
-|   |-- demo_audio/
-|   `-- metadata_clean.csv
-|
-|-- notebooks/
-|   |-- 01_data_preparation.ipynb
-|   |-- 02_eda_visualization.ipynb
-|   |-- 03_feature_extraction.ipynb
-|   |-- 04_baseline_models.ipynb
-|   |-- 05_main_ser_model.ipynb
-|   |-- 06_comparison_model.ipynb
-|   |-- 07_vad_timeline_smoothing.ipynb
-|   |-- 08_feedback_engine.ipynb
-|   `-- 09_gradio_demo.ipynb
-|
-|-- src/
-|   |-- config.py
-|   |-- label_parsers.py
-|   |-- audio_io.py
-|   |-- preprocessing.py
-|   |-- features_baseline.py
-|   |-- features_sequence.py
-|   |-- features_mel.py
-|   |-- models_ser.py
-|   |-- train_utils.py
-|   |-- evaluation.py
-|   |-- vad.py
-|   |-- smoothing.py
-|   |-- timeline.py
-|   |-- acoustic_indicators.py
-|   |-- pressure_score.py
-|   |-- transcript_analysis.py
-|   `-- feedback_engine.py
-|
-|-- models/
-|-- figures/
-|-- results/
-|-- app/
-`-- reports/
-```
-
----
-
-## 17. Timeline triển khai từ hiện tại
-
-### Tuần 1 - Main SER model
-
-- Tạo/load sequence feature.
-- Train 1D-CNN hoặc chọn main model đang tốt nhất trong repo.
-- Evaluate random và strict split.
-- So sánh với classical baseline.
-- Lưu model, metrics, confusion matrix.
 
 Deliverables:
 
+- exact dataset version;
+- exact labels;
+- split script;
+- metrics per fold;
+- confusion matrix.
+
+### Stage 2 - Strict IEMOCAP pipeline
+
+Goal:
+
 ```text
-main_ser_model
-model_metrics.json
-confusion_matrix.png
-model_comparison_table.csv
+IEMOCAP 4-class:
+angry, sad, neutral, happy+excited
+LOSO 5-fold
 ```
 
-### Tuần 2 - Comparison và ablation
+Deliverables:
 
-- Train/check 2D-CNN log-Mel.
-- Optional CNN-GRU/BiLSTM nếu còn thời gian.
-- Đo inference time.
-- Chốt model demo.
+- manifest CSV with audio path, speaker, session, label;
+- fold assignment;
+- no speaker leakage;
+- class distribution per fold.
 
-### Tuần 3 - VAD, sliding window, smoothing
+### Stage 3 - Feature extraction upgrade
 
-- Thu audio demo.
-- Implement VAD/silence detection.
-- Chunking 3s, hop 1.5s.
-- Predict per chunk.
-- Smooth probabilities.
-- Plot raw vs smoothed timeline.
+Fix weak feature extraction first.
 
-### Tuần 4 - Feedback, dashboard, report
+Feature groups:
 
-- Compute RMS, pitch, silence, pause.
-- Compute speaking pressure score.
-- Add transcript/WPM/filler nếu kịp.
-- Build Gradio dashboard.
-- Chuẩn bị screenshots, demo script, report/slide.
-
----
-
-## 18. Task assignment
-
-| Thành viên | Vai trò chính | Công việc |
+| Feature group | Source idea | Use |
 |---|---|---|
-| Nguyễn Minh Cường | EDA, acoustic indicators, timeline, dashboard | EDA figures, RMS/pitch/silence/pause, pressure score, timeline visualization, Gradio |
-| Nguyễn Tài Huy | Dataset, preprocessing, feature extraction, baseline | metadata, label mapping, split, feature extraction, baseline packaging |
-| Bùi Quang Huy | Literature, main model, methodology/report | literature map, main/comparison model, model comparison, methodology, results, limitation |
+| emotion2vec embedding | emotion2vec repo | main affective representation |
+| MFCC sequence | CA-MSER/TIM-Net | low-level acoustic branch |
+| log-mel/spectrogram | CA-MSER/SpeechFormer | spectral branch |
+| wav2vec2/WavLM optional | CA-MSER/DST/FT-w2v2 | baseline or optional branch |
+| statistics | current 06D | stable utterance-level auxiliary feature |
 
----
+Required ablation:
 
-## 19. Must-have, Should-have, Nice-to-have
+| Experiment | Purpose |
+|---|---|
+| emotion2vec only | check backbone strength |
+| MFCC only | check low-level baseline |
+| log-mel only | check spectral branch |
+| emotion2vec + MFCC | check acoustic + SSL |
+| emotion2vec + log-mel | check spectral + SSL |
+| all features concat | check naive fusion |
+| all features + co-attention | check 06D proposed gain |
 
-### Must-have
+### Stage 4 - Model optimization
 
-- 4-dataset metadata clean.
-- Label mapping 6 classes.
-- EDA figures.
-- Baseline classical ML result.
-- Main SER model.
-- Model comparison table.
-- Chunk-based prediction.
-- VAD hoặc silence detection cơ bản.
-- Smoothing đơn giản.
-- Emotion timeline.
-- Acoustic indicators: RMS, pitch, silence ratio, pause count.
-- Rule-based feedback.
-- Gradio upload demo.
+Optimize:
 
-### Should-have
+- freeze vs unfreeze emotion2vec adapter;
+- learning rate;
+- dropout;
+- class weights or focal loss;
+- early stopping by validation UA/Macro-F1;
+- batch size and sequence length;
+- speaker-independent validation fold;
+- seed averaging if time allows.
 
-- Strict speaker-aware evaluation.
-- Cross-dataset test.
-- Augmentation noise/shift.
-- Raw vs smoothed timeline comparison.
-- Speaking pressure score.
-- Audio tự thu nhiều case.
-- Transcript speech rate.
+Do not over-optimize random split. Random split is only sanity check.
 
-### Nice-to-have
+### Stage 5 - Compare with reference models
 
-- Filler words.
-- CNN-GRU/CNN-BiLSTM.
-- Silero VAD.
-- Vietnamese sample.
-- Wav2Vec2/HuBERT embeddings.
-- Backup demo video.
+Main comparison:
 
-### Future work
+1. emotion2vec linear.
+2. CA-MSER.
+3. FT-w2v2 P-TAPT.
+4. DST.
 
-- Full microphone streaming.
-- Emotion diarization dataset có boundary.
-- Vietnamese public speaking dataset.
-- Multimodal video + audio.
-- IELTS rubric.
-- Clinical stress/depression datasets only if ethical handling is clear.
+The final report should say:
 
----
+```text
+Our previous 06D reached around 80% on random split but only around 69%
+on strict speaker split. Therefore, this final stage focuses on strict
+speaker-independent generalization rather than random-split accuracy.
+```
 
-## 20. Rủi ro và cách xử lý
+### Stage 6 - Optional AVD regression
 
-| Rủi ro | Tác động | Cách xử lý |
-|---|---|---|
-| Strict split thấp | kết quả nhìn không đẹp | giải thích speaker/domain shift |
-| TESS quá dễ | random accuracy ảo cao | báo per-dataset metrics |
-| SAVEE nhỏ | model bias | dùng per-dataset/cross-dataset analysis |
-| Main model không vượt SVM nhiều | khó chọn model | thử 2D-CNN/log-Mel, phân tích latency và strict split |
-| Data leakage | kết quả sai | split trước augmentation/segmentation |
-| Timeline nhảy | feedback rối | smoothing + threshold |
-| Predict trên silence | timeline sai | thêm VAD/silence filtering |
-| Feedback chủ quan | khó đánh giá | rule rõ, audio test có kịch bản |
-| Stress bị hiểu nhầm | phản biện y khoa | gọi là speaking pressure, không stress diagnosis |
-| ASR sai filler | feedback sai | để optional/experimental |
+Only after emotion classification is stable.
 
----
+Architecture:
 
-## 21. Câu hỏi phản biện và câu trả lời
+```text
+shared 06D encoder
+  -> emotion head: CrossEntropyLoss
+  -> AVD head: predicts EmoAct, EmoVal, EmoDom
+```
 
-### Câu 1: Vì sao random split cao hơn strict split?
+Loss:
 
-Random split có thể để cùng speaker hoặc cùng corpus style xuất hiện trong cả train và test. Strict split khó hơn vì kiểm tra khả năng generalize sang speaker/corpus khác. Sự chênh lệch này là hiện tượng thường gặp trong SER.
+```text
+total_loss = CE_emotion + lambda * AVD_loss
+```
 
-### Câu 2: Dataset chỉ có label cho toàn audio, sao làm timeline?
+AVD loss options:
 
-Nhóm dùng chunk-based approximation. Audio dài được chia thành các chunk ngắn, mỗi chunk được xem như một utterance ngắn và model dự đoán emotion chủ đạo. Nhóm không khẳng định đây là frame-level emotion ground truth.
+- MSE loss first;
+- CCC loss if implementation time allows.
 
-### Câu 3: Vì sao cần VAD?
+Metrics:
 
-VAD giúp tránh dự đoán emotion trên silence và đồng thời cung cấp pause/silence information cho feedback.
+- CCC-Arousal;
+- CCC-Valence;
+- CCC-Dominance;
+- MAE-Arousal;
+- MAE-Valence;
+- MAE-Dominance.
 
-### Câu 4: Fear/sad có phải stress không?
+Important:
 
-Không. Emotion chỉ là tín hiệu phụ. Speaking pressure được tính từ pause, silence, energy, pitch, speech rate và filler. Hệ thống không chẩn đoán stress.
+```text
+Do not compare AVD CCC directly with emotion WA/UA.
+They are different tasks.
+```
 
-### Câu 5: Feedback có được train không?
+## 9. Demo plan
 
-Không ở bản nền. Feedback được sinh bằng rule-based engine vì chưa có dataset expert feedback đủ chuẩn. Các rule dựa trên acoustic indicators và transcript metrics.
+The demo should be small and realistic.
 
----
+### 9.1 Input
 
-## 22. Cấu trúc báo cáo
+```text
+User uploads a WAV/MP3 audio file
+or selects one IEMOCAP sample
+```
+
+### 9.2 Processing
+
+```text
+resample to 16 kHz
+split into 3-5 second segments
+run 06D improved model
+aggregate predictions
+optional AVD head for each segment
+```
+
+### 9.3 Output
+
+Minimum demo:
+
+- predicted emotion;
+- confidence score;
+- per-segment emotion timeline;
+- confusion/summary visualization for test samples.
+
+Optional demo:
+
+- arousal curve;
+- valence curve;
+- dominance curve;
+- short text explanation:
+
+```text
+This segment is predicted as high arousal / negative valence.
+This suggests an intense emotional tone.
+```
+
+Do not claim presentation-quality scoring in the demo.
+
+## 10. Final report structure
+
+Recommended report:
 
 1. Introduction
-2. Problem Statement and Motivation
-3. Literature Review
-4. Dataset Description and Label Mapping
-5. System Overview
-6. Audio Preprocessing
-7. Feature Extraction
-8. Baseline Classical ML Models
-9. Main SER Model
-10. Comparison / Advanced Model
-11. VAD-guided Chunk-based Inference
-12. Smoothing and Emotion Timeline
-13. Acoustic Speaking Indicators
-14. Speaking Pressure Indicator
-15. Transcript Analysis
-16. Feedback Engine
-17. Dashboard Demo
-18. Experiments and Results
-19. Ablation Study
-20. Discussion
-21. Limitations
-22. Future Work
-23. Conclusion
+   - Why random split is not enough.
+   - Why speaker-independent SER matters.
+2. Dataset
+   - IEMOCAP structure.
+   - 4-class subset.
+   - AVD labels.
+3. Related Work
+   - emotion2vec.
+   - Wav2Vec2 P-TAPT.
+   - CA-MSER.
+   - DST.
+   - AVD regression papers.
+4. Proposed Method
+   - 06D current model.
+   - Feature extraction weakness.
+   - Improved feature pipeline.
+   - Co-attention fusion.
+5. Experiments
+   - random split sanity check.
+   - strict LOSO 5-fold.
+   - ablation.
+   - baseline comparison.
+6. AVD Extension
+   - optional regression head.
+   - CCC/MAE.
+7. Demo
+   - audio upload/sample demo.
+8. Discussion
+   - why strict split is harder.
+   - why model may still be below some SOTA.
+   - feature extraction and speaker leakage discussion.
+9. Conclusion
 
----
+## 11. Work plan
 
-## 23. Slide outline
+### Week 1 - Data and baseline audit
 
-1. Title and team
-2. Motivation: presentation feedback problem
-3. Why not stress detection / IELTS scoring
-4. Proposed system overview
-5. Dataset strategy: 4 datasets, 6 labels
-6. Literature map
-7. Baseline results
-8. Main model decision
-9. Evaluation protocols
-10. VAD and sliding window
-11. Smoothing and emotion timeline
-12. Acoustic indicators
-13. Speaking pressure score
-14. Feedback engine
-15. Dashboard demo
-16. Results
-17. Limitations
-18. Future work
-19. Q&A
+- Read emotion2vec, CA-MSER, FT-w2v2, DST feature pipelines.
+- Build IEMOCAP manifest.
+- Implement LOSO 5-fold split.
+- Re-run current 06D on same split.
 
----
+### Week 2 - Feature extraction upgrade
 
-## 24. Checklist cuối cùng
+- Cache emotion2vec embeddings.
+- Add/clean MFCC and log-mel branches.
+- Match CA-MSER-style feature handling where possible.
+- Run feature ablation.
 
-### Dataset
+### Week 3 - 06D optimization
 
-- [ ] 4 dataset load được.
-- [ ] Metadata clean.
-- [ ] Label mapping 6 lớp.
-- [ ] Strict/random split.
-- [ ] Per-dataset distribution.
+- Tune LR, dropout, class weight/focal loss.
+- Compare concat vs co-attention.
+- Report WA, UA, Macro-F1 per fold.
+- Compare against reference models.
 
-### Baseline
+### Week 4 - Optional AVD and demo
 
-- [x] Classical ML baseline đã có theo roadmap v3.
-- [ ] Export figures clean.
-- [ ] Viết report baseline.
+- Add AVD regression head if emotion model is stable.
+- Report CCC/MAE.
+- Build demo notebook/app.
+- Finalize report tables and figures.
 
-### Main model
+## 12. Final decision
 
-- [ ] Sequence feature extraction.
-- [ ] Train/evaluate main SER model.
-- [ ] Compare với baseline.
-- [ ] Save best model.
-
-### Comparison/advanced
-
-- [ ] Train/check 2D-CNN log-Mel.
-- [ ] Optional CNN-GRU/BiLSTM.
-- [ ] Measure inference time.
-
-### Timeline
-
-- [ ] VAD/silence detection.
-- [ ] Sliding window.
-- [ ] Predict per chunk.
-- [ ] Smoothing.
-- [ ] Emotion timeline figure.
-
-### Feedback
-
-- [ ] RMS.
-- [ ] Pitch.
-- [ ] Silence ratio.
-- [ ] Pause count.
-- [ ] Speaking pressure score.
-- [ ] Transcript optional.
-- [ ] Feedback rules.
-
-### Demo
-
-- [ ] Gradio app.
-- [ ] Audio demo set.
-- [ ] Screenshots.
-- [ ] Backup video.
-- [ ] Demo script.
-
-### Report
-
-- [ ] Literature review.
-- [ ] Dataset section.
-- [ ] Methodology.
-- [ ] Results.
-- [ ] Ablation.
-- [ ] Limitations.
-- [ ] Future work.
-
----
-
-## 25. Kết luận
-
-Roadmap hợp nhất chốt project theo hướng:
+Core deliverable:
 
 ```text
-Voice-Based Presentation Feedback System
+Improved 06D model for strict speaker-independent IEMOCAP SER.
 ```
 
-Lõi kỹ thuật:
+Optional deliverable:
 
 ```text
-4-dataset SER
-+ classical baseline
-+ main SER model
-+ VAD-guided chunk inference
-+ smoothing
-+ emotion timeline
-+ acoustic speaking indicators
-+ speaking pressure score
-+ rule-based feedback
-+ Gradio dashboard
+06D + AVD regression head for EmoAct, EmoVal, EmoDom.
 ```
 
-Đóng góp chính không phải phát minh một model hoàn toàn mới, mà là xây dựng một pipeline ứng dụng đầy đủ từ training SER đến feedback luyện thuyết trình. Đây là hướng có cơ sở học thuật, khả thi trên Colab/Kaggle, và có demo rõ ràng.
+Removed from current roadmap:
+
+- PuSQ reproduction.
+- TED rating prediction.
+- Full presentation feedback system.
+- Long-audio TED assessment.
+
+Reason:
+
+```text
+These directions are useful research references, but they are too broad
+for the final deadline and no longer match the current core goal.
+```

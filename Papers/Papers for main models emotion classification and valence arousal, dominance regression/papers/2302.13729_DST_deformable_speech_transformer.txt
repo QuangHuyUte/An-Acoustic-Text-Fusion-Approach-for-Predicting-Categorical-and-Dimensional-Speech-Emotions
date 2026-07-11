@@ -1,0 +1,537 @@
+DST: DEFORMABLE SPEECH TRANSFORMER FOR EMOTION RECOGNITION
+Weidong Chen1 Xiaofen Xing1∗ Xiangmin Xu23 Jianxin Pang4 Lan Du5
+1 School of Electronic and Information Engineering, South China University of Technology, China
+2 School of Future Technology, South China University of Technology, China
+3 Pazhou Laboratory, China 4 UBTECH Robotics Corp, China 5 iFLYTEK Research, China
+ABSTRACT
+Enabled by multi-head self-attention, Transformer has exhib-
+ited remarkable results in speech emotion recognition (SER).
+Compared to the original full attention mechanism, window-
+based attention is more effective in learning ﬁne-grained fea-
+tures while greatly reducing model redundancy. However,
+emotional cues are present in a multi-granularity manner such
+that the pre-deﬁned ﬁxed window can severely degrade the
+model ﬂexibility. In addition, it is difﬁcult to obtain the op-
+timal window settings manually. In this paper, we propose a
+Deformable Speech Transformer, named DST, for SER task.
+DST determines the usage of window sizes conditioned on in-
+put speech via a light-weight decision network. Meanwhile,
+data-dependent offsets derived from acoustic features are uti-
+lized to adjust the positions of the attention windows, allow-
+ing DST to adaptively discover and attend to the valuable in-
+formation embedded in the speech. Extensive experiments on
+IEMOCAP and MELD demonstrate the superiority of DST.
+Index Terms— speech emotion recognition, deformable
+network, Transformer, deformable attention mechanism
+1. INTRODUCTION
+Emotion is one of the most essential characteristics that dis-
+tinguishes humans from robots [1] and speech is the most ba-
+sic tool for daily communication [2]. Therefore, analyzing
+emotion states through speech signals is a continuing concern
+for the research community. Owing to the rapid development
+of deep learning, many advanced models have been proposed
+and delivered promising results in speech emotion recognition
+(SER). In particular, convolutional neural networks [3, 4], re-
+current neural networks [5, 6] and their variants [7, 8, 9] have
+been widely studied and deployed for applications.
+Transformer [10], which is the recent white hope archi-
+tecture, is making a splash in deep learning domain. Differ-
+ent from previous networks, Transformer adopts the full at-
+tention mechanism, which is depicted in Fig. 1(a), to learn
+a global representation of input signal. Although the effec-
+tiveness of Transformer in SER has already been conﬁrmed
+[11, 12, 13], there are several key points to be aware of when
+handling emotion analysis with Transformer: 1) Emotional
+cues are multi-grained in nature, which means that beyond the
+∗Corresponding author: Xiaofen Xing, xfxing@scut.edu.cn
+(a) Full (b) Window-based
+(d) Ours(c) DCN-like
+Activated Node Deactivated Node
+Attention
+Mask
+Tokens
+Audio
+Interacted Feature
+Tokenlized 
+Fig. 1. Comparison between different attention mechanisms.
+In contrast to prior works that have pre-set window sizes or
+ﬁxed window positions, we propose to make them both ﬂexi-
+ble and deformable. DCN-like attention is applied in vision.
+global representation, the details in speech are also important.
+For example, the local characteristics, such as articulation and
+prolongation, are highly relevant to the emotion states. 2) The
+full attention mechanism suffers from a lack of diversity and
+is thus inadequate to capture the multi-granularity features. 3)
+The computation of the full attention is quite redundant.
+One mainstream approach to improve Transformer is em-
+ploying the window-based attention mechanism [11, 14]. As
+shown in Fig 1(b), window-based attention restricts the atten-
+tion scope to a ﬁxed local window whose size is typically set
+to a small value to focus on the ﬁne-grained features. How-
+ever, the immutable window also severely decreases the ﬂexi-
+bility of model. What is worse, it weakens the ability of global
+learning and thus it inevitably requires considerable manual
+tuning of window conﬁguration to obtain peak performance.
+To alleviate the above issues, this paper proposes a de-
+formable framework, named DST, for speech emotion recog-
+nition. In DST, the window sizes are learned by a light-weight
+decision network based on the input speech, breaking the lim-
+itations of using the pre-set conﬁguration. Also, the window
+positions can be shifted by learned offsets on a per-input ba-
+sis. These qualities follow the natures of emotion and greatly
+improve the model ﬂexibility. In addition, unlike deformable
+convolutional networks (DCNs) [15] and DCN-like attention
+arXiv:2302.13729v1  [cs.SD]  27 Feb 2023
+FFN
+Norm
+Norm
+DSA
+DST
+Acoustic Feature
+DST Block
+DST Block
+DST Block
+. . .
+DST Block
+Linear
+Linear ∑
+∑
+Linear
+Linear
+Linear
+𝐾1[:]
+𝑉1[:]
+𝐾2[:]
+𝑉2[:]
+Output
+Input
+𝑗-th token
+Linear
+Linear
+Decision
+Network
+𝑄2
+𝑗
+𝑄1
+𝑗
+Offset Size
+𝐷𝐻2
+𝑗
+𝐷𝐻1
+𝑗
+Fig. 2. Overview structure of the proposed DST. The only difference between DST block and the vanilla Transformer is the
+replacement of MSA with DSA. In DSA, we show only h = 2 attention heads and omit the softmax operation for a clear
+presentation. ⊗and ⊕represent the matrix multiplication and addition, respectively. Σ represents the weighted summation.
+utilized in vision that model intermittently (Fig. 1(c)) [16, 17],
+DST models continuous tokens (Fig. 1(d)), which is more in
+line with the continuous speech signal. Finally, we visualize
+different attention mechanisms for an intuitive understanding.
+The contributions of this work are summarized as follows:
+• We endow Transformer with deformability by employ-
+ing ﬂexible, data-dependent window sizes and offsets.
+• Extensive experiments on IEMOCAP [18] and MELD
+[19] datasets show that DST outperforms the state-of-
+the-art approaches. Our codes are publicly available at
+https://github.com/HappyColor/DST.
+2. METHODOLOGY
+The proposed DST, as illustrated in Fig. 2, is composed of
+multiple stacked DST blocks. Each DST block mainly con-
+sists of a deformable speech attention (DSA) module and a
+feed-forward network (FFN). Equipped with the DSA mod-
+ule, the system is able to adaptively determine the usage of
+window sizes and window positions depending on the input
+speech signal, which greatly improves the model ﬂexibility
+and can learn the multi-granularity emotional cues effectively.
+2.1. Revisiting Transformer
+At the core of the standard Transformer is the multi-head self-
+attention module (MSA), which makes Transformer stand out
+from other deep neural networks. More details can be found
+in [10]. Speciﬁcally, the MSA mechanism can be written as:
+Qi = QWQ
+i , Ki = KWK
+i , Vi = VWV
+i (1)
+Hi = softmax(QiK⊤
+i√
+dQ
+)Vi (2)
+MSA(Q,K,V) = concat(H1,..., Hh)Wo (3)
+where Q, K, V are query, key and value matrices, respectively;
+dQ is a scaling factor and hdenotes the number of attention
+heads; WQ
+i , WK
+i , WV
+i and Wo are to be learned parameters.
+2.2. Deformable Speech Transformer
+2.2.1. Deformable Speech Attention
+Deformable speech attention (DSA) is at the core of the DST.
+Different from previous attention mechanisms, DSA is able
+to change the window sizes and modify the window positions
+via a simple decision network. Let Qj
+i be the j-th token of
+Qi in the i-th attention head, where i ∈[1,h]. The decision
+network ﬁrst produces the window sizesij and offset oij con-
+ditioned on Qj
+i :
+¯sij,¯oij = Qj
+i WD
+i (4)
+sij = σ1(¯sij) ×L, oij = σ2(¯oij) ×L (5)
+where j ∈[0,L−1] and Ldenotes the sequence length of the
+features; WD
+i is the parameter matrix; σ1 and σ2 are two non-
+linear functions for restricting the range of the outputs. For
+example, the window size sij should lie in the range (0,L).
+Therefore, we ﬁrst apply the sigmoid function to limit the
+value of ¯sto (0,1) and then scale it by the maximum length
+L. Similarly, since the valuable information can be on either
+side of the current j-th token, we apply the tanh function to
+normalize ¯oij to the range (−1,1) before scaling it by L.
+Giving the current position index jand the offset oij, the
+anchor of the critical segment Aij can be obtained. Combin-
+ing with the predicted window size sij, the boundaries of the
+attention window for the j-th query in the i-th head, Lij and
+Rij, are also given. The calculations are as follows:
+Aij = j+ oij (6)
+Lij = Aij −sij , Rij = Aij + sij (7)
+Finally, each query token attends to its respective de-
+formed attention windows through the proposed DSA mech-
+anism. The DSA is formulated as follows:
+DHj
+i = softmax(Qj
+i Ki[Lij : Rij]⊤
+√
+dQ
+)Vi[Lij : Rij] (8)
+DSA(Q,K,V) = concat(DH1,..., DHh)Wo (9)
+1−(⌈𝑅⌉−R)
+1+(𝐴−⌊𝐴⌋)
+1+(⌈𝐴⌉−𝐴)
+1−(𝐿−⌊𝐿⌋) 1−(𝐿−⌊𝐿⌋)
+𝑊𝑑
+Decision
+Network
+1.6 1.4 0.1
+K Linear
+Weighted Key
+3
+Index 2 3 4 510 6 7 8 9
+Key
+Matrix
+1 1
+𝑜 = 1.4 𝑠 = 1.7
+Eqs. 6-7
+Eq. 10
+0.3 𝑊
+⌈𝑅⌉⌊𝐴⌋ ⌈𝐴⌉⌊𝐿⌋
+𝐿 = 𝐴−𝑠 = 2.7 𝑅 = 𝐴+𝑠 = 6.1𝐴 = 𝑗+𝑜 = 4.4𝑗 = 3
+Backward Propagation
+Forward Propagation
+Decision
+Network
+1.6 1.4 0.1
+𝐾𝑖 Linear
+Attention in the 𝑖-th head
+3
+Index 2 3 4 510 6 7 8 9
+Input
+1 1
+𝑜 ~1.4 𝑠~1.7
+Eqs. 6-7
+Eq. 10
+0.3 𝑤𝑖
+⌈𝑅⌉⌊𝐴⌋ ⌈𝐴⌉⌊𝐿⌋
+𝐿 = 𝐴−𝑠 = 2.7 𝑅 = 𝐴+𝑠 = 6.1𝐴 = 𝑗+𝑜 = 4.4𝑗 = 3
+Backward Propagation
+Forward Propagation
+𝑅𝐿
+𝐴
+Linear
+𝑄𝑖
+3
+Assumed Output~
+Position-wise Multiplication
+Fig. 3. Differentiable weighting process for end-to-end train-
+ing. ⊙denotes position-wise multiplication.
+where Ki[Lij : Rij] and Vi[Lij : Rij] consist of the Lij-th
+to the Rij-th tokens of Ki and Vi matrices, respectively; DHj
+i
+denotes the j-th output token of the i-th attention head.
+2.2.2. End-to-End Training
+For ease of reading, we will omit the subscripts of the no-
+tations. In practice, the outputs of the decision network, the
+window size sand offset o, are decimals, causing the atten-
+tion boundaries, Land R, to be decimals as well. However, in
+Eq. 8, the indexing operationsK[L: R] and V[L: R] require
+both Land Rto be integers. One simple solution is rounding
+the Land Rto integers ⌊L⌋and ⌈R⌉, where ⌈·⌉and ⌊·⌋round
+a number up and down, respectively. However, the rounding
+operations are non-differentiable, resulting in a decision net-
+work that cannot be optimized by the back propagation algo-
+rithm. To add the decision network to the computation graph
+in a differentiable way, we leverage the distances between the
+predicted boundaries (Land R) and the true boundaries (⌊L⌋
+and ⌈R⌉), and the distances between the central tokens ( ⌊A⌋
+and ⌈A⌉) and the anchor (A) to yield weights for the selected
+key features in DSA. In general, only if the predicted bound-
+aries are close to the true boundaries, the⌊L⌋-th and the ⌈R⌉-
+th tokens will be assigned large weights. The weights for two
+central tokens are against each other, and whichever side the
+anchor is close to has a larger weight. Noting that we ex-
+pect anchor to be the center of the important segment, thus
+the weights for the central tokens should be larger than 1 to
+emphasize them. Overall, the weights are computed as below:
+wk
+i =
+
+
+
+1 −(L−⌊L⌋) if k= ⌊L⌋
+1 −(⌈R⌉−R) if k= ⌈R⌉
+1 + (⌈A⌉−A) if k= ⌊A⌋
+1 + (A−⌊A⌋) if k= ⌈A⌉
+1 otherwise
+(10)
+where k ∈[⌊L⌋,⌈R⌉] denotes the token index and wk
+i is the
+weight for the k-th token in theKi matrix. Eventually, sand o
+are correlated with the weights, and the process of weighting
+is differentiable. The decision network can be optimized with
+the entire model jointly in an end-to-end manner. Suppose the
+current index jis 3, the weighting process is shown in Fig. 3.
+3. EXPERIMENTS
+3.1. Datasets and Acoustic Features
+IEMOCAP [18] contains ﬁve sessions, every of which has
+one male and one female speaker, respectively. We merge ex-
+citement into happiness category and select 5,531 utterances
+from happy, angry, sad and neutral classes. Experiments are
+conducted in leave-one-session-out cross-validation strategy.
+MELD [19] dataset contains 13,708 utterances with 7 emo-
+tion classes. As MELD has been ofﬁcially split into training,
+validation and testing sets, we use the validation set for hyper-
+parameter turning and report the scores on the testing set. To
+be consistent with previous works, weighted accuracy (W A),
+unweighted accuracy (UA) and weighted average F1 (WF1)
+are used to assess the model performance.
+Features. Pre-trained self-supervised WavLM [20] is adopted
+to extract the acoustic features. The max sequence lengths are
+set to 326 and 224 for IEMOCAP and MELD, respectively.
+3.2. Training Details and Hyper-Parameters
+The number of training epochs is set to 120. SGD [21] with
+a learning rate of 5e−4 on IEMOCAP and 1e−3 on MELD
+is applied to optimize the model. Cosine annealing warm
+restarts scheduler [22] is used to adjust the learning rate in
+the training phase. Learning rate of the decision network is
+multiplied by a factor of 0.1. The batch size is 32. The num-
+ber of attention heads is 8. The number of DST blocks is 4.
+3.3. Experimental Results and Analysis
+3.3.1. Comparison with Other Attention Mechanisms
+Performance Analysis. To analyze the potency of DST, we
+implement other common attention mechanisms, namely, full
+[10], window-based and DCN-like [16] attentions, for com-
+parison. The ﬁxed window size of the window-based attention
+and the number of sampling points in the DCN-like attention
+are empirically set to 10% of input length. Average percent-
+age of activated tokens for each query is also listed for com-
+prehensive analysis. As shown in Table 1, DST outperforms
+the counterparts on IEMOCAP and MELD by a considerable
+margin. In particular, the use of DCN-like attention causes a
+signiﬁcant drop in performance, which means that modeling
+the continuous tokens is essential for speech signal. Most in-
+terestingly, we ﬁnd that on IEMOCAP, each query attends to
+an average of 8.7% of all input tokens, while on MELD, this
+percentage increases to 12.7%. This ambiguity exposes the
+difﬁculty of manual tuning and recommends conﬁgurations
+that are automatically determined by model itself. Also, we
+Full
+Window-based
+DCN-like
+DSA (Ours)
+ashamed 
+somehowI felt what 
+you said [N][N][N]
+Full
+Window-based
+DCN-like
+DST (Ours)
+ashamed 
+somehowI felt what 
+you said [N][N][N]
+Fig. 4. Visualization of different attention mechanisms. [N]
+indicates a silent segment with background noise.
+ﬁnd that DST can learn all potential emotional features, both
+ﬁne and coarse, through its deformable capabilities. Further-
+more, we discard the learned window size ( −deform. size)
+or reset the offset to zero ( −deform. offset), and the abla-
+tion results shown in the last two rows of Table 1 once again
+conﬁrm the effectiveness of the proposed deformable design.
+Visualization Analysis. To further understand the proposed
+model, we consider an utterance sample and intuitively com-
+pare the attention weights in each attention mechanism by vi-
+sualization. As illustrated in Fig 4, voiced fragments are dis-
+tributed in a small part of the entire speech sample. The full
+attention has difﬁculty in highlighting the key parts owing to
+the large amount of noise that deeply confuses the model. Al-
+though the window-based attention is able to learn the ﬁne-
+grained features, it is inevitably limited in performance when
+the duration and position of the key segments mismatch with
+the pre-deﬁned window settings. Since speech is a continuous
+signal, the DCN-like attention fails to judge importance by
+the discrete tokens, leading to little difference in its assigned
+weights. Inspiringly, DST successfully focuses on the critical
+segments (“ashamed somehow” in text ) and highlights them
+by means of the learned window sizes and offsets.
+3.3.2. Comparison to Previous State-of-the-Art
+Table 2 gives the comparison among the proposed DST with
+some known approaches on IEMOCAP and MELD. All ap-
+proaches here adopt acoustic features as input for a fair com-
+parison. On IEMOCAP, DST outperforms the previous best
+results obtained by [3, 6]. On MELD, DST substantially sur-
+passes the other competitors by a considerable margin.
+4. CONCLUSION
+In this paper, a deformable speech Transformer, named DST,
+has been proposed for speech emotion recognition. DST can
+Table 1. Performances of adopting different attention mech-
+anisms on two corpora. PAT indicates the average percentage
+of the activated tokens for each query during the testing phase.
+−deform. x means the corresponding attribute x is ﬁxed.
+Attention
+Mechanisms
+IEMOCAP MELD
+W A UA PAT WF1 PAT
+Full 0.710 0.720 100 0.472 100
+Window-based 0.714 0.723 10 0.476 10
+DCN-like 0.665 0.681 10 0.455 10
+DST (Ours) 0.718 0.736 8.7 0.488 12.7
+−deform. size 0.714 0.726 10 0.479 10
+−deform. offset 0.716 0.729 8.9 0.483 12.8
+Table 2. Comparison with known state-of-the-art systems on
+IEMOCAP and MELD. All systems apply audio as input.
+IEMOCAP
+Method Year W A UA
+Audio-CNN [4] 2021 0.654 0.667
+AR-GRU [8] 2021 0.669 0.683
+ISNet [3] 2022 0.704 0.650
+Co-attention [6] 2022 0.698 0.711
+DST (Ours) 2023 0.718 0.736
+MELD
+Method Year WF1
+CTNet [12] 2021 0.382
+DECN [7] 2021 0.439
+SpeechFormer [11] 2022 0.419
+MM-DFN [9] 2022 0.427
+DST (Ours) 2023 0.488
+capture the multi-granularity emotional cues effectively via
+deformed attention windows whose sizes and positions are
+automatically determined by model itself. This deformability
+of DST signiﬁcantly improves the model ﬂexibility and adapt-
+ability. Experimental results on IEMOCAP and MELD cor-
+pora demonstrate the effectiveness of the proposed DST. We
+hope our work can inspire insights towards designing ﬂexible
+and potent variants of Transformer for the speech domain. In
+the future, we plan to extend DST to other speech tasks and
+further verify its adaptability.
+5. ACKNOWLEDGEMENT
+The work is supported in part by the Natural Science Foun-
+dation of Guangdong Province 2022A1515011588, in part
+by the National Key R&D Program of China under Grant
+2022YFB4500600, in part by the Science and Technology
+Project of Guangzhou under Grant 202103010002, in part
+by the Science and Technology Project of Guangdong under
+Grant 2022B0101010003, in part by the National Natural Sci-
+ence Foundation of China under Grant U1801262, and in part
+by the Guangdong Provincial Key Laboratory of Human Dig-
+ital Twin under Grant 2022B1212010004.
+6. REFERENCES
+[1] J.-M. Fellous, “From human emotions to robot emo-
+tions,” Architectures for Modeling Emotion: Cross-
+Disciplinary Foundations, American Association for Ar-
+tiﬁcial Intelligence, pp. 39–46, 2004.
+[2] B.C. Moore, L.K. Tyler, and W. Marslen-Wilson, “Intro-
+duction. the perception of speech: from sound to mean-
+ing,” Philosophical transactions of the Royal Society
+of London. Series B, Biological sciences , vol. 363, no.
+1493, pp. 917–921, 2008.
+[3] W. Fan, X. Xu, B. Cai, and X. Xing, “Isnet: Individ-
+ual standardization network for speech emotion recog-
+nition,” IEEE/ACM Transactions on Audio, Speech, and
+Language Processing, vol. 30, pp. 1803–1814, 2022.
+[4] Z. Peng, Y . Lu, S. Pan, and Y . Liu, “Efﬁcient speech
+emotion recognition using multi-scale cnn and atten-
+tion,” in IEEE International Conference on Acoustics,
+Speech and Signal Processing, 2021, pp. 3020–3024.
+[5] J. Lee and I. Tashev, “High-level feature representa-
+tion using recurrent neural network for speech emotion
+recognition,” in Proc. Interspeech, 2015, pp. 1537–
+1540.
+[6] H. Zou, Y . Si, C. Chen, D. Rajan, and E. S. Chng,
+“Speech emotion recognition with co-attention based
+multi-level acoustic information,” inIEEE International
+Conference on Acoustics, Speech and Signal Process-
+ing, 2022, pp. 7367–7371.
+[7] Z. Lian, B. Liu, and J. Tao, “Decn: Dialogical emotion
+correction network for conversational emotion recogni-
+tion,” Neurocomputing, vol. 454, pp. 483–495, 2021.
+[8] S. T. Rajamani, K. T. Rajamani, A. Mallol-Ragolta,
+S. Liu, and B. Schuller, “A novel attention-based gated
+recurrent unit and its efﬁcacy in speech emotion recog-
+nition,” in IEEE International Conference on Acoustics,
+Speech and Signal Processing, 2021, pp. 6294–6298.
+[9] D. Hu, X. Hou, L. Wei, L. Jiang, and Y . Mo, “Mm-dfn:
+Multimodal dynamic fusion network for emotion recog-
+nition in conversations,” in IEEE International Confer-
+ence on Acoustics, Speech and Signal Processing, 2022,
+pp. 7037–7041.
+[10] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit,
+L. Jones, and et al., “Attention is all you need,” in Pro-
+ceedings of the 31st International Conference on Neural
+Information Processing Systems, 2017, pp. 5998–6008.
+[11] W. Chen, X. Xing, X. Xu, J. Pang, and L. Du, “Speech-
+Former: A Hierarchical Efﬁcient Framework Incorpo-
+rating the Characteristics of Speech,” in Proc. Inter-
+speech, 2022, pp. 346–350.
+[12] Z. Lian, B. Liu, and J. Tao, “Ctnet: Conversa-
+tional transformer network for emotion recognition,”
+IEEE/ACM Transactions on Audio, Speech, and Lan-
+guage Processing, vol. 29, pp. 985–1000, 2021.
+[13] W. Chen, X. Xing, X. Xu, J. Yang, and J. Pang,
+“Key-sparse transformer for multimodal speech emo-
+tion recognition,” in IEEE International Conference
+on Acoustics, Speech and Signal Processing , 2022, pp.
+6897–6901.
+[14] K. Chen, X. Du, B. Zhu, Z. Ma, T. Berg-Kirkpatrick,
+and S. Dubnov, “Hts-at: A hierarchical token-semantic
+audio transformer for sound classiﬁcation and detec-
+tion,” in IEEE International Conference on Acoustics,
+Speech and Signal Processing, 2022, pp. 646–650.
+[15] J. Dai, H. Qi, Y . Xiong, Y . Li, G. Zhang, H. Hu, and
+Y . Wei, “Deformable convolutional networks,” in Pro-
+ceedings of the IEEE International Conference on Com-
+puter Vision, 2017, pp. 764–773.
+[16] Z. Xia, X. Pan, S. Song, L. E. Li, and G. Huang, “Vision
+transformer with deformable attention,” in Proceedings
+of the IEEE/CVF Conference on Computer Vision and
+Pattern Recognition, 2022, pp. 4794–4803.
+[17] X. Zhu, W. Su, L. Lu, B. Li, X. Wang, and J. Dai,
+“Deformable detr: Deformable transformers for end-to-
+end object detection,”arXiv preprint arXiv:2010.04159,
+2020.
+[18] C. Busso, M. Bulut, C.-C Lee, A. Kazemzadeh,
+E. Mower, and et al., “Iemocap: Interactive emotional
+dyadic motion capture database,” Language Resources
+and Evaluation, vol. 42, no. 4, pp. 335–359, 2008.
+[19] S. Poria, D. Hazarika, N. Majumder, G. Naik, E. Cam-
+bria, and R. Mihalcea, “MELD: A multimodal multi-
+party dataset for emotion recognition in conversations,”
+arXiv preprint arXiv:1810.02508, 2019.
+[20] S. Chen, C. Wang, Z. Chen, Y . Wu, S. Liu, Z. Chen,
+J. Li, N. Kanda, T. Yoshioka, X. Xiao, J. Wu, L. Zhou,
+and et al., “Wavlm: Large-scale self-supervised pre-
+training for full stack speech processing,”IEEE Journal
+of Selected Topics in Signal Processing, pp. 1–14, 2022.
+[21] H. Robbins and S. Monro, “A stochastic approxima-
+tion method,” The annals of mathematical statistics, pp.
+400–407, 1951.
+[22] I. Loshchilov and F. Hutter, “Sgdr: Stochastic gra-
+dient descent with warm restarts,” arXiv preprint
+arXiv:1608.03983, 2016.

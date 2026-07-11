@@ -1,0 +1,515 @@
+Multi-Scale Temporal Transformer For Speech Emotion Recognition
+Zhipeng Li1, Xiaofen Xing1∗, Yuanbo Fang1, Weibin Zhang3, Hengsheng Fan4, Xiangmin Xu1,2
+1 South China University of Technology, Guangzhou, China
+2 Pazhou Lab, Guangzhou, China
+3 V oiceAI Technologies, Shenzhen, China
+4 Forensic Science Institute of Guangzhou Public Security Bureau
+Abstract
+Speech emotion recognition plays a crucial role in human-
+machine interaction systems. Recently various optimized
+Transformers have been successfully applied to speech emotion
+recognition. However, the existing Transformer architectures
+focus more on global information and require large computa-
+tion. On the other hand, abundant speech emotional represen-
+tations exist locally on different parts of the input speech. To
+tackle these problems, we propose a Multi-Scale TRansfomer
+(MSTR) for speech emotion recognition. It comprises of three
+main components: (1) a multi-scale temporal feature opera-
+tor, (2) a fractal self-attention module, and (3) a scale mixer
+module. These three components can effectively enhance the
+transformer’s ability to learn multi-scale local emotion repre-
+sentations. Experimental results demonstrate that the proposed
+MSTR model significantly outperforms a vanilla Transformer
+and other state-of-the-art methods across three speech emotion
+datasets: IEMOCAP, MELD and, CREMA-D. In addition, it
+can greatly reduce the computational cost.
+Index Terms: Multi-Scale, Transformer, Speech Emotion
+Recognition
+1. Introduction
+In recent years, with the development of artificial intelligence
+and robotics, affective computing has become more and more
+important in human-computer interaction. Human emotions
+and intentions are well contained in the speech. Speech emo-
+tion recognition has a wide range of applications in spoken dia-
+logue systems, call-center conversation analysis, etc. It can also
+be potentially used in a smart device. Despite great progress
+that has been made in speech processing, natural emotion un-
+derstanding is still a challenging task for many smart systems.
+With the advancement of deep neural networks, several at-
+tempts have been made to classify the emotional utterances
+through recurrent neural networks and convolutional neural net-
+works. Guo et al. [1] proposed a CNN based on a spectro-
+temporal-channel attention module to improve emotion repre-
+sentation learning ability. Some algorithms[2, 3, 4] used RNN
+to model temporal sequence and attention mechanism for tem-
+poral tokens weighting have helped emotion representation ex-
+traction from speech.
+Self-attention-based Transformers [5, 6, 7, 8] have be-
+come the main backbone in natural language processing(NLP)
+and computer vision(CV). Inspired by the success of NLP,
+researchers have tried to replace the entire CNN or RNN
+with a Transformer. Significant progress has been made in
+∗* Corresponding author.
+many speech-related tasks such as automatic speech recogni-
+tion [9, 10, 11], speech enhancement [12, 13, 14]. However,
+the computational resources that a Transformer with the full-
+attention mechanism is quadratic to the sequence duration, mak-
+ing it difficult to run on mobiles and embedded devices. In ad-
+dition, its applications to the speech emotion recognition (SER)
+task remains limited since human emotions are inherently com-
+plex and ambiguous. Some authors have proposed Transformer-
+based sparse attention mechanisms, such as BigBird[15] in
+NLP, Image transformer[16], Swin transformer[17] in CV , but
+these are not well suited for speech emotion tasks, since emo-
+tion is embedded in a long segment of continuous speech. So,
+it is necessary for us to design specific transformers for SER.
+Chen et al. [18] proposed a Transformer based algorithm to cap-
+ture all emotion features through a single fixed-scale size fea-
+ture extractor. This might be inappropriate since human emo-
+tions can be expressed in different parts of the speech with dif-
+ferent time spans. Zhu et al. [19] used two different convolu-
+tional kernel sizes to simulate the extraction of multi-scale emo-
+tions from speech. We believe that using more different speech
+time scale information will be more helpful for emotion extrac-
+tion. Emotional cues are multi-grained in nature, so a efficient
+light-weight Transformer that can utilize multiple granule levels
+of the acoustic features is more suitable for the speech emotion
+recognition (SER) task.
+Figure 1: Compared with different attention mechanisms. Full
+attention means high computational cost and unnecessary at-
+tention redundancy and other sparse attention do not take well
+into account the characteristics of emotion in speech. We pro-
+pose to extract emotional representation in different speech tem-
+poral scales.
+To deal with the limits of existing Transformers used in
+SER, we propose a Multi-Scale TRansfomer(MSTR).
+arXiv:2410.00390v1  [eess.AS]  1 Oct 2024
+Figure 2: Overall architecture of the proposed Multi-Scale Transformer (MSTR) for speech emotion recognition. Each basic block of
+the MSTR mainly consists of three main components: a multi-scale temporal operator, a fractal self-attention module , and a scale
+mixer module. FFN means feedforward networks.
+The contributions of this article are summarized as follows:
+• To obtain multi-grained speech emotion representations, we
+proposed MSTR. The first effective transformer-based model
+that exploits multi-scale temporal features. Experiments
+demonstrate the great potential of the proposed method in
+modeling human emotion expressed in different temporal
+granularities in speech.
+• Experiments also show that the proposed model achieves
+comparable results with other state-of-the-art methods on
+both IEMOCAP[20], Meld[21] and CREMA-D[22] SER
+benchmark datasets, but with much less computation require-
+ment.
+2. Methodology
+The overall architecture of the proposed MSTR model is shown
+in Figure 2. As can be seen, different from a vanilla Trans-
+former, the basic block of the proposed MSTR network mainly
+contains three components: a multi-scale temporal feature op-
+erator, a fractal self-attention module, and a scale mixer mod-
+ule. The multi-scale temporal features operator takes raw acous-
+tic feature or output from the lower layer as input and pro-
+duces multiple output features with different temporal scales.
+The fractal self-attention module is used to efficiently model
+the temporal relations between different frames within a fixed-
+length window. Finally, the scale mixer module effectively
+fuses features at different temporal scales, to create a unified
+and mixed emotional feature representation. Compared to the
+original full attention mechanism, fractal attention is more ef-
+fective in learning multi-grained features while greatly reducing
+model redundancy. Other modules like feed forward network
+remain the same as the original vanilla Transformer. The trans-
+former’s output will be fed to a classifier with three fully con-
+nected layers for sentiment classification. Details about these
+components are presented in the following sections.
+2.1. Multi-Scale Temporal Feature Operator
+We proposed a multi-scale temporal feature operator to paral-
+lelly extract multi-scale feature representations from raw acous-
+tic features or output from lower layer. It takes a sequential fea-
+ture X ∈ RT×F as input, where T is the number of input frames
+and F indicates the feature dimension. Similar to a vanilla
+Transformer, we first obtain the Query, Key, and Value. Specif-
+ically, the input X is projected in to Q = XW Q, K = XW K,
+and V = XW V , where WQ, WK, WV ∈ RF×F .
+As shown in Figure 2, the obtained {Q, K, V} are then fed
+into an average pooling module separately to get features at dif-
+ferent time scales. Specifically, a scaling factor Sk = pk−1 is
+designed for the kth scale level, wherep is the fractal factor and
+k ∈ {1, 2, ..., L}. The kth scaling level operates on top of the
+k − 1th level by averaging p adjacent frames. In a word, the
+input feature set {Q, K, V} goes through the average pooling
+operator to obtain temporal scale feature sets at different time
+scale Xk =
+
+Qk, Kk, Vk	
+∈ R
+T
+Sk
+×F
+. The new feature set Xk
+will be fed into the fractal self-attention module to model the
+features’ temporal relationship. It is worth mentioning that use
+of the pooling operator rather than the convolution can perform
+better, maintain the original timing structure, and wouldn’t add
+any extra parameters.
+2.2. Fractal Self-Attention
+A vanilla Transformer uses global self-attention and thus re-
+quires large amount of computation. In the proposed MSTR
+model, we propose to calculate the self-attention within a fixed-
+length window since we already have features at different time
+scales. In our implementation, the length of the window is set
+to p, i.e. same with the fractal factor. Thus we call the self-
+attention module the fractal self-attention.
+Specifically, the feature set at the k-th scale level Xk =
+Qk, Kk, Vk	
+is divided by the window size p. Take Qk for
+example , we will have Qk =
+
+Qk
+1 , Qk
+2 , ..., Qk
+w
+	
+, where w =
+T
+Sk×p = T
+pk . For data in the i-th window block, self-attention
+is computed, i.e.
+Attention(Qk
+i , Kk
+i , Vk
+i ) =softmax( Qk
+i Kk
+i
+t
+√
+F
+)V k
+i (1)
+where t means transpose and Ak
+i = Attention(Qk
+i , Kk
+i , Vk
+i ).
+Finally, the output matrices from the self-attention com-
+puted at different windows are concatenated along the time di-
+mension to produce new features Xk ∈ R
+T
+Sk
+×F
+:
+Y k = Concat(Ak
+1 , Ak
+2 , ..., Ak
+w) (2)
+The output Y k from the k-th level scale will then be fed to the
+following scale mixer module. In Equation 1, a single-head at-
+tention with full dimensionality is used for simplify. The multi-
+head mechanism described in [5] can also be applied straight-
+forwardly. The window length p applied to self-attention calcu-
+lation help substantially reduce computation, especially when
+the length of the input data is large.
+2.3. Scale Mixer Module
+Fractal self-attention module can greatly reduce the computa-
+tional complexity, but it also leads to the problem that the model
+might excessively focus on local semantics and ignore global
+information. We thus propose a scale mixer module to aggre-
+gate multi-scale data to get a unified emotion representation.
+The first step is to interpolate data at different time scales to
+have the original temporal sequence length T. This is achieved
+by performing the nearest up-sample operation. Then the up-
+sampled data go through an activation function Gelu before we
+simply add all of them up. Finally, a linear projection WO is
+applied to get the final multi-scale emotion representation.
+Y k
+up = UpSampling (Y k
+s ) (3)
+Output = (
+NX
+k=1
+Gelu(Y k
+up))WO (4)
+The local semantic information from fine-grained features and
+the global semantic information from coarse-grained features
+will be re-unified into a single representation. The scale mixer
+module effectively complements the deficiency of only being
+able to extract salient local information within a short window
+in a specific scale caused by the fractal self-attention. Other
+more complicated fusion methods like scale attention to select
+important emotional information may also be used to aggregate
+information from multi-scale features. But the simple method
+described above performs the best among all the fusion methods
+we explored in our experiments.
+2.4. Computational Complexity Analyse
+In a MSTR model, the self-attention is computed within a win-
+dow of length p. The computation complexities of the self-
+attention from a vanilla Transformer(VTR) and that from the
+fractal self-attention in a MSTR model are given below:
+O(VT R) =T2 × F (5)
+O(MST R) =
+LX
+k=1
+T
+Sk
+× p2 × F (6)
+Here we ignore the computational effort of pooling and upsam-
+pling because they are much smaller than the computational
+effort of the self-attentive module. As can be seen, the com-
+putation for the self-attention layer in a vanilla Transformer is
+quadratic to the input sequence length, while the computation
+for the fractal self-attention in a MSTR model is liner.
+Table 1: Details about the three datasets used in the experi-
+ments. LR represents learning rate. Three common evalua-
+tion metrics, i.e. Weight Accuracy (WA), Unweighted Accuracy
+(UA), and Weighted average F1 (WF1) are used to access the
+model performance.
+Dataset Feature Epochs LR Evaluation Metric
+IEMOCAP Hubert 150 1e−4 W A& UA
+Meld Hubert 150 5e−6 WF1
+CREMA-D Hubert 100 5e−5 W A& UA
+3. Experiments
+3.1. Datasets
+IEMOCAP: The dataset was used in the same way as in pre-
+vious studies[23, 24]. The subset of IEMOCAP, which con-
+tains 5531 utterances of angry, happy(the category excited is
+labeled as happy), sad, and neutral was used. A 5-fold leave-
+one-session-out cross-validation strategy was utilized.
+Meld: Meld is a multi-model dataset containing 13708 utter-
+ances with 7 emotion classes. There are 9989/1109/2610 utter-
+ances in the training/validation/testing sets and the performance
+on the test set are reported.
+CREMA-D: It contains 7442 clips of 91 actors. All the clips are
+divided into six categories, i.e. neutral, happy, anger, disgust,
+fear, and sad. 80% the samples from CREMA-D were selected
+randomly as the training set and the remaining 20 % as the test
+set, and the test set are reported.
+3.2. Experimental Setup
+Details about the experimental settings as well as the evaluation
+metrics used for three datasets are listed in Table 1. We used a
+pre-trained Hubert(-large)[25]model to extract raw acoustic fea-
+tures. For both the MSTR model and the baseline model–vanilla
+Transformer, cross-entropy is employed as aloss function, and
+Adam [26] optimizer is employed, the number of basic model-
+ing blocks is 4, the number of heads is 16 and the batch size
+is 32. In our implementation, Fractal number p is 3 and the
+number of scale layers L is 4. In order to eliminate the effects
+of randomness, we trained and evaluated the models 10 times
+(setting 10 different seeds from 0 to 9), and report the average
+scores in the following.
+3.3. Result and Discussion
+3.3.1. Comparison Analyse
+The results of different methods are shown, in Table 2. As can
+be seen, compared with the baseline model (a vanilla Trans-
+former), the proposed MSTR significantly improves the per-
+formance on all the results: +1.70 % W A and +1.58% UA in
+IEMOCAP, +0.95% WF1 in Meld, +2.00 % W A and +1.98%
+UA in CREMA-D. In addition, it reduces FLOPs up to 96.25%
+in IEMOCAP, 93.11 % in Meld, 86.81 % in CREMA-D. The
+proposed method uses local self-attention within a window to
+model the input’s correlation rather than full attention. On the
+other hand, it expands the local receptive field through a multi-
+scale structure. The results demonstrate the effectiveness of the
+proposed MSTR model.
+The MSTR model also outperforms some well-known sys-
+tems on the three corpora. On IEMOCAP, MSTR achieves com-
+parable performances to [23]: +0.80 %W A and +0.55%UA. In
+terms of computation, it only requires about 1.5 % of the com-
+Table 2: Performance comparison of the proposed MSTR
+model, the baseline (a vanilla Transformer), and other state-
+of-the-art methods on IEMOCAP , MELD, and CREMA-D. “-
+” means the original paper doesn’t give the corresponding re-
+sults. Params means number of model parameters and FLOPs
+means model computational complexity. The rules of calculat-
+ing FLOPs we are consistent with vit[8, 17]
+IEMOCAP
+Method Params FLOPs W A UA
+Guo (2021)[1] - - 61.32 60.43
+Wang (2021)[27] - - 66.50 65.70
+Chen (2022)[24] 16.72M 2.28G 62.90 64.50
+Gudmalwar (2022)[28] - - - 67.42
+Fan (2020)[29] - - 70.40 65.00
+Zou (2022)[23] - - 69.80 71.05
+Baseline 27.0M 892.2M 68.90 70.02
+MSTR(ours) 27.0M 33.5M 70.60 71.60
+Meld
+Method Params FLOPs WF1
+Liang (2020)[30] - - 40.20
+Lian (2021)[31] - - 38.20
+Chen (2022)[24] 33.2M 1.64G 41.90
+Hu (2022)[32] - - 42.72
+Baseline 25.3M 432.7M 45.20
+MSTR(ours) 25.3M 29.8M 46.15
+CREMA-D
+Method Params FLOPs W A UA
+Baseline 24.1M 205.9M 77.70 77.90
+MSTR(ours) 24.1M 27.16M 79.70 79.92
+putation of the model in [24]. On Meld, the MSTR model out-
+performs the previous methods by a large margin: +3.43%WF1
+over [32]. In summary, the MSTR architecture achieves state-
+of-the-art performance and computational efficiency in three
+popular benchmark datasets in speech emotion recognition.
+3.3.2. Significant Hyperparameter Analysis
+We also did experiments to evaluate the influence of the two
+important hyperparameters: the fractal factor p and the num-
+ber of scale layers L. Figure 3 shows the results compared with
+baseline model. As can be seen from Figure 3a, setting p to
+3 achieves the best performance in all three speech emotion
+datasets. From Figure 3b, we can clearly see that the model
+can substantially benefit from the multi-scale configurations.
+The performance of the MSTR model drops on all the cor-
+pus when the number of scale levels goes from 4 to 1, which
+demonstrates the effectiveness of multi-scale temporal trans-
+former. When p set 3 and L set 1, the fractal attention mecha-
+nism degenerates to general window-based attention, compared
+with baseline model, MSTR does not perform well, and that
+means the window-based attention mechanism does not apply
+to all speech emotion datasets, and multi-scale attention mech-
+anism can achieve great performance with low computing vol-
+ume .This in turn confirms that human emotion indeed exists
+in features with different time-scales and the fact that multi-
+grained emotion representations are essential. Rational use of
+emotion representations implied by speech in different time
+scales is the key to the speech emotion recognition task.
+Figure 3: Analysis of the influence of hyperparameters p and L
+4. Conclusions
+In this paper, we delve into the emotional multi-scale represen-
+tation learning and propose a new efficient architecture named
+MSTR for the speech emotion recognition task. The fractal self-
+attention module in MSTR can effectively extract multi-scale
+temporal emotion features. The scale mixer module summa-
+rizes multi-scale representations into a single emotion represen-
+tation. The ablation experiments show that multi-scale features
+contain more salient emotional information than single-scale
+features. MSTR was evaluated on three SER datasets. It outper-
+forms the latest Transformer-based network in both computa-
+tional complexity and performance. The MSTR model achieves
+new state-of-the-art results.
+5. Acknowledgements
+The work is supported in part by the Science and Technology
+Project of Guangzhou 202103010002; in part by Natural Sci-
+ence Foundation of Guangdong Province 2022A1515011588;
+in part by Nansha key project 2022ZD011; in part by the Na-
+tional Natural Science Foundation of China U1801262; in part
+by the Fundamental Research Funds for the Central Universities
+2022ZYGXZR0075; in part by Key-Area Research and Devel-
+opment Program of Guangdong Province 2022B0101010003;
+in part by the Guangdong Provincial Key Laboratory of Human
+Digital Twin 2022B1212010004.
+6. References
+[1] L. Guo, L. Wang, C. Xu, J. Dang, E. S. Chng, and H. Li, “Rep-
+resentation learning with spectro-temporal-channel attention for
+speech emotion recognition,” in IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP), 2021, pp.
+6304–6308.
+[2] J. Li and C. Lee, “Attentive to individual: A multimodal emotion
+recognition network with personalized attention profile,” in Inter-
+speech, 2019, pp. 211–215.
+[3] J. Wang, M. Xue, R. Culhane, E. Diao, and V . Tarokh, “Speech
+emotion recognition with dual-sequence lstm architecture,” in
+IEEE International Conference on Acoustics, Speech and Signal
+Processing (ICASSP), 2020.
+[4] P. Kumar, V . Kaushik, and B. Raman, “Towards the explainability
+of multimodal speech emotion recognition.” inInterspeech, 2021,
+pp. 1748–1752.
+[5] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N.
+Gomez, Ł. Kaiser, and I. Polosukhin, “Attention is all you need,”
+in Proceedings of the 31st International Conference on Neural
+Information Processing Systems, 2017, pp. 5998–6008.
+[6] J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova, “Bert: Pre-
+training of deep bidirectional transformers for language under-
+standing,” arXiv preprint arXiv:1810.04805, 2018.
+[7] Z. Dai, Z. Yang, Y . Yang, J. Carbonell, Q. V . Le, and R. Salakhut-
+dinov, “Transformer-xl: Attentive language models beyond a
+fixed-length context,” arXiv preprint arXiv:1901.02860, 2019.
+[8] A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn,
+X. Zhai, T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold,
+S. Gelly et al., “An image is worth 16x16 words: Transformers
+for image recognition at scale,”arXiv preprint arXiv:2010.11929,
+2020.
+[9] M. Li, S. Zhang, C. Zoril ˘a, and R. Doddipatla, “Transformer-
+based streaming asr with cumulative attention,” in IEEE Inter-
+national Conference on Acoustics, Speech and Signal Processing
+(ICASSP). IEEE, 2022, pp. 8272–8276.
+[10] J. Xie and J. H. Hansen, “DEFORMER: Coupling Deformed
+Localized Patterns with Global Context for Robust End-to-end
+Speech Recognition,” in Proc. Interspeech 2022, 2022, pp. 1392–
+1396.
+[11] K. Audhkhasi, Y . Huang, B. Ramabhadran, and P. J. Moreno,
+“Analysis of Self-Attention Head Diversity for Conformer-based
+Automatic Speech Recognition,” inProc. Interspeech 2022, 2022,
+pp. 1026–1030.
+[12] F. Dang, H. Chen, and P. Zhang, “Dpt-fsnet: Dual-path trans-
+former based full-band and sub-band fusion network for speech
+enhancement,” in IEEE International Conference on Acoustics,
+Speech and Signal Processing (ICASSP). IEEE, 2022, pp. 6857–
+6861.
+[13] D. de Oliveira, T. Peer, and T. Gerkmann, “Efficient Transformer-
+based Speech Enhancement Using Long Frames and STFT Mag-
+nitudes,” in Proc. Interspeech 2022, 2022, pp. 2948–2952.
+[14] E. Kim and H. Seo, “SE-Conformer: Time-Domain Speech En-
+hancement Using Conformer,” in Proc. Interspeech 2021, 2021,
+pp. 2736–2740.
+[15] M. Zaheer, G. Guruganesh, K. A. Dubey, J. Ainslie, C. Alberti,
+S. Ontanon, P. Pham, A. Ravula, Q. Wang, L. Yang et al., “Big
+bird: Transformers for longer sequences,” Advances in neural in-
+formation processing systems, vol. 33, pp. 17 283–17 297, 2020.
+[16] N. Parmar, A. Vaswani, J. Uszkoreit, L. Kaiser, N. Shazeer, A. Ku,
+and D. Tran, “Image transformer,” in International conference on
+machine learning. PMLR, 2018, pp. 4055–4064.
+[17] Z. Liu, Y . Lin, Y . Cao, H. Hu, Y . Wei, Z. Zhang, S. Lin, and
+B. Guo, “Swin transformer: Hierarchical vision transformer using
+shifted windows,” in Proceedings of the IEEE/CVF international
+conference on computer vision, 2021, pp. 10 012–10 022.
+[18] W. Chen, X. Xing, X. Xu, J. Yang, and J. Pang, “Key-sparse trans-
+former for multimodal speech emotion recognition,” in IEEE In-
+ternational Conference on Acoustics, Speech and Signal Process-
+ing (ICASSP). IEEE, 2022, pp. 6897–6901.
+[19] W. Zhu and X. Li, “Speech emotion recognition with global-aware
+fusion on multi-scale feature representation,” in ICASSP 2022-
+2022 IEEE International Conference on Acoustics, Speech and
+Signal Processing (ICASSP). IEEE, 2022, pp. 6437–6441.
+[20] C. Busso, M. Bulut, C. Lee, A. Kazemzadeh, E. Mower, S. K.,
+J. N. Chang, S. Lee, and S. S. Narayanan, “Iemocap: Interactive
+emotional dyadic motion capture database,” Language resources
+and evaluation, vol. 42, no. 4, pp. 335–359, 2008.
+[21] S. Poria, D. Hazarika, N. Majumder, G. Naik, E. Cam-
+bria, and R. Mihalcea, “Meld: A multimodal multi-party
+dataset for emotion recognition in conversations,” arXiv preprint
+arXiv:1810.02508, 2018.
+[22] H. Cao, D. G. Cooper, M. K. Keutmann, R. C. Gur, A. Nenkova,
+and R. Verma, “Crema-d: Crowd-sourced emotional multimodal
+actors dataset,” IEEE transactions on affective computing, vol. 5,
+no. 4, pp. 377–390, 2014.
+[23] H. Zou, Y . Si, C. Chen, D. Rajan, and E. S. Chng, “Speech emo-
+tion recognition with co-attention based multi-level acoustic infor-
+mation,” in IEEE International Conference on Acoustics, Speech
+and Signal Processing (ICASSP). IEEE, 2022, pp. 7367–7371.
+[24] W. Chen, X. Xing, X. Xu, J. Pang, and L. Du, “Speechformer: A
+hierarchical efficient framework incorporating the characteristics
+of speech,” arXiv preprint arXiv:2203.03812, 2022.
+[25] W. Hsu, Y . Tsai, B. Bolte, R. Salakhutdinov, and A. Mohamed,
+“Hubert: How much can a bad teacher benefit asr pre-training,” in
+IEEE International Conference on Acoustics, Speech and Signal
+Processing (ICASSP). IEEE, 2021, pp. 6533–6537.
+[26] D. P. Kingma and J. Ba, “Adam: A method for stochastic opti-
+mization,” arXiv preprint arXiv:1412.6980, 2014.
+[27] Y . Wang, G. Shen, Y . Xu, J. Li, and Z. Zhao, “Learning mutual
+correlation in multimodal transformer for speech emotion recog-
+nition.” in Interspeech, 2021, pp. 4518–4522.
+[28] A. Gudmalwar, B. Basel, A. Dutta, and C. Rao, “The magnitude
+and phase based speech representation learning using autoencoder
+for classifying speech emotions using deep canonical correlation
+analysis.” in Interspeech, 2022, pp. 1163–1167.
+[29] W. Fan, X. Xu, B. Cai, and X. Xing, “Isnet: Individual stan-
+dardization network for speech emotion recognition,” IEEE/ACM
+Transactions on Audio, Speech, and Language Processing, 2022.
+[30] J. Liang, R. Li, and Q. Jin, “Semi-supervised multi-modal emo-
+tion recognition with cross-modal distribution matching,” in Pro-
+ceedings of the 28th ACM International Conference on Multime-
+dia, 2020, pp. 2852–2861.
+[31] Z. Lian, B. Liu, and J. Tao, “Ctnet: Conversational transformer
+network for emotion recognition,” IEEE/ACM Transactions on
+Audio, Speech, and Language Processing, vol. 29, pp. 985–1000,
+2021.
+[32] D. Hu, X. Hou, L. Wei, L. Jiang, and Y . Mo, “Mm-dfn: Multi-
+modal dynamic fusion network for emotion recognition in conver-
+sations,” in IEEE International Conference on Acoustics, Speech
+and Signal Processing (ICASSP). IEEE, 2022, pp. 7037–7041.

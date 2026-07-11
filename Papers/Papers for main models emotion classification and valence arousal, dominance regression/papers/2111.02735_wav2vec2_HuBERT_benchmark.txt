@@ -1,0 +1,565 @@
+A FINE-TUNED W A V2VEC 2.0/HUBERT BENCHMARK FOR SPEECH EMOTION
+RECOGNITION, SPEAKER VERIFICATION AND SPOKEN LANGUAGE UNDERSTANDING
+Yingzhi Wang⋆ Abdelmoumene Boumadane⋆ Abdelwahab Heba⋆
+⋆ Zaion Lab, Zaion, Paris, France
+ABSTRACT
+Speech self-supervised models such as wav2vec 2.0 and HuBERT
+are making revolutionary progress in Automatic Speech Recognition
+(ASR). However, they have not been totally proven to produce better
+performance on tasks other than ASR. In this work, we explored par-
+tial ﬁne-tuning and entire ﬁne-tuning on wav2vec 2.0 and HuBERT
+pre-trained models for three non-ASR speech tasks: Speech Emo-
+tion Recognition, Speaker Veriﬁcation and Spoken Language Under-
+standing. With simple proposed downstream frameworks, the best
+scores reached 79.58% weighted accuracy on speaker-dependent set-
+ting and 73.01% weighted accuracy on speaker-independent setting
+for Speech Emotion Recognition on IEMOCAP, 2.36% equal error
+rate for Speaker Veriﬁcation on V oxCeleb1, 89.38% accuracy for In-
+tent Classiﬁcation and 78.92% F1 for Slot Filling on SLURP, show-
+ing the strength of ﬁne-tuned wav2vec 2.0 and HuBERT on learning
+prosodic, voice-print and semantic representations.
+Index Terms— wav2vec 2.0, HuBERT, speech emotion recog-
+nition, speaker veriﬁcation, spoken language understanding
+1. INTRODUCTION
+Nowadays, people are expecting less labeled data to train well-
+generalized models for supervised tasks, since data labeling is a
+very time- and money-consuming process. Furthermore, people
+have been attempting to ﬁnd a powerful feature embedding that can
+assist the ﬁne-tuning and multi-task training for downstream tasks.
+The appearance of self-supervised learning meets the above two
+requirements exactly. In speech domain, excellent self-supervised
+models are emerging [1, 2, 3, 4, 5, 6, 7, 8, 9], among which the
+most high-performing and the most widely used are wav2vec 2.0
+[10] and HuBERT [11]. Many wav2vec 2.0/HuBERT pretrained
+models have also been published and this has greatly promoted their
+applications in the ﬁeld of speech. Therefore, we chose wav2vec2.0
+and HuBERT as our research objects in this work.
+The wav2vec 2.0 model architecture contains mainly three
+modules. A convolutional neural network (CNN) feature encoder
+encodes the raw waveform inputs into latent speech representations.
+Mask operations are applied before they are fed to the Transformer-
+based contextualized encoder. A quantization module is used to
+quantize the latent speech representations from the CNN encoder
+into a discretized embedding which is then used as the target. The
+objective is to optimize the contrastive loss, which enforces the
+model to identify the true quantized latent speech representations.
+HuBERT shares the same architecture as wav2vec 2.0. Instead
+of constructing a contrastive loss, HuBERT uses an ofﬂine clustering
+step to generate noisy labels for Masked Language Model pretrain-
+ing. Speciﬁcally, HuBERT consumes masked continuous speech
+features to predict predetermined cluster assignments. The predic-
+tive loss is applied over the masked regions, forcing the model to
+learn good high-level representations of unmasked inputs in order to
+infer the targets of masked ones correctly.
+Wav2vec 2.0 and HuBERT outperformed all existing ASR mod-
+els at that time, proving that they can construct a better verbal em-
+bedding. However, speech also contains other important information
+such as emotion, speaker and semantics, for which the industry also
+has high expectations. In the ﬁeld of Speech Emotion Recogni-
+tion (SER), Speaker Veriﬁcation (SV) and Spoken Language Un-
+derstanding (SLU), it is still vague whether self-supervised mod-
+els can produce better performance compared with traditional super-
+vised models (spectral features + CNN-based feature extraction +
+RNN/Transformer based time series modeling) [12, 13, 14, 15, 16].
+However, meaningful attempts have been made in some previous
+works, which we will introduce below.
+In SUPERB [17], the performance of different frozen self-
+supervised encoders were benchmarked across a wide range of
+speech tasks. For SER, the HuBERT large model stood out from
+other self-supervised encoders with 67.62% accuracy (ACC) on
+IEMOCAP [18]. For SV , the HuBERT base model obtained the best
+Equal Error Rate (EER) 5.11% on V oxCeleb1 [19]. SLU contains
+two separate subtasks: Intent Classiﬁcation (IC) and Slot Filling
+(SF). The HuBERT large model achieved the best results on both
+IC and SF tasks with 98.76% ACC on Fluent Speech Commands
+dataset [20] and 89.81% F1 score on SNIPS [21] respectively.
+For SER, [22] combined the features from frozen wav2vec2.0
+with other hand-crafted prosodic features and then fed them into a
+1d-CNN for a deeper extraction. [23] explored wav2vec ﬁne-tuning
+strategies and 65.4% W A on IEMOCAP was achieved. For SV , [24,
+25] both explored ﬁne-tuned wav2vec 2.0, [24] obtained 3.61% EER
+on V oxCeleb1, while [25] also obtained 1.91% EER on V oxCeleb1
+by adding V oxCeleb2 into the training set.
+We notice that self-supervised models were only used as frozen
+feature extractors in SUPERB and some other works. Believing that
+only by ﬁne-tuning can we show the real power of self-supervised
+models, we explored the ﬁne-tuning of wav2vec2.0/HuBERT on
+three speech tasks and provided full ﬁne-tuning experiment de-
+tails. Taking inspiration from [10] and [11], we added another
+ﬁne-tuning method by splitting a pre-trained wav2vec 2.0/HuBERT
+model into two parts: the CNN feature encoder and the Transformer
+contextualized encoder. We froze the CNN feature encoder and
+only ﬁne-tuned the Transformer contextualized encoder. We then
+tested partially ﬁne-tuned wav2vec2.0/HuBERT pre-trained models
+together with the entirely ﬁne-tuned ones with the following tasks
+below:
+• Speech Emotion Recognition on IEMOCAP
+• Speaker Veriﬁcation on V oxCeleb1
+• Spoken Language Understanding on SLURP [26]
+The results show that our ﬁne-tuned models achieved excellent
+results on the three tasks, which further proves their strong capac-
+arXiv:2111.02735v3  [cs.CL]  3 Oct 2022
+Fig. 1. Partial ﬁne-tuning (left) and entire ﬁne-tuning (right) of wav2vec 2.0/HuBERT.
+ity on constructing problem-agnostic representations. The code and
+ﬁne-tuned models for SER and SLU have been open-sourced on
+SpeechBrain [27] 1.
+2. METHOD
+In this section, we will ﬁrst introduce the pre-training of wav2vec
+2.0/HuBERT model, then we will show our ﬁne-tuning methods and
+downstream models for each task.
+2.1. Pretrained wav2vec 2.0
+The wav2vec 2.0 pre-training is similar to the masked language mod-
+elling in BERT [28] and is carried out under a self-supervised setting.
+Contiguous time steps from the CNN encoder representations are
+randomly masked, and the model is trained to reproduce the quan-
+tized local encoder representations for masked frames at the output
+of the contextualized encoder.
+Lm = −log exp(sim(ct,qt)/κ)∑
+˜q∈Qt (exp(sim(ct,˜q)/κ) (1)
+The training objective is illustrated in Eq.1, wheresim(ct,qt) is
+the cosine similarity between the contextualized encoder outputs ct
+and the quantized CNN encoder representations qt, tis the masked
+time step, Qt is the union of candidate representations ˜q which in-
+cludes qt and K = 100 distractors, κ is the temperature which is
+set to 0.1. The distractors are outputs of the local encoder sampled
+from masked frames belonging to the same utterance asqt. The con-
+trastive loss is then given by Lm summed over all masked frames.
+At the end, an L2 regularization is added to the contrastive loss, as
+well as a diversity loss to increase the use of the quantized codebook
+representations.
+The pre-training process is optimized with Adam [29] and the
+learning rate decays linearly after a waming up. In [10], wav2vec 2.0
+is also ﬁne-tuned on ASR aiming to improve ASR performance. For
+ASR ﬁne-tuning, a randomly initialized linear projection is added
+to the output of the contextual encoder and the CTC (Connectionist
+Temporal Classiﬁcation [30]) loss is minimized. For more details of
+1https://github.com/speechbrain/speechbrain/tree/develop/recipes
+the pre-training and ASR ﬁne-tuning of wav2vec 2.0, please refer to
+[10].
+In this work, we compare four released wav2vec 2.0 pre-trained
+models: the wav2vec 2.0 base model (12 transformer blocks and 768
+embedding dimension) and its ASR ﬁne-tuned version, the wav2vec
+2.0 large model (24 transformer blocks and 1024 embedding dimen-
+sion) and its ASR ﬁne-tuned version. Both base and large models
+are pre-trained on 960h LibriSpeech [31] data, which is also used
+for their ASR ﬁne-tuning. ASR ﬁne-tuned models for both wav2vec
+2.0 and HuBERT are taken into consideration because we assume
+that some tasks may beneﬁt from the ASR ﬁne-tuning.
+2.2. Pretrained HuBERT
+In the same way as wav2vec 2.0, CNN-encoded audio features are
+randomly masked in HuBERT. To generate labels for the ﬁrst iter-
+ation of HuBERT pre-training, a k-means clustering is applied on
+39-dimensional MFCC features. To generate better targets for the
+subsequent iterations, k-means clustering then works on the latent
+features extracted from the HuBERT model pre-trained in the previ-
+ous iteration. A projection layer is added over transformer blocks to
+predict cluster labels. Cross-entropy loss is computed over masked
+timestamps, which can be deﬁned as:
+Lm(f; X,{Z(k)}k,M) =
+∑
+t∈M
+∑
+k
+log p(k)
+f (z(k)
+t |˜X,t) (2)
+M ⊂[T] denotes the set of indices to be masked for a length- T
+sequence X, and ˜X = r(X; M) denotes a corrupted version of
+X where xt is replaced with a mask embedding ˜x if t ∈M. A
+masked prediction model f takes as input ˜Xand predicts a distribu-
+tion over the target indices at each timestep pf (·|˜X; t). To improve
+target quality, cluster ensembles are utillized in case that an individ-
+ual clustering model performs badly, Z(k) then denotes the target
+sequences generated by the k-th clustering model.
+HuBERT pre-training uses the same optimizer and learning rate
+scheduler as wav2vec 2.0. For ASR ﬁne-tuning, the projection layer
+is removed and replaced by a randomly initialized softmax layer,
+then the CTC loss is optimized. For more details of the pre-training
+of HuBERT, please refer to [11].
+Fig. 2. Simple downstream models for SER, SID and SLU. For SER
+and SID, an average time pooling and a linear classiﬁer is built over
+wav2vec 2.0/HuBERT. For SLU, an attentional decoder decodes in-
+tents and slots directly from the ﬁne-tuned wav2vec2.0/HuBERT
+embedding.
+Like wav2vec 2.0, we compare three released HuBERT pre-
+trained models: the HuBERT base model (12 transformer blocks
+and 768 embedding dimension, of which no ASR ﬁne-tuned version
+is released), the HuBERT large model (24 transformer blocks and
+1024 embedding dimension) and its ASR ﬁne-tuned version. The
+HuBERT base model is pre-trained on 960h LibriSpeech data, while
+the large model is pre-trained on 60k hours Libri-Light [32] data.
+The ASR ﬁne-tuning is also based on 960h LibriSpeech data.
+2.3. Fine-tuning
+As is shown in Figure 1 on the left for partial ﬁne-tuning, the
+wav2vec 2.0/HuBERT model is divided into two parts: the CNN-
+based feature encoder and the transformer-based contextualized
+encoder. We froze the CNN-based feature encoder, ﬁxing all the
+parameters of these CNN blocks, and only ﬁne-tuned the parameters
+of the transformer blocks. Partial ﬁne-tuning can be understood as a
+domain adaptation training for the top level, which aims to prevent
+interference and damage to the bottom CNN layers that already have
+an expressive ability.
+For entire ﬁne-tuning which is shown on the right in Figure 1, the
+CNN and Transformer modules are both ﬁne-tuned during the down-
+stream training process. By training general features at the bottom
+level, entire ﬁne-tuning allows higher-level expressions to be more
+complete and more targeted.
+Then, assuming that ﬁne-tuned wav2vec 2.0/HuBERT are al-
+ready powerful enough to capture information, we directly added
+simple downstream adaptors (classiﬁer/decoder) to wav2vec 2.0/Hu-
+BERT without adding another heavy and redundant encoder. The
+downstream adaptors for each task are presented as below.
+For SER, an average time pooling and one linear layer are added
+as a simple downstream classiﬁer (Fig.2). The average time pooling
+compresses variant time lengths into one, then the linear layer effec-
+tuates an utterance-level classiﬁcation minimizing the cross-entropy
+loss.
+For SV , a Speaker Identiﬁcation (SID) task is ﬁrst imple-
+mented using the same downstream framework as SER. Pairwise
+cosine-similarity scores are then produced for SV on the pre-trained
+SID embeddings before the linear classiﬁcation layer.
+For SLU (Fig.2), another attentional GRU-based decoder is
+added to decode semantic information directly from the ﬁne-tuned
+wav2vec2.0/HuBERT embedding. In our work, intents and slots
+are both treated as a sequence-to-sequence ASR task and are both
+decoded from the attentional decoder. The Negative Log-Likelihood
+(NLL) loss is then calculated over a character-level token genera-
+tion. Following the observations of [33], we utilized a beam-search
+with a beam of 80 without coverage penalty to identify the optimum
+sequence for validation set and test set.
+3. EXPERIMENTS
+In the experiment section, we will ﬁrst introduce the datasets used
+for the three tasks, then we will list the models we compared and
+add details of our experiment settings. Finally, we will show the
+results for each task and compare with the existing state-of-the-art
+baselines.
+3.1. Datasets
+The three most widely used and most representative datasets were
+chosen in our experiments, which are IEMOCAP for SER, V ox-
+Celeb1 for SV and SLURP for SLU.
+The Interactive Emotional Dyadic Motion Capture (IEMOCAP)
+dataset has approximately 12 hours of data and consists of scripted
+and improvised dialogues by 10 speakers. In order to form a contrast
+in this work, we used 4 emotional classes as in SUPERB: anger, hap-
+piness, sadness and neutral, following the work of [34]. The evalu-
+ation metric is weighted accuracy (W A) and the experiments were
+carried out on two different split settings: Speaker-Dependent ( SD)
+setting and Speaker-Independent ( SI) setting. For SD, the results
+were averaged on 5 different random seeds for train-validation-test
+split. For SI, a 10-fold cross-validation was performed with a leave-
+two-speaker-out strategy (one for validation and one for test).
+V oxCeleb1 contains over 100,000 utterances from 1,251 speak-
+ers, with approximately 351 hours of audio in total. In our work, a
+Speaker Identiﬁcation task was ﬁrst implemented, encouraging the
+model to learn to distinguish 1211 different voice-prints. A veriﬁ-
+cation was then carried out on the vox1-o test set of 40 speakers by
+calculating cosine similarity on the embeddings from the pre-trained
+Speaker Identiﬁcation model. V oxCeleb2 and noise augmentation
+were not used in our experiments. We used equal error rate (EER)
+as the evaluation metric and the results were averaged on 5 different
+seeds for train-validation split.
+The Spoken Language Understanding Resource Package (SLURP)
+Dataset is a collection of 72K audio recordings of single turn user
+interactions with a home assistant, annotated with three levels of se-
+mantics: Scenario, Action and Entities. The training and evaluation
+are based on its ofﬁcial training, validation and test sets.
+3.2. Fine-tuning settings
+We rename the models we compare with a method as below.
+• EF/PF/Frozen: Entirely Fine-tuned/Partially Fine-tuned/Not
+ﬁne-tuned
+• w2v/hbt: wav2vec 2.0/HuBERT based model
+• base/large: base/large pre-trained model
+• -/960h: with/without ASR ﬁne-tuning using 960h Lib-
+riSpeech data
+For example, EF-w2v-base refers to an entirely ﬁne-tuned
+wav2vec 2.0 base model, while PF-hbt-large-960h refers to a par-
+tially ﬁne-tuned HuBERT large model with an ASR ﬁne-tuning. For
+more detailed parameters of released pre-trained wav2vec 2.0/Hu-
+BERT models, please refer to [10] and [11].
+During the ﬁne-tuning process, we applied two different sched-
+ulers to respectively adjust the ﬁne-tuning learning rate of the
+wav2vec 2.0/HuBERT encoder and the learning rate of the down-
+stream model. Both the schedulers use an Adam Optimizer and
+linearly anneal the learning rates according to the performance of
+validation stage. For SER and SV , the initialized ﬁne-tuning learning
+rate and the downstream learning rate are set to 10−5 and 10−4. For
+SLU, these values are set to 10−5 and 3 ×10−4.
+Table 1. Benchmark results for two utterance-level tasks: Speech
+Emotion Recognition (SER) on weighted accuracy (W A%) and
+Speaker Veriﬁcation (SV) on Equal Error Rate (EER%). In rela-
+tion to SER, it is divided into SER-SD (Speaker-Dependent settng)
+and SER-SI (Speaker-Independent setting).
+Model SER-SD SER-SI SV
+EF-w2v-base 75.90 70.75 2.77
+PF-w2v-base 77.02 70.21 3.15
+EF-w2v-base-960h 73.64 64.20 4.46
+PF-w2v-base-960h 73.84 68.34 4.38
+EF-w2v-large 77.00 70.96 3.42
+PF-w2v-large 77.47 70.99 3.85
+EF-w2v-large-960h 73.00 68.18 4.27
+PF-w2v-large-960h 76.75 69.08 4.47
+EF-hbt-base 76.53 69.83 2.84
+PF-hbt-base 76.60 69.68 3.13
+EF-hbt-large 78.52 72.31 2.86
+PF-hbt-large 79.58 73.01 3.21
+EF-hbt-large-960h 78.78 72.71 2.36
+PF-hbt-large-960h 78.96 72.98 2.38
+Frozen-w2v-base[17] - 63.43 6.02
+Frozen-w2v-large[17] - 65.64 5.65
+Frozen-hbt-base[17] - 64.92 5.11
+Frozen-hbt-large[17] - 67.62 5.98
+Head Fusion[35] 76.18 - -
+Attention Pooling[36] - 71.75 -
+Siamese Capsule[37] - - 3.14
+3.3. Results and discussion
+3.3.1. Speech Emotion Recognition & Speaker Veriﬁcation
+The results of SER and SV are shown in Table 1. For comparison, we
+show SUPERB’s results as a non-ﬁne-tuned baseline (marked with
+[17] in Table 1). Furthermore, we took Head-Fusion ACNN [35]
+for SER-SD (Speaker-Dependent setting), Attention Pooling based
+representation [36] for SER-SI (Speaker-Independent setting) and
+Siamese Capsule network [37] for SV as state-of-the-art baselines
+respectively. Compared with other more recent works, [36] provides
+a comparable result by reporting a competitve Weighted Accuracy
+using only speech, and [37] also provides a comparable result using
+only V oxceleb1 as the training set (the same as SUPERB). First of
+all, from an overall perspective, we notice a signiﬁcant improvement
+on the results of ﬁne-tuned models over those of SUPERB’s non-
+ﬁne-tuned models. Then, for SER, we are surprised to ﬁnd that all of
+our ﬁne-tuned models performed well, where the partially ﬁne-tuned
+HuBERT large model reached a best W A of 79.58% for SER-SD and
+a best W A of 73.01% for SER-SI, improving by 3.40% and 1.26% on
+the state-of-the-art baselines respectively. Moreover, we observe that
+partial ﬁne-tuning appeared to be a better ﬁne-tuning method than
+entire ﬁne-tuning. We consider that IEMOCAP is a small dataset
+with only 12 hours of data and training too many parameters may
+easily cause an overﬁtting. Additionally, we noticed that the ASR
+ﬁne-tuning was not helping the downstream SER task, suggesting a
+loss of prosodic information during the ASR ﬁne-tuning.
+In the case of SV , the entirely ﬁne-tuned HuBERT with ASR
+ﬁne-tuning reached a best 2.36% Equal Error Rate, surpassing the
+baseline by 0.78%. However, contrary to SER, entire ﬁne-tuning
+outperforms partial ﬁne-tuning as can be seen from the results. Due
+to the large amount of data (351 hours) of V oxCeleb1 that are also
+acoustically similar to the data used for pre-training, the pre-trained
+encoder parameters provide an ideal initialization for the down-
+stream SV task, releasing all the layers and ﬁne-tuning with a low
+learning rate can lead to a good result. Finally, we ﬁnd that Hu-
+BERT turned out to be a better self-supervised encoder compared to
+wav2vec 2.0 for both SER and SV tasks.
+Table 2. Benchmark results for Spoken Language Understanding:
+Intent Classiﬁcation (IC) on accuracy (ACC%) and Slot Filling (SF)
+on F1 score (F1%).
+Model IC (ACC%) SF (F1%)
+EF-w2v-base 87.13 74.32
+PF-w2v-base 86.58 74.73
+EF-w2v-base-960h 85.89 74.33
+PF-w2v-base-960h 86.13 73.78
+EF-w2v-large 85.80 72.45
+PF-w2v-large 86.29 73.16
+EF-w2v-large-960h 86.10 73.39
+PF-w2v-large-960h 86.35 74.03
+EF-hbt-base 87.44 75.06
+PF-hbt-base 87.51 75.32
+EF-hbt-large 89.38 78.43
+PF-hbt-large 89.22 78.92
+EF-hbt-large-960h 88.71 78.89
+PF-hbt-large-960h 88.32 78.17
+Frozen-w2v-base 47.15 37.66
+Frozen-w2v-large 3.88 3.85
+Frozen-hbt-base 68.74 57.06
+Frozen-hbt-large 74.42 60.07
+CTI[38] 86.92 74.66
+3.3.2. Spoken Language Understanding
+For SLU, the results of its two subtasks are shown in Table 2. Like-
+wise, we carried out experiments of frozen wav2vec 2.0/HuBERT
+models to form a contrast. However, the performance of frozen
+models on this task drops signiﬁcantly, especially for wav2vec 2.0
+large model the loss cannot even converge, demonstrating that the
+frozen wav2vec 2.0/HuBERT cannot hold complete semantic infor-
+mation. Continuous Token Interface [38] is chosen as the state-of-
+the-art baseline. The best ACC for IC is 89.38% with the entirely
+ﬁne-tuned HuBERT large model, while the partially ﬁne-tuned Hu-
+BERT large model reached the best F1 78.92% for SF. For SLU, the
+gap between the two ﬁne-tuning methods is not obvious. A slight
+drop is observed on ASR ﬁne-tuned models, which implies that ASR
+ﬁne-tuning will also result in a loss of semantic information.
+4. CONCLUSIONS
+In this work we explored different ﬁne-tuning methods on two of the
+most powerful self-supervised models (wav2vec 2.0 and HuBERT),
+then benchmarked their performance on Speech Emotion Recog-
+nition, Speaker Veriﬁcation and Spoken Language Understanding
+tasks. State-of-the-art results were achieved for all the three tasks,
+proving the excellent generalizability of wav2vec 2.0/HuBERT on
+learning prosodic, voice-print and semantic representations. We
+hope to show the broad prospects of self-supervised learning and
+also provide some useful insights for its industrial applications.
+5. REFERENCES
+[1] Yu-An Chung, Wei-Ning Hsu, Hao Tang, and James Glass,
+“An unsupervised autoregressive model for speech represen-
+tation learning,” in Interspeech, 2019.
+[2] Alexander H. Liu, Yu-An Chung, and James Glass, “Non-
+Autoregressive Predictive Coding for Learning Speech Rep-
+resentations from Local Dependencies,” in Proc. Interspeech
+2021, 2021, pp. 3730–3734.
+[3] Andy T Liu, Shu-wen Yang, Po-Han Chi, Po-chun Hsu, and
+Hung-yi Lee, “Mockingjay: Unsupervised speech representa-
+tion learning with deep bidirectional transformer encoders,” in
+ICASSP 2020-2020 IEEE International Conference on Acous-
+tics, Speech and Signal Processing (ICASSP). IEEE, 2020, pp.
+6419–6423.
+[4] Andy T Liu, Shang-Wen Li, and Hung-yi Lee, “Tera: Self-
+supervised learning of transformer encoder representation for
+speech,” IEEE/ACM Transactions on Audio, Speech, and Lan-
+guage Processing, vol. 29, pp. 2351–2366, 2021.
+[5] Mirco Ravanelli, Jianyuan Zhong, Santiago Pascual, Pawel
+Swietojanski, Joao Monteiro, Jan Trmal, and Yoshua Bengio,
+“Multi-task self-supervised learning for robust speech recog-
+nition,” in ICASSP 2020-2020 IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP) . IEEE,
+2020, pp. 6989–6993.
+[6] Steffen Schneider, Alexei Baevski, Ronan Collobert, and
+Michael Auli, “wav2vec: Unsupervised Pre-Training for
+Speech Recognition,” in Proc. Interspeech 2019 , 2019, pp.
+3465–3469.
+[7] A. Baevski, S. Schneider, and M. Auli, “vq-wav2vec: Self-
+supervised learning of discrete speech representations,” in In-
+ternational Conference on Learning Representations (ICLR) ,
+2020.
+[8] Sanyuan Chen, Chengyi Wang, Zhengyang Chen, Yu Wu, Shu-
+jie Liu, Zhuo Chen, Jinyu Li, Naoyuki Kanda, Takuya Yosh-
+ioka, Xiong Xiao, et al., “Wavlm: Large-scale self-supervised
+pre-training for full stack speech processing,” IEEE Journal of
+Selected Topics in Signal Processing, 2022.
+[9] Chengyi Wang, Yu Wu, Yao Qian, Kenichi Kumatani, Shujie
+Liu, Furu Wei, Michael Zeng, and Xuedong Huang, “Unis-
+peech: Uniﬁed speech representation learning with labeled
+and unlabeled data,” in International Conference on Machine
+Learning. PMLR, 2021, pp. 10937–10947.
+[10] Alexei Baevski, Yuhao Zhou, Abdelrahman Mohamed, and
+Michael Auli, “wav2vec 2.0: A framework for self-supervised
+learning of speech representations,” in NeurIPS, 2020.
+[11] Wei-Ning Hsu, Benjamin Bolte, Yao-Hung Hubert Tsai,
+Kushal Lakhotia, Ruslan Salakhutdinov, and Abdelrahman
+Mohamed, “Hubert: Self-supervised speech representation
+learning by masked prediction of hidden units,” arXiv preprint
+arXiv:2106.07447, 2021.
+[12] Pengcheng Li, Yan Song, Ian Vince McLoughlin, Wu Guo, and
+Lirong Dai, “An attention pooling based representation learn-
+ing method for speech emotion recognition,” in Interspeech.
+2018, pp. 3087–3091, ISCA.
+[13] Xixin Wu, Songxiang Liu, Yuewen Cao, Xu Li, Jianwei Yu,
+Dongyang Dai, Xi Ma, Shoukang Hu, Zhiyong Wu, Xunying
+Liu, et al., “Speech emotion recognition using capsule net-
+works,” in ICASSP 2019-2019 IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP) . IEEE,
+2019, pp. 6695–6699.
+[14] Gautam Bhattacharya, Md Jahangir Alam, and Patrick Kenny,
+“Deep speaker embeddings for short-duration speaker veriﬁca-
+tion.,” in Interspeech, 2017, pp. 1517–1521.
+[15] Brecht Desplanques, Jenthe Thienpondt, and Kris Demuynck,
+“ECAPA-TDNN: emphasized channel attention, propagation
+and aggregation in TDNN based speaker veriﬁcation,” in In-
+terspeech. 2020, pp. 3830–3834, ISCA.
+[16] Dmitriy Serdyuk, Yongqiang Wang, Christian Fuegen, Anuj
+Kumar, Baiyang Liu, and Yoshua Bengio, “Towards end-to-
+end spoken language understanding,” in 2018 IEEE Interna-
+tional Conference on Acoustics, Speech and Signal Processing
+(ICASSP). IEEE, 2018, pp. 5754–5758.
+[17] Shu-wen Yang, Po-Han Chi, Yung-Sung Chuang, Cheng-I Lai,
+Kushal Lakhotia, Yist Lin, Andy Liu, Jiatong Shi, Xuankai
+Chang, Guan-Ting Lin, Tzu-Hsien Huang, Wei-Cheng Tseng,
+Ko-tik Lee, Da-Rong Liu, Zili Huang, Shuyan Dong, Shang-
+Wen Li, Shinji Watanabe, Abdelrahman Mohamed, and Hung-
+yi Lee, “Superb: Speech processing universal performance
+benchmark,” in Proc. Interspeech 2021, 08 2021, pp. 1194–
+1198.
+[18] Carlos Busso, Murtaza Bulut, Chi-Chun Lee, Abe
+Kazemzadeh, Emily Mower, Samuel Kim, Jeannette N
+Chang, Sungbok Lee, and Shrikanth S Narayanan, “Iemocap:
+Interactive emotional dyadic motion capture database,” Lan-
+guage resources and evaluation , vol. 42, no. 4, pp. 335–359,
+2008.
+[19] Arsha Nagrani, Joon Son Chung, and Andrew Zisserman,
+“V oxceleb: A large-scale speaker identiﬁcation dataset,” in
+Interspeech. 2017, pp. 2616–2620, ISCA.
+[20] Natalia Tomashenko, Antoine Caubri `ere, Yannick Est`eve, An-
+toine Laurent, and Emmanuel Morin, “Recent advances in
+end-to-end spoken language understanding,” in International
+Conference on Statistical Language and Speech Processing .
+Springer, 2019, pp. 44–55.
+[21] Alice Coucke, Alaa Saade, Adrien Ball, Th ´eodore Bluche,
+Alexandre Caulier, David Leroy, Cl´ement Doumouro, Thibault
+Gisselbrecht, Francesco Caltagirone, Thibaut Lavril, et al.,
+“Snips voice platform: an embedded spoken language under-
+standing system for private-by-design voice interfaces,” arXiv
+preprint arXiv:1805.10190, 2018.
+[22] Leonardo Pepino, Pablo Riera, and Luciana Ferrer, “Emotion
+Recognition from Speech Using wav2vec 2.0 Embeddings,” in
+Proc. Interspeech 2021, 2021, pp. 3400–3404.
+[23] Yangyang Xia, Li-Wei Chen, Alexander Rudnicky, and
+Richard M Stern, “Temporal context in speech emotion recog-
+nition,” in Proc. Interspeech, 2021, vol. 2021, pp. 3370–3374.
+[24] Zhiyun Fan, Meng Li, Shiyu Zhou, and Bo Xu, “Exploring
+wav2vec 2.0 on Speaker Veriﬁcation and Language Identiﬁca-
+tion,” in Proc. Interspeech 2021, 2021, pp. 1509–1513.
+[25] Nik Vaessen and David A Van Leeuwen, “Fine-tuning
+wav2vec2 for speaker recognition,” in ICASSP 2022-2022
+IEEE International Conference on Acoustics, Speech and Sig-
+nal Processing (ICASSP). IEEE, 2022, pp. 7967–7971.
+[26] Emanuele Bastianelli, Andrea Vanzo, Pawel Swietojanski, and
+Verena Rieser, “Slurp: A spoken language understanding re-
+source package,” arXiv preprint arXiv:2011.13205, 2020.
+[27] Mirco Ravanelli, Titouan Parcollet, Peter Plantinga, Aku
+Rouhe, Samuele Cornell, Loren Lugosch, Cem Subakan, Nau-
+man Dawalatabad, Abdelwahab Heba, Jianyuan Zhong, et al.,
+“Speechbrain: A general-purpose speech toolkit,” arXiv
+preprint arXiv:2106.04624, 2021.
+[28] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina
+Toutanova, “BERT: pre-training of deep bidirectional trans-
+formers for language understanding,” in NAACL-HLT (1) .
+2019, pp. 4171–4186, Association for Computational Linguis-
+tics.
+[29] Diederik P. Kingma and Jimmy Ba, “Adam: A method for
+stochastic optimization,” in ICLR (Poster), 2015.
+[30] Alex Graves, Santiago Fern ´andez, Faustino Gomez, and J¨urgen
+Schmidhuber, “Connectionist temporal classiﬁcation: la-
+belling unsegmented sequence data with recurrent neural net-
+works,” in Proceedings of the 23rd international conference
+on Machine learning, 2006, pp. 369–376.
+[31] Vassil Panayotov, Guoguo Chen, Daniel Povey, and Sanjeev
+Khudanpur, “Librispeech: An asr corpus based on public do-
+main audio books,” in 2015 IEEE International Conference on
+Acoustics, Speech and Signal Processing (ICASSP), 2015, pp.
+5206–5210.
+[32] Jacob Kahn, Morgane Rivi `ere, Weiyi Zheng, Evgeny
+Kharitonov, Qiantong Xu, Pierre-Emmanuel Mazar ´e, Julien
+Karadayi, Vitaliy Liptchinsky, Ronan Collobert, Christian Fue-
+gen, et al., “Libri-light: A benchmark for asr with limited or no
+supervision,” in ICASSP 2020-2020 IEEE International Con-
+ference on Acoustics, Speech and Signal Processing (ICASSP).
+IEEE, 2020, pp. 7669–7673.
+[33] Loren Lugosch, Piyush Papreja, Mirco Ravanelli, Abdelwahab
+Heba, and Titouan Parcollet, “Timers and Such: A Practical
+Benchmark for Spoken Language Understanding with Num-
+bers,” NeurIPS Datasets and Benchmarks, 2021.
+[34] Haytham M Fayek, Margaret Lech, and Lawrence Cavedon,
+“Evaluating deep learning architectures for speech emotion
+recognition,” Neural Networks, vol. 92, pp. 60–68, 2017.
+[35] Mingke Xu, Fan Zhang, and Wei Zhang, “Head fusion: Im-
+proving the accuracy and robustness of speech emotion recog-
+nition on the iemocap and ravdess dataset,” IEEE Access, vol.
+9, pp. 74539–74549, 2021.
+[36] Pengcheng Li, Yan Song, Ian Vince McLoughlin, Wu Guo,
+and Li-Rong Dai, “An attention pooling based representation
+learning method for speech emotion recognition,”Interspeech,
+2018.
+[37] Amirhossein Hajavi and Ali Etemad, “Siamese capsule net-
+work for end-to-end speaker recognition in the wild,” in
+ICASSP 2021-2021 IEEE International Conference on Acous-
+tics, Speech and Signal Processing (ICASSP). IEEE, 2021, pp.
+7203–7207.
+[38] Seunghyun Seo, Donghyun Kwak, and Bowon Lee, “Integra-
+tion of pre-trained networks with continuous token interface
+for end-to-end spoken language understanding,”arXiv preprint
+arXiv:2104.07253, 2021.
