@@ -1602,3 +1602,647 @@ Nói ngắn gọn:
 
 7. Notebook được đối chiếu:  
    `06d_Emotion2Vec_CoAttention_Full_SER.ipynb`
+
+---
+
+# 25. Bonus v2 update - 06D + PuSQ + TED Talk/VoiceCoach
+
+Cap nhat nay chot huong nghien cuu moi cho project:
+
+```text
+Base model: 06D Emotion2Vec Co-Attention Full SER
+    +
+PuSQ idea: SER/valence/arousal posterior lam feature trung gian
+    +
+TED Talk / VoiceCoach: long public-speaking data + audience-rating baseline
+    =
+Speech + transcript presentation feedback system
+```
+
+Muc tieu la lay phan tot nhat cua tung huong:
+
+- `06D` cho backbone audio hien dai;
+- `PuSQ` cho cach bien emotion thanh feature danh gia speaking quality;
+- `TED Talk Ratings` cho bai toan audience-rating prediction tren bai noi dai;
+- `VoiceCoach / TED_dataset` cho dataset TED co transcript timestamp va link tai audio/video de thuc nghiem that.
+
+## 25.1 Base model cua de tai
+
+Base model cua de tai la notebook:
+
+```text
+06d_Emotion2Vec_CoAttention_Full_SER.ipynb
+```
+
+Vai tro cua 06D:
+
+```text
+Raw audio
+   |
+   |-- Temporal acoustic branch
+   |     MFCC + delta + delta-delta + RMS/ZCR/spectral sequence
+   |     -> 1D-CNN -> BiLSTM -> attention pooling
+   |
+   |-- Spectrogram branch
+   |     log-Mel + delta + delta-delta
+   |     -> residual 2D-CNN -> SE attention
+   |
+   |-- Emotion2Vec branch
+   |     frozen/pretrained emotion2vec
+   |     -> adapter MLP
+   |
+   |-- Statistics branch
+   |     handcrafted acoustic statistics
+   |     -> MLP / SVM posterior
+   |
+   -> emotion-guided co-attention
+   -> stacking
+   -> emotion posterior
+```
+
+Hien tai 06D duoc train cho SER categorical emotion. Trong huong presentation feedback, 06D khong nen chi dung de noi "audio nay la happy/sad/angry". No nen duoc dung de tao:
+
+```text
+segment emotion posterior
+segment affective embedding
+segment arousal/energy proxy
+timeline emotion dynamics
+```
+
+Sau do cac feature nay moi duoc ghep voi prosody, pause, speech rate va transcript de danh gia delivery quality.
+
+## 25.2 PuSQ dung lam gi?
+
+PuSQ khong phai base model. PuSQ la paper/repo de tham khao cach chuyen tu SER sang speaking quality assessment.
+
+PuSQ dung 2 tang:
+
+```text
+Tang 1:
+Audio/text segment
+-> emotion classifier
+-> valence classifier
+-> arousal classifier
+-> posterior probabilities
+
+Tang 2:
+posterior probabilities
++ silence/pause/speech ratio
++ word rate/text features
++ low-level acoustic features
+-> recording-level classifier
+-> Expressiveness / Enjoyment
+```
+
+Phan quan trong nhat can hoc tu PuSQ:
+
+> Emotion/valence/arousal khong phai output cuoi. Chung la feature trung gian de mo ta speaking style.
+
+Gioi han cua PuSQ:
+
+- repo public khong co raw WAV;
+- chi co feature da trich xuat `.npz` va ASR `.asr`;
+- khong the dua truc tiep raw-audio 06D vao PuSQ;
+- chi nen reproduce PuSQ o muc feature-level baseline;
+- sau do dung y tuong PuSQ de thiet ke pipeline moi tren TED/audio that.
+
+Baseline PuSQ can check:
+
+| Task | Input | Model | Metric |
+|---|---|---|---|
+| Expressiveness | MetaAudio / Text / LowLevelAudio / fusion | SVM-RBF, GaussianNB, Logistic Regression | ROC-AUC LOSO |
+| Enjoyment | MetaAudio / Text / LowLevelAudio / fusion | SVM-RBF, GaussianNB, Logistic Regression | ROC-AUC LOSO |
+
+Gia tri cua PuSQ trong project:
+
+```text
+PuSQ = proof-of-concept cho "SER posterior -> speaking quality"
+```
+
+Khong nen viet:
+
+```text
+PuSQ = dataset de train truc tiep 06D
+```
+
+Vi dieu nay sai voi ban public hien tai.
+
+## 25.3 TED Talk models can tham khao de check baseline
+
+### Paper A - Predicting TED Talk Ratings from Language and Prosody
+
+- Link: https://arxiv.org/abs/1906.03940
+- PDF local: `Papers/Papers for presentation feedback system/papers/Predicting_TED_Talk_Ratings_from_Language_and_Prosody.pdf`
+- Dataset/code official: chua tim thay link public dung duoc. Source arXiv co dong link bi blind vi anonymous review.
+
+Mo hinh can tham khao:
+
+| Baseline | Input | Output | Ghi chu |
+|---|---|---|---|
+| Statistical baseline | LIWC, prosody stats, narrative features | 14 TED rating labels | AUC khoang 0.78 |
+| Word Sequence LSTM | GloVe word sequence theo sentence | 14 TED rating labels | text-only neural baseline |
+| Dependency TreeLSTM | dependency tree + POS/dependency embedding + GloVe | 14 TED rating labels | text model manh nhat trong paper |
+| TreeLSTM + Prosody CNN | TreeLSTM text + pitch/loudness/formant 8D at 10Hz | 14 TED rating labels | prosody khong cai thien ro trong paper |
+
+14 output labels:
+
+```text
+beautiful, confusing, courageous, fascinating, funny,
+informative, ingenious, inspiring, jaw-dropping,
+longwinded, obnoxious, ok, persuasive, unconvincing
+```
+
+Cach dung trong project:
+
+```text
+TED statistical/text baseline
+-> compare voi
+TED + 06D emotion posterior
+-> compare voi
+TED + 06D + PuSQ-style prosody/fluency features
+```
+
+### Paper B - Causality-Guided Prediction of TED Talk Ratings
+
+- Link: https://arxiv.org/abs/1905.08392
+- PDF local: `Papers/Papers for presentation feedback system/papers/TED_Causality_Guided_Ratings_Transcript_1905_08392.pdf`
+- Dataset/code official: chua tim thay link public dung duoc.
+
+Mo hinh:
+
+| Model | Input | Output | Diem can hoc |
+|---|---|---|---|
+| Word Sequence LSTM | transcript sentence sequence | 14 ratings | bag-of-sentences vi transcript rat dai |
+| Dependency TreeLSTM | dependency parse of sentences | 14 ratings | syntactic structure giup text representation |
+| Causal rating normalization | rating counts + total views | scaled/binarized ratings | xu ly bias do views/popularity |
+
+Gia tri cho project:
+
+- dung `totalviews` de normalize rating, tranh hoc theo popularity;
+- binarize label theo median tung rating;
+- tach reserved test set va khong dung de tune hyperparameter.
+
+### Paper C - VoiceCoach
+
+- Paper: https://arxiv.org/abs/2001.07876
+- Dataset/code repo: https://github.com/xingbow/TED_dataset
+- PDF local: `Papers/Papers for presentation feedback system/papers/VoiceCoach_CHI2020_2001_07876.pdf`
+- Code/data local da clone: `Papers/Papers for presentation feedback system/code/TED_dataset_xingbow_check`
+
+VoiceCoach khong phai rating-prediction paper giong 1905/1906. No la he thong feedback voice modulation. Nhung no rat quan trong cho project vi:
+
+- dung 2623 TED Talks lam benchmark;
+- tap trung pitch, volume, speed;
+- co visual quantitative feedback;
+- recommend example speech modulation tu TED;
+- dataset repo public co transcript AWS word-level timestamp va link download audio/video.
+
+Thong ke local da kiem:
+
+| Thuoc tinh | Ket qua |
+|---|---:|
+| JSON files | 2623 |
+| JSON loi | 0 |
+| Co AWS transcript | 2623 |
+| Co word-level timestamp | 2623 |
+| Co URL TED | 2623 |
+| Co video native link trong `alldata_JSON` | 2623 |
+| Co mp3 truc tiep trong `downloadlink` | 2171 |
+| Thieu mp3 truc tiep nhung co mp4 | 452 |
+| Co du 14 rating labels | 2604 |
+| Chi co `total_count=0` | 19 |
+| Median duration | 816s, khoang 13.6 phut |
+| Mean duration | 804s, khoang 13.4 phut |
+| Max duration | 3608s, khoang 60 phut |
+| Median transcript words | 1966 |
+
+Day la dataset ung vien chinh de lam TED experiments trong project, vi no co:
+
+```text
+transcript
+word timestamp
+ratings
+views
+duration
+TED url
+audio/video download link
+```
+
+Nhung can ghi ro:
+
+> `xingbow/TED_dataset` khong phai official dataset cua paper 1905/1906. No la dataset cua VoiceCoach CHI 2020, nhung co cau truc rat phu hop de reconstruct TED rating/prosody experiments.
+
+### Paper D - VaryFairyTED / TED_HEM
+
+- Paper: https://arxiv.org/abs/2012.06157
+- Code repo resolved tu paper: https://github.com/racharyy/TED_HEM
+- Code/data local da clone: `Papers/Papers for presentation feedback system/code/TED_HEM_tmp_check`
+
+Repo nay co processed feature, khong phai raw audio:
+
+| File | Noi dung |
+|---|---|
+| `all_features.pkl` | 2383 rows, ratings, views, gender/race one-hot, 768D `doc_rep` |
+| `topic_representation.pkl` | topic representation |
+| `text_div_dic.pkl` | text diversity metric |
+| `tid_vs_variation_visual.pkl` | visual variation metric |
+
+Gia tri cho project:
+
+- dung lam reference ve fairness/bias va rating normalization;
+- co processed text representation 768D;
+- khong phu hop lam raw-audio/prosody baseline chinh.
+
+## 25.4 Baseline TED nen check theo thu tu
+
+Khong nen bat dau bang TreeLSTM vi dependency tree batching phuc tap. Thu tu kha thi:
+
+### Baseline 0 - Label preprocessing
+
+Input:
+
+```text
+xingbow/TED_dataset JSON
+```
+
+Xu ly:
+
+```text
+parse ratings string -> dict
+remove 19 talks with total_count = 0
+create 14 rating count labels
+scale/normalize by totalviews or total_count
+binarize each label by train-set median
+split train/dev/test
+```
+
+Can lam 2 protocol:
+
+```text
+Protocol A: random split 80/10/10
+Protocol B: paper-like reserved test 150 talks
+```
+
+### Baseline 1 - Text/statistical baseline
+
+Input:
+
+```text
+AWS transcript
+```
+
+Feature:
+
+```text
+TF-IDF
+sentence count
+word count
+unique-word ratio
+readability/simple lexical stats
+optional: sentence embedding / BERT embedding
+```
+
+Model:
+
+```text
+Logistic Regression
+Linear SVM
+Ridge/LASSO style classifier
+XGBoost/LightGBM neu can
+```
+
+Output:
+
+```text
+14 binary ratings
+macro AUC / macro F1 / per-label AUC
+```
+
+### Baseline 2 - Prosody/fluency baseline
+
+Input:
+
+```text
+downloaded mp3/mp4 -> wav
+AWS word-level timestamp
+```
+
+Feature:
+
+```text
+pitch/F0 mean, std, range
+energy/RMS mean, std
+speaking rate
+pause count
+long pause count
+silence ratio
+speech ratio
+duration
+word rate
+```
+
+Model:
+
+```text
+Logistic Regression
+SVM
+RandomForest/XGBoost
+```
+
+Day la baseline can thiet de noi ro presentation feedback khong chi dua vao transcript.
+
+### Baseline 3 - VoiceCoach-style voice modulation
+
+Input:
+
+```text
+sentence/window level transcript timestamp
+pitch
+volume
+speed
+```
+
+Output:
+
+```text
+voice modulation profile
+similar TED examples
+timeline feedback
+```
+
+Day khong nhat thiet la supervised rating model. No co the la retrieval/feedback module:
+
+```text
+user segment
+-> find TED segments co sentence structure + pitch/volume/speed tuong tu
+-> recommend good modulation examples
+```
+
+### Baseline 4 - 06D emotion posterior baseline
+
+Input:
+
+```text
+audio segmented 3-5s or sentence-aligned audio
+```
+
+Feature:
+
+```text
+06D emotion posterior
+emotion2vec embedding
+emotion dynamics over time
+neutral dominance
+high-arousal proxy
+emotion entropy
+emotion variance
+```
+
+Aggregation:
+
+```text
+segment -> 30-60s block -> whole talk
+mean, std, max, slope, entropy, percentiles
+```
+
+Output:
+
+```text
+14 TED rating labels
+or reduced presentation-quality targets
+```
+
+### Baseline 5 - Final combined model
+
+Final model khong can qua phuc tap ngay:
+
+```text
+Text feature
++ Prosody/fluency feature
++ 06D emotion posterior feature
++ PuSQ-style pause/speech feature
+-> feature fusion
+-> multi-label classifier
+```
+
+Ung vien model:
+
+```text
+Late fusion Logistic Regression / SVM
+MLP fusion
+Gated fusion
+LightGBM/XGBoost
+```
+
+Output:
+
+```text
+overall rating prediction
++ timeline explanation
+```
+
+## 25.5 Cach ket hop 06D + PuSQ + TED trong he thong cuoi
+
+Pipeline de xuat:
+
+```text
+TED/audio input
+   |
+   |-- ASR transcript or provided AWS transcript
+   |-- word-level/sentence-level timestamp
+   |-- audio segmentation
+   |
+   |-- 06D branch:
+   |      emotion posterior
+   |      emotion2vec embedding
+   |
+   |-- PuSQ-style branch:
+   |      pause duration
+   |      silence ratio
+   |      speech ratio
+   |      word rate
+   |      low-level acoustic stats
+   |
+   |-- TED-style branch:
+   |      transcript embedding/statistical text feature
+   |      rating normalization
+   |      multi-label prediction
+   |
+   -> fusion model
+   -> presentation feedback
+```
+
+Output nen co 2 tang:
+
+```text
+1. Overall score / rating proxy
+   - inspiring
+   - fascinating
+   - persuasive
+   - longwinded risk
+   - confusing risk
+
+2. Timeline feedback
+   - monotone risk
+   - low energy segment
+   - too fast segment
+   - long pause segment
+   - harsh/high-arousal segment
+```
+
+Can ghi ro ve mat khoa hoc:
+
+> TED ratings la label cap toan bai, khong phai label cap segment. Timeline feedback la interpretability/diagnostic layer dua tren feature, khong phai ground-truth segment label.
+
+## 25.6 Dataset chinh de thuc nghiem
+
+### Dataset 1 - PuSQ
+
+Dung de:
+
+- reproduce feature-level Expressiveness/Enjoyment;
+- bao cao PuSQ baseline;
+- hoc cach aggregate posterior.
+
+Khong dung de:
+
+- train 06D raw audio;
+- demo long TED/presentation audio.
+
+### Dataset 2 - xingbow/TED_dataset
+
+Dung de:
+
+- train/test TED rating baselines;
+- extract transcript feature;
+- tai audio/video de extract prosody;
+- chay 06D tren subset audio;
+- lam long-audio presentation feedback demo.
+
+Bo loc de dung:
+
+```text
+remove talks with total_count = 0
+remove transcript word count < 450 neu muon giong paper TED
+optional: keep talks before 2017-05-15 de gan voi paper 1906
+optional: remove music/dance/performance/entertainment neu can
+```
+
+Theo thong ke local:
+
+```text
+paper-like before 2017-05-15 and word >= 450: 1987 talks
+before 2017-11-15 and word >= 450: 2127 talks
+all valid word >= 450 until 2019-06-07: 2615 talks
+```
+
+### Dataset 3 - TED_HEM
+
+Dung de:
+
+- tham khao processed feature;
+- tham khao fairness/bias;
+- co the check nhanh text embedding baseline.
+
+Khong dung lam dataset audio chinh vi khong co raw audio/prosody.
+
+## 25.7 Viec can lam tiep
+
+Checklist implementation:
+
+- [ ] Tao script parse `xingbow/TED_dataset` JSON thanh CSV/Parquet.
+- [ ] Parse `ratings` tu string dict sang columns.
+- [ ] Loai 19 talks co `total_count = 0`.
+- [ ] Tao label binarized theo median tren train set.
+- [ ] Tao split `train/dev/test` va `reserved_test_150`.
+- [ ] Build text baseline TF-IDF/LogReg.
+- [ ] Build transcript embedding baseline.
+- [ ] Viet downloader subset audio/video, khong tai toan bo ngay.
+- [ ] Extract prosody/fluency feature cho subset 100-300 talks.
+- [ ] Chay 06D inference tren subset audio va cache feature.
+- [ ] Train fusion model text + prosody + 06D.
+- [ ] Tao report so sanh baseline.
+- [ ] Tao live/near-real-time demo voi audio moi.
+
+Thu tu nen lam:
+
+```text
+Week 1:
+parse TED_dataset + text baseline
+
+Week 2:
+prosody/fluency extraction subset
+
+Week 3:
+06D inference subset + cache feature
+
+Week 4:
+fusion model + ablation
+
+Week 5:
+timeline feedback demo
+```
+
+## 25.8 Tai lieu/code da tai ve local
+
+Papers:
+
+```text
+Papers/Papers for presentation feedback system/papers/PuSQ_Automatic_Assessment_of_Speaking_Skills_Aural_Textual_ICNLSP2021.pdf
+Papers/Papers for presentation feedback system/papers/Predicting_TED_Talk_Ratings_from_Language_and_Prosody.pdf
+Papers/Papers for presentation feedback system/papers/TED_Causality_Guided_Ratings_Transcript_1905_08392.pdf
+Papers/Papers for presentation feedback system/papers/VoiceCoach_CHI2020_2001_07876.pdf
+Papers/Papers for presentation feedback system/papers/SpeechMirror_Multimodal_Visual_Analytics_Public_Speaking.pdf
+Papers/Papers for presentation feedback system/papers/E_ffective_Analysis_of_Online_Speaking_Effectiveness.pdf
+```
+
+Repos/code:
+
+```text
+Papers/Papers for presentation feedback system/code/PuSQ
+Papers/Papers for presentation feedback system/code/readys
+Papers/Papers for presentation feedback system/code/TED_dataset_xingbow_check
+Papers/Papers for presentation feedback system/code/TED_HEM_tmp_check
+```
+
+Link can cite:
+
+```text
+06D local notebook:
+06_Advanced_Model/06d_Emotion2Vec_CoAttention_Full_SER.ipynb
+
+PuSQ:
+https://aclanthology.org/2021.icnlsp-1.19/
+https://github.com/sofiaele/PuSQ
+https://github.com/tyiannak/readys
+
+TED ratings:
+https://arxiv.org/abs/1906.03940
+https://arxiv.org/abs/1905.08392
+
+VoiceCoach / TED dataset:
+https://arxiv.org/abs/2001.07876
+https://github.com/xingbow/TED_dataset
+
+TED_HEM:
+https://arxiv.org/abs/2012.06157
+https://github.com/racharyy/TED_HEM
+```
+
+## 25.9 Ket luan cap nhat
+
+Huong nang cap nen viet trong bao cao:
+
+```text
+This project uses the 06D Emotion2Vec Co-Attention SER model as the base
+speech-affect backbone. Inspired by PuSQ, the emotion posterior is not used
+as the final prediction target, but as an intermediate speaking-style feature.
+The system is extended to long public-speaking assessment using TED Talk
+rating baselines and the VoiceCoach TED dataset, combining transcript,
+prosody/fluency, and SER-derived affective cues for both overall prediction
+and timeline-based presentation feedback.
+```
+
+Noi ngan gon bang tieng Viet:
+
+> De tai chinh la ung dung model 06D ket hop y tuong PuSQ de tao feature affective-speech, sau do dung TED Talk/VoiceCoach de mo rong sang bai noi dai, check cac baseline text/prosody/rating prediction, va xay he thong feedback theo timeline.
