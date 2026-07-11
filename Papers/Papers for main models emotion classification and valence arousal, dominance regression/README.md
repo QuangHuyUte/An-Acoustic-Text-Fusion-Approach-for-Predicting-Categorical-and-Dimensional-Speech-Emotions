@@ -36,6 +36,23 @@ This folder collects papers and code repositories for the revised project scope:
 
 Extracted `.txt` files are stored beside each PDF to make later search and summarization easier.
 
+## AVD / CCC / MAE Paper and Code Status
+
+These are the main references for activation/arousal, valence, and dominance prediction. The PDFs have been downloaded locally. As of the latest check, official code repositories for these AVD-specific papers were not found, so they should be treated as paper references rather than ready-to-run code baselines.
+
+| Paper | Local PDF | Paper link | Metric/task | Reported result | Code/repo status |
+|---|---|---|---|---|---|
+| Contrastive Unsupervised Learning for Speech Emotion Recognition | `papers/2102.06357_contrastive_unsupervised_AVD_SER.pdf` | https://arxiv.org/abs/2102.06357 | Continuous activation, valence, dominance regression | CCC avg 0.731; activation 0.752, valence 0.752, dominance 0.691 | Official repo not found |
+| Representation learning through cross-modal conditional teacher-student training for speech emotion recognition | `papers/2112.00158_cross_modal_teacher_student_AVD.pdf` | https://arxiv.org/abs/2112.00158 | Continuous activation, valence, dominance regression | IEMOCAP CCC activation 0.667, valence 0.582, dominance 0.545 | Official repo not found |
+| Learning Arousal-Valence Representation from Categorical Emotion Labels of Speech | `papers/2311.14816_AV_from_categorical_emotion_labels.pdf` | https://arxiv.org/abs/2311.14816 | Arousal/valence prediction from categorical emotion labels | Valence CCC 0.529-0.566; arousal CCC 0.632-0.672 depending setup | Official repo not found |
+| Attention-Augmented End-to-End Multi-Task Learning for Emotion Prediction from Speech | `papers/1903.12424_attention_augmented_multitask_AVD.pdf` | https://arxiv.org/abs/1903.12424 | AVD discretized low/mid/high classification, not continuous CCC regression | Test UAR: arousal 48.5, valence 63.8, dominance 51.6 | Official repo not found |
+
+Practical note for this project:
+
+- Use the CCC papers above mainly to design the optional AVD regression head and evaluation table.
+- Do not promise reproduction of these AVD papers unless an official or reliable third-party implementation is later found.
+- For runnable baselines, prioritize the code-backed SER repositories: emotion2vec, FT-w2v2-ser, CA-MSER, DST, TIM-Net, and SpeechFormer.
+
 ## Notes
 
 - IEMOCAP has about 10,039 utterances overall.

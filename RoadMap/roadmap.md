@@ -516,12 +516,14 @@ Papers/Papers for main models emotion classification and valence arousal, domina
 
 ### 10.2 Bảng model AVD regression/classification
 
-| Model/paper | Input | Task | Split | Kết quả | Vai trò |
-|---|---|---|---|---|---|
-| Contrastive unsupervised learning / preCPC | raw audio/CPC | continuous AVD regression | IEMOCAP 5-fold | CCC act 0.752, val 0.752, dom 0.691 | Mốc tham chiếu mạnh cho AVD |
-| Cross-modal conditional teacher-student | HuBERT audio, BERT text teacher | audio-only AVD regression student | 5-fold speaker-independent | CCC act 0.667, val 0.582, dom 0.545 | Tham khảo nếu muốn dùng transcript nhẹ |
-| Attention-augmented multi-task learning | raw audio/eGeMAPS | AVD low/mid/high classification | Session 1-3 train, Session 4 dev, Session 5 test | UAR arousal 48.5, valence 63.8, dominance 51.6 | Tham khảo multi-task AVD |
-| AV from categorical emotion labels | WavLM | arousal/valence từ categorical emotion | speaker-independent | valence CCC 0.529-0.566, arousal CCC 0.632-0.672 | Rất liên quan nếu muốn suy ra AV từ emotion classifier |
+| Model/paper | Paper link | Code/repo | Input | Task | Split | Kết quả | Vai trò |
+|---|---|---|---|---|---|---|---|
+| Contrastive unsupervised learning / preCPC | <https://arxiv.org/abs/2102.06357> | Chưa tìm thấy official repo | raw audio/CPC | continuous AVD regression | IEMOCAP 5-fold | CCC act 0.752, val 0.752, dom 0.691 | Mốc tham chiếu mạnh cho AVD |
+| Cross-modal conditional teacher-student | <https://arxiv.org/abs/2112.00158> | Chưa tìm thấy official repo | HuBERT audio, BERT text teacher | audio-only AVD regression student | 5-fold speaker-independent | CCC act 0.667, val 0.582, dom 0.545 | Tham khảo nếu muốn dùng transcript nhẹ |
+| Attention-augmented multi-task learning | <https://arxiv.org/abs/1903.12424> | Chưa tìm thấy official repo | raw audio/eGeMAPS | AVD low/mid/high classification | Session 1-3 train, Session 4 dev, Session 5 test | UAR arousal 48.5, valence 63.8, dominance 51.6; không phải CCC/MAE vì bài này discretize nhãn | Tham khảo multi-task AVD |
+| AV from categorical emotion labels | <https://arxiv.org/abs/2311.14816> | Chưa tìm thấy official repo | WavLM | arousal/valence từ categorical emotion | speaker-independent | valence CCC 0.529-0.566, arousal CCC 0.632-0.672; không có dominance | Rất liên quan nếu muốn suy ra AV từ emotion classifier |
+
+Hiện tại các paper AVD/CCC đã được tải PDF về thư mục `papers/`, nhưng chưa có repo code chính thức để clone. Vì vậy, phần AVD nên được đặt là hướng mở rộng dựa trên ý tưởng và metric của paper, không nên hứa reproduce đầy đủ các paper CCC/MAE này.
 
 ## 11. Ta nên tham khảo mô hình nào nhất?
 
@@ -1017,4 +1019,3 @@ Audio input -> segment -> emotion prediction -> timeline visualization.
 ```
 
 Đây là hướng thực tế hơn, học thuật hơn, dễ bảo vệ hơn và bám sát phần nhóm đã làm ở 06D hơn so với việc mở rộng quá xa sang presentation feedback/PuSQ/TED rating.
-
