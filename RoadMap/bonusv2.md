@@ -57,6 +57,7 @@ Mục tiêu không phải thay thế hoàn toàn PuSQ/TED, mà là tạo một h
 | PuSQ repo | https://github.com/sofiaele/PuSQ | Dataset feature-level, annotation, ASR transcript, parser |
 | readys repo | https://github.com/tyiannak/readys | Framework train/test segment classifier và recording-level classifier |
 | TED Talk Ratings | Paper: https://arxiv.org/abs/1906.03940 | Hướng dataset dài hơn PuSQ, dùng transcript + prosody để dự đoán 14 audience ratings |
+| TED causality-guided ratings | Paper: https://arxiv.org/abs/1905.08392 | Cùng hướng TED ratings, tập trung transcript và xử lý bias bằng causal diagram |
 | TED alignment tool | https://github.com/JoFrhwld/FAVE/wiki/FAVE-align | Tool được paper TED dùng để align audio với transcript |
 | Praat | https://www.fon.hum.uva.nl/praat/ | Tool paper TED dùng để trích pitch/loudness/formants |
 | SpeechMirror | https://arxiv.org/abs/2309.05091 | Tham khảo giao diện timeline, speech factor feedback, recommendation, SpeechTwin/SpeechPlayer |
@@ -64,7 +65,7 @@ Mục tiêu không phải thay thế hoàn toàn PuSQ/TED, mà là tạo một h
 | Automated coaching survey | https://arxiv.org/abs/2606.27380 | Related work tổng quan về automated presentation coaching |
 | Valence/arousal pretrained | https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim | Có thể dùng thử để lấy arousal/valence/dominance cho audio demo |
 
-Ghi chú quan trọng: paper TED ghi code/source được phát hành, nhưng bản arXiv đang để link code bị ẩn vì anonymous review. Trong workspace, thư mục `Papers/Papers for presentation feedback system/code/TED_Talk_Ratings_reference` là **reference implementation theo mô tả paper**, không phải official repo của tác giả.
+Ghi chú quan trọng: với hai paper TED (`1906.03940` và `1905.08392`), mình **chưa tìm thấy official dataset/code repo có thể tải trực tiếp**. Paper `1906.03940` ghi source code/dataset sẽ được phát hành, nhưng bản arXiv đang để link code bị ẩn vì anonymous review. Vì vậy, không nên tự đặt một thư mục "code reference" như thể đó là code gốc. Nếu dùng TED trong project, cần viết trung thực là: hiện mới có paper và mô tả dataset/model; chưa có official repo/dataset local.
 
 ---
 
@@ -136,6 +137,13 @@ TED Talk Ratings phù hợp hơn PuSQ ở mặt độ dài và audience percepti
 - reserved test subset 150 talks;
 - best average AUC khoảng 0.83.
 
+Tuy nhiên, tại thời điểm rà soát hiện tại:
+
+- chưa tìm thấy link chính thức để tải dataset TED ratings/features;
+- chưa tìm thấy official GitHub/source code của tác giả;
+- paper `1905.08392` cũng dùng TED transcript + ratings tương tự, nhưng không cung cấp dataset trực tiếp trên trang arXiv;
+- vì vậy TED nên được xem là **research direction / model inspiration** trước, chưa phải dataset đã sẵn sàng để reproduce ngay như PuSQ.
+
 Các model chính từ paper TED:
 
 1. **Word Sequence LSTM**
@@ -164,7 +172,7 @@ Các model chính từ paper TED:
    - Linear SVM / LASSO/Ridge-style classifier;
    - AUC khoảng 0.78.
 
-Đề xuất cho project:
+Đề xuất cho project nếu sau này tìm được dataset hoặc tự thu thập lại transcript/rating:
 
 ```text
 Baseline 1: statistical transcript + prosody
@@ -188,9 +196,23 @@ pause/speech rate
 segment/window-level aggregation
 ```
 
-### Giai đoạn D - Long-audio demo 5 phút
+### Giai đoạn D - Long-audio demo và TED full-talk
 
-Audio TED dài hơn PuSQ rất nhiều. Nếu xử lý một audio 5 phút:
+Audio TED dài hơn PuSQ rất nhiều. Theo paper TED:
+
+```text
+2,231 talks
+513.49 total hours
+=> trung bình khoảng 13.8 phút / talk
+```
+
+Con số **5 phút** chỉ là kịch bản demo/subset ban đầu của project mình, không phải độ dài trung bình của TED. Có thể lấy 5 phút từ:
+
+- một đoạn của TED talk dài hơn;
+- một bài thuyết trình tự thu;
+- một sample demo để kiểm tra long-audio pipeline.
+
+Nếu xử lý một audio 5 phút:
 
 ```text
 5 phút = 300 giây
@@ -218,6 +240,22 @@ Timeline:
   02:10-02:40: long pauses + low speech ratio -> fluency issue
   04:00-04:30: low energy + low arousal -> low delivery energy
 ```
+
+Nếu xử lý một TED talk trung bình 13.8 phút:
+
+```text
+13.8 phút = khoảng 828 giây
+segment 3 giây -> khoảng 276 segment / talk
+```
+
+Nếu xử lý toàn bộ TED raw audio:
+
+```text
+513.49 giờ = khoảng 1,848,564 giây
+segment 3 giây -> khoảng 616,000 segment
+```
+
+Do đó, không nên chạy 06D/emotion2vec trên toàn bộ TED ngay từ đầu. Nên làm subset + cache feature trước.
 
 ### 0.5 TED có chỉ ra đoạn hay/dở không?
 
