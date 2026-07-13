@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 
 import torch
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score, confusion_matrix
 from sklearn.preprocessing import StandardScaler
@@ -241,6 +241,7 @@ WORKING_REPORT_DIR = WORKING_DATA_DIR / "feature_reports"
 WORKING_FIGURE_DIR = WORKING_DATA_DIR / "feature_figures"
 INPUT_FEATURE_DIR = DATA_DIR / "features"
 FEATURE_CACHE_NAME = "iemocap_full_emotion2vec_acoustic_cache.npz"
+FINETUNED_FEATURE_CACHE_NAME = os.getenv("FINETUNED_FEATURE_CACHE_NAME", "iemocap_finetuned_emotion2vec_acoustic_cache.npz")
 WORKING_FEATURE_CACHE_PATH = WORKING_FEATURE_DIR / FEATURE_CACHE_NAME
 INPUT_FEATURE_CACHE_PATH = INPUT_FEATURE_DIR / FEATURE_CACHE_NAME
 
@@ -250,18 +251,26 @@ def resolve_feature_cache_path(require_exists=False):
     if env_cache:
         candidates.append(Path(env_cache))
     candidates.extend([
+        WORKING_FEATURE_DIR / FINETUNED_FEATURE_CACHE_NAME,
+        INPUT_FEATURE_DIR / FINETUNED_FEATURE_CACHE_NAME,
+        DATA_DIR / "output" / "features" / FINETUNED_FEATURE_CACHE_NAME,
         WORKING_FEATURE_CACHE_PATH,
         INPUT_FEATURE_CACHE_PATH,
         DATA_DIR / "output" / "features" / FEATURE_CACHE_NAME,
     ])
     for root in search_roots():
         candidates.extend([
+            root / FINETUNED_FEATURE_CACHE_NAME,
+            root / "features" / FINETUNED_FEATURE_CACHE_NAME,
+            root / "data" / "features" / FINETUNED_FEATURE_CACHE_NAME,
+            root / "output" / "features" / FINETUNED_FEATURE_CACHE_NAME,
             root / FEATURE_CACHE_NAME,
             root / "features" / FEATURE_CACHE_NAME,
             root / "data" / "features" / FEATURE_CACHE_NAME,
             root / "output" / "features" / FEATURE_CACHE_NAME,
         ])
         try:
+            candidates.extend(root.rglob(FINETUNED_FEATURE_CACHE_NAME))
             candidates.extend(root.rglob(FEATURE_CACHE_NAME))
         except Exception:
             pass
@@ -461,14 +470,19 @@ MODEL_HELPERS = r'''
 EMOTIONS = ["neutral", "angry", "sad", "happy"]
 ID_TO_EMOTION = {0: "neutral", 1: "angry", 2: "sad", 3: "happy"}
 
-EPOCHS = int(os.getenv("EPOCHS", "25"))
+EPOCHS = int(os.getenv("EPOCHS", "45"))
 BATCH_SIZE = int(os.getenv("BATCH_SIZE", "64"))
-LR = float(os.getenv("LR", "8e-4"))
-WEIGHT_DECAY = float(os.getenv("WEIGHT_DECAY", "1e-4"))
-PATIENCE = int(os.getenv("PATIENCE", "7"))
-LOSS_EMOTION_WEIGHT = float(os.getenv("LOSS_EMOTION_WEIGHT", "1.0"))
-LOSS_AVD_WEIGHT = float(os.getenv("LOSS_AVD_WEIGHT", "0.35"))
-LOSS_CCC_WEIGHT = float(os.getenv("LOSS_CCC_WEIGHT", "0.65"))
+LR = float(os.getenv("LR", "5e-4"))
+WEIGHT_DECAY = float(os.getenv("WEIGHT_DECAY", "2e-4"))
+PATIENCE = int(os.getenv("PATIENCE", "10"))
+HIDDEN_DIM = int(os.getenv("HIDDEN_DIM", "256"))
+DROPOUT = float(os.getenv("DROPOUT", "0.30"))
+N_SEEDS = int(os.getenv("N_SEEDS", "1"))
+USE_WEIGHTED_SAMPLER = os.getenv("USE_WEIGHTED_SAMPLER", "1") == "1"
+LOSS_EMOTION_WEIGHT = float(os.getenv("LOSS_EMOTION_WEIGHT", "1.35"))
+LOSS_AVD_WEIGHT = float(os.getenv("LOSS_AVD_WEIGHT", "0.30"))
+LOSS_CCC_WEIGHT = float(os.getenv("LOSS_CCC_WEIGHT", "0.55"))
+PRIMARY_SCORE_MODE = os.getenv("PRIMARY_SCORE_MODE", "all").lower()
 
 def normalize_avd(df):
     out = df.copy()
@@ -547,7 +561,7 @@ class FullFeatureDataset(Dataset):
         return {"e2v": self.e[idx], "acoustic": self.a[idx], "emotion": self.y_cls[idx], "avd": self.y_reg[idx], "idx": idx}
 
 class MLPBranch(nn.Module):
-    def __init__(self, in_dim, out_dim=192, hidden=384, dropout=0.25):
+    def __init__(self, in_dim, out_dim=256, hidden=512, dropout=0.30):
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(in_dim, hidden),
@@ -557,6 +571,7 @@ class MLPBranch(nn.Module):
             nn.Linear(hidden, out_dim),
             nn.LayerNorm(out_dim),
             nn.GELU(),
+            nn.Dropout(dropout * 0.5),
         )
     def forward(self, x):
         return self.net(x)
@@ -571,7 +586,7 @@ class Emotion2VecAcousticCoAttentionMultiTask(nn.Module):
       Head 1: 4-class emotion classification
       Head 2: valence/arousal/dominance regression
     """
-    def __init__(self, e2v_dim, acoustic_dim, hidden=192, heads=4, dropout=0.25, n_classes=4):
+    def __init__(self, e2v_dim, acoustic_dim, hidden=256, heads=4, dropout=0.30, n_classes=4):
         super().__init__()
         self.e2v_branch = MLPBranch(e2v_dim, out_dim=hidden, hidden=hidden * 2, dropout=dropout)
         self.acoustic_branch = MLPBranch(acoustic_dim, out_dim=hidden, hidden=hidden * 2, dropout=dropout)
@@ -584,8 +599,21 @@ class Emotion2VecAcousticCoAttentionMultiTask(nn.Module):
             nn.GELU(),
             nn.Dropout(dropout),
         )
-        self.emotion_head = nn.Linear(hidden, n_classes)
-        self.avd_head = nn.Sequential(nn.Linear(hidden, hidden // 2), nn.GELU(), nn.Dropout(dropout), nn.Linear(hidden // 2, 3), nn.Sigmoid())
+        self.emotion_head = nn.Sequential(
+            nn.Linear(hidden, hidden),
+            nn.LayerNorm(hidden),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden, n_classes),
+        )
+        self.avd_head = nn.Sequential(
+            nn.Linear(hidden, hidden // 2),
+            nn.LayerNorm(hidden // 2),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden // 2, 3),
+            nn.Sigmoid(),
+        )
     def forward(self, e2v, acoustic):
         z_e = self.e2v_branch(e2v)
         z_a = self.acoustic_branch(acoustic)
@@ -624,6 +652,15 @@ def class_weights(train_df):
     counts = train_df["emotion_id"].value_counts().sort_index()
     total = counts.sum()
     return torch.tensor([total / (4.0 * counts.get(i, 1)) for i in range(4)], dtype=torch.float32)
+
+def make_train_sampler(train_df):
+    counts = train_df["emotion_id"].value_counts().to_dict()
+    weights = train_df["emotion_id"].map(lambda x: 1.0 / max(counts.get(x, 1), 1)).values
+    return WeightedRandomSampler(
+        weights=torch.tensor(weights, dtype=torch.double),
+        num_samples=len(weights),
+        replacement=True,
+    )
 
 def run_epoch(model, loader, optimizer, ce):
     model.train()
@@ -674,7 +711,50 @@ def compute_metrics(pred):
     }
 
 def primary_score(m):
-    return float(m["UAR"] + m["CCC_mean"])
+    if PRIMARY_SCORE_MODE == "emotion":
+        return float(0.40 * m["WA"] + 0.40 * m["UAR"] + 0.20 * m["Macro_F1"])
+    if PRIMARY_SCORE_MODE == "ccc":
+        return float(m["CCC_mean"])
+    return float(0.25 * m["WA"] + 0.30 * m["UAR"] + 0.25 * m["Macro_F1"] + 0.20 * m["CCC_mean"])
+
+def resolve_warm_start_checkpoint():
+    env_ckpt = os.getenv("MULTITASK_WARM_START_CHECKPOINT", "").strip()
+    if env_ckpt and Path(env_ckpt).exists():
+        return Path(env_ckpt).resolve()
+    names = [
+        "multitask_coattention_warm_start.pt",
+        "03_04_warm_start.pt",
+        "coattention_warm_start.pt",
+    ]
+    for root in search_roots():
+        for name in names:
+            direct_candidates = [
+                root / name,
+                root / "models" / name,
+                root / "output" / "models" / name,
+                root / "finetuned_models" / name,
+            ]
+            for candidate in direct_candidates:
+                if candidate.exists():
+                    return candidate.resolve()
+            try:
+                found = sorted(root.rglob(name))
+            except Exception:
+                found = []
+            if found:
+                return found[0].resolve()
+    return None
+
+def load_warm_start_if_available(model):
+    ckpt_path = resolve_warm_start_checkpoint()
+    if ckpt_path is None:
+        return None
+    ckpt = torch.load(ckpt_path, map_location=DEVICE)
+    state = ckpt.get("model_state_dict", ckpt.get("state_dict", ckpt)) if isinstance(ckpt, dict) else ckpt
+    missing, unexpected = model.load_state_dict(state, strict=False)
+    print("Loaded warm-start checkpoint:", ckpt_path)
+    print("Warm-start missing keys:", len(missing), "unexpected keys:", len(unexpected))
+    return ckpt_path
 '''
 
 
@@ -1472,40 +1552,76 @@ def run_fold(fold):
     val_ds = FullFeatureDataset(val_df, cache, e_scaler=train_ds.e_scaler, a_scaler=train_ds.a_scaler)
     test_ds = FullFeatureDataset(test_df, cache, e_scaler=train_ds.e_scaler, a_scaler=train_ds.a_scaler)
 
-    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     test_loader = DataLoader(test_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
 
-    model = Emotion2VecAcousticCoAttentionMultiTask(
-        e2v_dim=cache["emotion2vec"].shape[1],
-        acoustic_dim=cache["acoustic"].shape[1],
-    ).to(DEVICE)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
-    ce = nn.CrossEntropyLoss(weight=class_weights(train_df).to(DEVICE), label_smoothing=0.05)
+    seed_test_preds = []
+    seed_histories = []
+    seed_states = []
+    seed_best_epochs = []
 
-    best_state = None
-    best_score = -1e9
-    best_epoch = 0
-    patience_left = PATIENCE
-    history = []
-    for epoch in range(1, EPOCHS + 1):
-        loss = run_epoch(model, train_loader, optimizer, ce)
-        val_pred = predict(model, val_loader)
-        val_metrics = compute_metrics(val_pred)
-        score = primary_score(val_metrics)
-        history.append({"fold": fold, "epoch": epoch, "train_loss": loss, "primary_score": score, **{f"val_{k}": v for k, v in val_metrics.items()}})
-        if score > best_score:
-            best_score = score
-            best_epoch = epoch
-            best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
-            patience_left = PATIENCE
-        else:
-            patience_left -= 1
-        if patience_left <= 0:
-            break
+    for seed_offset in range(N_SEEDS):
+        seed_value = SEED + seed_offset
+        set_seed(seed_value)
+        sampler = make_train_sampler(train_df) if USE_WEIGHTED_SAMPLER else None
+        train_loader = DataLoader(
+            train_ds,
+            batch_size=BATCH_SIZE,
+            shuffle=(sampler is None),
+            sampler=sampler,
+            num_workers=0,
+        )
 
-    model.load_state_dict(best_state)
-    test_pred = predict(model, test_loader)
+        model = Emotion2VecAcousticCoAttentionMultiTask(
+            e2v_dim=cache["emotion2vec"].shape[1],
+            acoustic_dim=cache["acoustic"].shape[1],
+            hidden=HIDDEN_DIM,
+            dropout=DROPOUT,
+        ).to(DEVICE)
+        warm_start_path = load_warm_start_if_available(model)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="max",
+            factor=0.5,
+            patience=max(2, PATIENCE // 3),
+        )
+        ce = nn.CrossEntropyLoss(weight=class_weights(train_df).to(DEVICE), label_smoothing=0.05)
+
+        best_state = None
+        best_score = -1e9
+        best_epoch = 0
+        patience_left = PATIENCE
+        history = []
+        for epoch in range(1, EPOCHS + 1):
+            loss = run_epoch(model, train_loader, optimizer, ce)
+            val_pred = predict(model, val_loader)
+            val_metrics = compute_metrics(val_pred)
+            score = primary_score(val_metrics)
+            scheduler.step(score)
+            history.append({"fold": fold, "seed": seed_value, "epoch": epoch, "train_loss": loss, "primary_score": score, "warm_start": str(warm_start_path) if warm_start_path else "", **{f"val_{k}": v for k, v in val_metrics.items()}})
+            if score > best_score:
+                best_score = score
+                best_epoch = epoch
+                best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+                patience_left = PATIENCE
+            else:
+                patience_left -= 1
+            if patience_left <= 0:
+                break
+
+        model.load_state_dict(best_state)
+        seed_test_preds.append(predict(model, test_loader))
+        seed_histories.extend(history)
+        seed_states.append({"seed": seed_value, "state_dict": best_state, "best_epoch": best_epoch, "best_score": best_score})
+        seed_best_epochs.append(best_epoch)
+
+    test_pred = {
+        "logits": np.mean([p["logits"] for p in seed_test_preds], axis=0),
+        "reg": np.mean([p["reg"] for p in seed_test_preds], axis=0),
+        "y_cls": seed_test_preds[0]["y_cls"],
+        "y_reg": seed_test_preds[0]["y_reg"],
+    }
     metrics = compute_metrics(test_pred)
     pred_cls = test_pred["logits"].argmax(axis=1)
     probs = torch.softmax(torch.tensor(test_pred["logits"]), dim=1).numpy()
@@ -1520,11 +1636,11 @@ def run_fold(fold):
     out["pred_dominance"] = test_pred["reg"][:, 2] * 4.0 + 1.0
 
     safe = str(fold).replace(" ", "_").replace("/", "_")
-    pd.DataFrame(history).to_csv(REPORT_DIR / f"{safe}_history.csv", index=False, encoding="utf-8-sig")
+    pd.DataFrame(seed_histories).to_csv(REPORT_DIR / f"{safe}_history.csv", index=False, encoding="utf-8-sig")
     out.to_csv(PREDICTION_DIR / f"{safe}_predictions.csv", index=False, encoding="utf-8-sig")
-    torch.save({"model_state_dict": model.state_dict(), "fold": fold, "best_epoch": best_epoch, "metrics": metrics}, MODEL_DIR / f"{safe}_best.pt")
+    torch.save({"seed_states": seed_states, "fold": fold, "best_epochs": seed_best_epochs, "metrics": metrics}, MODEL_DIR / f"{safe}_best.pt")
 
-    return {"protocol": PROTOCOL, "fold": fold, "best_epoch": best_epoch, "n_train": len(train_df), "n_validation": len(val_df), "n_test": len(test_df), **metrics}, out
+    return {"protocol": PROTOCOL, "fold": fold, "best_epoch": int(np.max(seed_best_epochs)), "n_seeds": N_SEEDS, "n_train": len(train_df), "n_validation": len(val_df), "n_test": len(test_df), **metrics}, out
 
 rows = []
 preds = []
