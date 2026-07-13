@@ -85,6 +85,107 @@ if not BASE_DIR.exists() and Path("/kaggle/working").exists():
     BASE_DIR = Path("/kaggle/working") / "06_w2v_based_models"
 
 LOCAL_DATA_DIR = PROJECT_ROOT / "06_w2v_based_models" / "data"
+KAGGLE_INPUT_DIR = Path("/kaggle/input")
+ENV_DATA_DIR = os.environ.get("IEMOCAP_DATA_DIR", "").strip()
+KNOWN_KAGGLE_DATASETS = [
+    KAGGLE_INPUT_DIR / "multitask",
+    KAGGLE_INPUT_DIR / "iemocap-full-multitask-data",
+    KAGGLE_INPUT_DIR / "iemocap_full_multitask_data",
+    KAGGLE_INPUT_DIR / "iemocap-multitask-train-data",
+    KAGGLE_INPUT_DIR / "iemocap_multitask_train_data",
+]
+
+def unique_existing_paths(paths):
+    seen = set()
+    out = []
+    for path in paths:
+        if not path:
+            continue
+        path = Path(path)
+        key = str(path)
+        if key in seen:
+            continue
+        seen.add(key)
+        if path.exists():
+            out.append(path)
+    return out
+
+def search_roots():
+    roots = []
+    env_dir = os.environ.get("IEMOCAP_DATA_DIR", "").strip()
+    if env_dir:
+        roots.append(Path(env_dir))
+    roots.extend([
+        LOCAL_DATA_DIR,
+        BASE_DIR / "data",
+        BASE_DIR,
+        PROJECT_ROOT,
+        *KNOWN_KAGGLE_DATASETS,
+        KAGGLE_INPUT_DIR,
+    ])
+    return unique_existing_paths(roots)
+
+def rank_candidate(path):
+    text = str(path).replace("\\", "/").lower()
+    preferred = 0
+    if ENV_DATA_DIR:
+        try:
+            env_text = str(Path(ENV_DATA_DIR).resolve()).replace("\\", "/").lower()
+            if text.startswith(env_text):
+                preferred -= 20
+        except Exception:
+            pass
+    if "/multitask/" in text or text.endswith("/multitask"):
+        preferred -= 4
+    if "/output/" in text:
+        preferred -= 3
+    if "/data/" in text:
+        preferred -= 2
+    if "/output/features/" in text:
+        preferred -= 2
+    if "/features/" in text:
+        preferred -= 1
+    return (preferred, len(path.parts), text)
+
+def find_named_file(filename, env_var=None, extra_candidates=None, require_exists=True, description=None):
+    candidates = []
+    if env_var:
+        env_value = os.environ.get(env_var, "").strip()
+        if env_value:
+            candidates.append(Path(env_value))
+    if extra_candidates:
+        candidates.extend(Path(p) for p in extra_candidates)
+
+    for root in search_roots():
+        candidates.extend([
+            root / filename,
+            root / "data" / filename,
+            root / "metadata" / filename,
+            root / "splits" / filename,
+            root / "features" / filename,
+            root / "output" / filename,
+            root / "output" / "metadata" / filename,
+            root / "output" / "splits" / filename,
+            root / "output" / "features" / filename,
+        ])
+        if root.exists():
+            try:
+                candidates.extend(root.rglob(filename))
+            except Exception:
+                pass
+
+    existing = [Path(p).resolve() for p in candidates if Path(p).exists() and Path(p).is_file()]
+    if existing:
+        existing = sorted(set(existing), key=rank_candidate)
+        return existing[0]
+
+    if require_exists:
+        roots_text = "\n".join(f"- {root}" for root in search_roots())
+        raise FileNotFoundError(
+            f"Không tìm thấy {description or filename}. Notebook đã quét các root:\n{roots_text}\n"
+            f"Nếu file nằm chỗ khác, hãy set {env_var or 'biến môi trường tương ứng'}."
+        )
+    return None
 
 def has_train_tables(path):
     return (
@@ -103,41 +204,25 @@ def candidate_data_roots(base):
             roots.append(meta_path.parent.parent)
     return roots
 
-def resolve_data_dir():
-    candidates = []
-    env_dir = os.environ.get("IEMOCAP_DATA_DIR")
-    if env_dir:
-        candidates.append(Path(env_dir))
-    candidates.extend([
-        LOCAL_DATA_DIR,
-        Path("/kaggle/input/iemocap-full-multitask-data"),
-        Path("/kaggle/input/iemocap_full_multitask_data"),
-        Path("/kaggle/input/iemocap-multitask-train-data"),
-        Path("/kaggle/input/iemocap_multitask_train_data"),
-    ])
-
-    for candidate in candidates:
-        for root in candidate_data_roots(candidate):
-            if has_train_tables(root):
-                return root.resolve()
-
-    kaggle_input = Path("/kaggle/input")
-    if kaggle_input.exists():
-        for root in candidate_data_roots(kaggle_input):
-            if has_train_tables(root):
-                return root.resolve()
-
-    raise FileNotFoundError(
-        "Không tìm thấy dữ liệu IEMOCAP. Notebook sẽ tự quét /kaggle/input, nhưng folder dữ liệu cần có "
-        "metadata/iemocap_metadata_full.csv và splits/. Nếu bạn đặt ở chỗ khác, set IEMOCAP_DATA_DIR."
+def resolve_metadata_path():
+    return find_named_file(
+        "iemocap_metadata_full.csv",
+        env_var="IEMOCAP_METADATA_PATH",
+        description="metadata IEMOCAP `iemocap_metadata_full.csv`",
     )
 
-DATA_DIR = resolve_data_dir()
-METADATA_DIR = DATA_DIR / "metadata"
-SPLIT_DIR = DATA_DIR / "splits"
-AUDIO_DIR = DATA_DIR / "audio_wav"
+def resolve_split_path(split_file):
+    return find_named_file(
+        split_file,
+        env_var="IEMOCAP_SPLIT_PATH",
+        description=f"split file `{split_file}`",
+    )
 
-FULL_METADATA_PATH = METADATA_DIR / "iemocap_metadata_full.csv"
+FULL_METADATA_PATH = resolve_metadata_path()
+METADATA_DIR = FULL_METADATA_PATH.parent
+DATA_DIR = METADATA_DIR.parent if METADATA_DIR.name == "metadata" else METADATA_DIR
+SPLIT_DIR = None
+AUDIO_DIR = DATA_DIR / "audio_wav"
 
 WORKING_DATA_DIR = Path("/kaggle/working/iemocap_full_multitask_data") if Path("/kaggle/working").exists() else DATA_DIR
 WORKING_FEATURE_DIR = WORKING_DATA_DIR / "features"
@@ -153,18 +238,36 @@ def resolve_feature_cache_path(require_exists=False):
     candidates = []
     if env_cache:
         candidates.append(Path(env_cache))
-    candidates.extend([WORKING_FEATURE_CACHE_PATH, INPUT_FEATURE_CACHE_PATH])
+    candidates.extend([
+        WORKING_FEATURE_CACHE_PATH,
+        INPUT_FEATURE_CACHE_PATH,
+        DATA_DIR / "output" / "features" / FEATURE_CACHE_NAME,
+    ])
+    for root in search_roots():
+        candidates.extend([
+            root / FEATURE_CACHE_NAME,
+            root / "features" / FEATURE_CACHE_NAME,
+            root / "data" / "features" / FEATURE_CACHE_NAME,
+            root / "output" / "features" / FEATURE_CACHE_NAME,
+        ])
+        try:
+            candidates.extend(root.rglob(FEATURE_CACHE_NAME))
+        except Exception:
+            pass
+
     for candidate in candidates:
         if candidate.exists():
             return candidate.resolve()
     if require_exists:
         raise FileNotFoundError(
-            "Không tìm thấy full feature cache. Hãy chạy notebook 02 trước. Trên Kaggle, notebook 02 ghi cache vào "
-            f"{WORKING_FEATURE_CACHE_PATH}, không ghi vào /kaggle/input vì Kaggle input dataset là read-only."
+            "Không tìm thấy full feature cache. Notebook đã tự quét `data/features/`, `output/features/` "
+            "và toàn bộ `/kaggle/input`. Nếu bạn dùng Kaggle dataset `quanghuy225/multitask`, hãy đảm bảo file "
+            f"`{FEATURE_CACHE_NAME}` nằm trong dataset, ví dụ `/kaggle/input/multitask/output/features/{FEATURE_CACHE_NAME}`."
         )
     return WORKING_FEATURE_CACHE_PATH
 
 print("DATA_DIR:", DATA_DIR)
+print("FULL_METADATA_PATH:", FULL_METADATA_PATH, FULL_METADATA_PATH.exists())
 print("AUDIO_DIR:", AUDIO_DIR, AUDIO_DIR.exists())
 print("INPUT_FEATURE_CACHE_PATH:", INPUT_FEATURE_CACHE_PATH, INPUT_FEATURE_CACHE_PATH.exists())
 print("WORKING_FEATURE_CACHE_PATH:", WORKING_FEATURE_CACHE_PATH, WORKING_FEATURE_CACHE_PATH.exists())
@@ -1310,7 +1413,7 @@ for folder in [REPORT_DIR, FIGURE_DIR, PREDICTION_DIR, MODEL_DIR]:
     folder.mkdir(parents=True, exist_ok=True)
 
 PROTOCOL = "{protocol}"
-SPLIT_PATH = SPLIT_DIR / "{split_file}"
+SPLIT_PATH = resolve_split_path("{split_file}")
 N_EXPECTED_FOLDS = {n_folds}
 FEATURE_CACHE_PATH = resolve_feature_cache_path(require_exists=True)
 print("SPLIT_PATH:", SPLIT_PATH, SPLIT_PATH.exists())
