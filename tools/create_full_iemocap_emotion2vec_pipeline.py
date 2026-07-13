@@ -1031,6 +1031,271 @@ Head 2: valence/arousal/dominance regression
 ```
 """
         ),
+        md(
+            """
+## 1. Giải thích kiến trúc đề xuất
+
+Mô hình trong notebook này là mô hình **multi-task hai nhánh**:
+
+```text
+Feature cache từ notebook 02
+   |
+   |-- Branch A: Emotion2Vec embedding
+   |      e2v [B, D_e]
+   |      -> MLP adapter
+   |      -> z_e [B, 192]
+   |
+   |-- Branch B: Handcrafted acoustic vector
+   |      acoustic [B, D_a]
+   |      -> MLP adapter
+   |      -> z_a [B, 192]
+   |
+   |-- Bidirectional cross-attention
+   |      acoustic query attends to emotion2vec
+   |      emotion2vec query attends to acoustic
+   |      -> context_e, context_a
+   |
+   |-- Gated fusion
+   |      concat(z_e, z_a, context_e, context_a)
+   |      -> shared representation z [B, 192]
+   |
+   |-- Head 1: emotion classification
+   |      z -> logits [B, 4]
+   |      neutral / angry / sad / happy
+   |
+   |-- Head 2: AVD regression
+          z -> [B, 3]
+          valence / arousal / dominance
+```
+
+Lý do dùng hai nhánh:
+
+- Emotion2Vec là pretrained speech emotion representation, cung cấp cue cảm xúc mức cao từ waveform.
+- Acoustic handcrafted vector giữ các tín hiệu dễ diễn giải hơn như RMS, ZCR, MFCC, spectral centroid, log-Mel summary.
+- Cross-attention cho hai nhánh tương tác thay vì chỉ concatenate thô.
+"""
+        ),
+        md(
+            """
+## 2. Co-attention / cross-attention là gì?
+
+Attention cơ bản dùng ba đại lượng:
+
+```text
+Q = query
+K = key
+V = value
+Attention(Q, K, V) = softmax(QK^T / sqrt(d)) V
+```
+
+Trong notebook này, ta dùng hai chiều attention:
+
+```text
+a_ctx = Attention(query=z_a, key=z_e, value=z_e)
+e_ctx = Attention(query=z_e, key=z_a, value=z_a)
+```
+
+Ý nghĩa:
+
+- `a_ctx`: nhánh acoustic hỏi Emotion2Vec xem cue cảm xúc mức cao nào nên được chú ý.
+- `e_ctx`: nhánh Emotion2Vec hỏi acoustic xem tín hiệu năng lượng/phổ/timbre nào bổ sung cho embedding pretrained.
+
+Do mỗi utterance hiện được biểu diễn bằng vector cố định, notebook đưa mỗi vector thành token dài 1:
+
+```text
+z_e -> e_tok [B, 1, 192]
+z_a -> a_tok [B, 1, 192]
+```
+
+Đây là phiên bản lightweight của co-attention. Khi sau này cache token/frame-level Emotion2Vec hoặc acoustic sequence được lưu lại, phần này có thể mở rộng thành attention nhiều token theo thời gian.
+"""
+        ),
+        md(
+            """
+## 3. Gated fusion là gì?
+
+Sau cross-attention, mô hình có bốn vector:
+
+```text
+z_e, z_a, e_ctx, a_ctx
+```
+
+Notebook nối bốn vector này:
+
+```text
+parts = concat(z_e, z_a, e_ctx, a_ctx)
+```
+
+Sau đó học một cổng:
+
+```text
+g = sigmoid(W_g parts)
+fused = MLP(parts)
+z = g * fused + (1 - g) * 0.5 * (z_e + z_a)
+```
+
+Ý nghĩa:
+
+- Nếu `g` cao, mô hình tin vào representation đã fusion sâu.
+- Nếu `g` thấp, mô hình giữ lại trung bình hai nhánh gốc để tránh fusion làm mất tín hiệu.
+"""
+        ),
+        md(
+            """
+## 4. Hai head trong multi-task learning
+
+Mô hình có chung encoder/fusion, sau đó tách thành hai head.
+
+### Head 1 - Emotion classification
+
+```text
+emotion_head(z) -> logits [B, 4]
+```
+
+Output là xác suất cho 4 emotion:
+
+```text
+neutral, angry, sad, happy
+```
+
+Loss:
+
+```text
+CrossEntropyLoss(logits, emotion_id)
+```
+
+Metric:
+
+- `WA`: weighted accuracy / accuracy tổng.
+- `UAR`: unweighted average recall, tức trung bình recall từng class.
+- `Macro-F1`: F1 trung bình đều giữa các class.
+- `Weighted-F1`: F1 có trọng số theo số mẫu từng class.
+
+### Head 2 - AVD regression
+
+```text
+avd_head(z) -> [valence, arousal, dominance]
+```
+
+Output được đưa qua `Sigmoid`, nên nằm trong `[0, 1]`. Label gốc IEMOCAP thường ở thang `1..5`, notebook chuẩn hóa:
+
+```text
+y_norm = (y - 1) / 4
+```
+
+Khi lưu prediction, notebook đổi ngược lại:
+
+```text
+y = y_norm * 4 + 1
+```
+
+Loss:
+
+```text
+SmoothL1Loss(pred_avd, true_avd) + CCCLoss(pred_avd, true_avd)
+```
+"""
+        ),
+        md(
+            r"""
+## 5. CCC được tính như thế nào?
+
+`CCC` là **Concordance Correlation Coefficient**. Nó đo mức độ dự đoán vừa tương quan với nhãn thật, vừa gần đường đồng nhất `prediction = target`.
+
+Với prediction `x` và target `y`:
+
+```text
+mean_x = trung bình của x
+mean_y = trung bình của y
+var_x  = phương sai của x
+var_y  = phương sai của y
+cov_xy = covariance(x, y)
+```
+
+Công thức:
+
+```text
+CCC = (2 * cov_xy) / (var_x + var_y + (mean_x - mean_y)^2)
+```
+
+Trong code:
+
+```python
+pred_mean = torch.mean(pred, dim=0)
+target_mean = torch.mean(target, dim=0)
+pred_var = torch.var(pred, dim=0, unbiased=False)
+target_var = torch.var(target, dim=0, unbiased=False)
+cov = torch.mean((pred - pred_mean) * (target - target_mean), dim=0)
+ccc = (2.0 * cov) / (pred_var + target_var + (pred_mean - target_mean) ** 2 + eps)
+```
+
+Notebook tính riêng:
+
+```text
+CCC_valence
+CCC_arousal
+CCC_dominance
+CCC_mean = mean(CCC_valence, CCC_arousal, CCC_dominance)
+```
+
+Loss dùng để tối ưu:
+
+```text
+CCCLoss = 1 - mean(CCC)
+```
+"""
+        ),
+        md(
+            """
+## 6. Tổng loss và tiêu chí chọn model tốt nhất
+
+Loss tổng:
+
+```text
+loss =
+  LOSS_EMOTION_WEIGHT * CrossEntropyLoss
+  + LOSS_AVD_WEIGHT   * SmoothL1Loss
+  + LOSS_CCC_WEIGHT   * CCCLoss
+```
+
+Mặc định:
+
+```text
+LOSS_EMOTION_WEIGHT = 1.0
+LOSS_AVD_WEIGHT = 0.35
+LOSS_CCC_WEIGHT = 0.65
+```
+
+Tiêu chí chọn best checkpoint trên validation:
+
+```text
+primary_score = UAR + CCC_mean
+```
+
+Lý do:
+
+- `UAR` đại diện cho classification, ít bị lệch bởi class imbalance hơn accuracy.
+- `CCC_mean` đại diện cho regression AVD.
+- Cộng hai chỉ số giúp model không chỉ tốt ở emotion classification mà bỏ qua AVD regression.
+"""
+        ),
+        md(
+            """
+## 7. Link tham khảo
+
+- Emotion2Vec: Self-Supervised Pre-Training for Speech Emotion Representation  
+  https://arxiv.org/abs/2312.15185
+
+- CA-MSER: Speech Emotion Recognition with Co-Attention based Multi-level Acoustic Information  
+  https://arxiv.org/abs/2203.15326
+
+- Concordance Correlation Coefficient, Lin 1989: A concordance correlation coefficient to evaluate reproducibility  
+  DOI/JSTOR: https://doi.org/10.2307/2532051
+
+- Multi-task learning reference: Multi-Task Learning Using Uncertainty to Weigh Losses for Scene Geometry and Semantics  
+  https://arxiv.org/abs/1705.07115
+"""
+        ),
         code(COMMON_IMPORTS),
         code(ZIP_HELPERS),
         code(PATH_RESOLVER),
