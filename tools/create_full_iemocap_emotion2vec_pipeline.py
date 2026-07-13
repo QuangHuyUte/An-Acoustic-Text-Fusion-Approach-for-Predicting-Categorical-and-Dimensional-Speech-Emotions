@@ -22,6 +22,7 @@ import math
 import os
 import random
 import time
+import zipfile
 
 import numpy as np
 import pandas as pd
@@ -49,6 +50,28 @@ if torch.cuda.is_available():
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("DEVICE:", DEVICE)
+'''
+
+
+ZIP_HELPERS = r'''
+def zip_folder(source_dir, zip_path, exclude_dir_names=None, exclude_suffixes=None):
+    source_dir = Path(source_dir)
+    zip_path = Path(zip_path)
+    exclude_dir_names = set(exclude_dir_names or [])
+    exclude_suffixes = set(exclude_suffixes or [])
+    zip_path.parent.mkdir(parents=True, exist_ok=True)
+    if zip_path.exists():
+        zip_path.unlink()
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for file_path in source_dir.rglob("*"):
+            if not file_path.is_file():
+                continue
+            if any(part in exclude_dir_names for part in file_path.relative_to(source_dir).parts):
+                continue
+            if file_path.suffix.lower() in exclude_suffixes:
+                continue
+            zf.write(file_path, file_path.relative_to(source_dir))
+    return zip_path
 '''
 
 
@@ -507,6 +530,7 @@ Khác với bản baseline trước, notebook này không coi metadata là featu
 """
         ),
         code(COMMON_IMPORTS),
+        code(ZIP_HELPERS),
         code(PATH_RESOLVER),
         code(FEATURE_EXTRACTION_HELPERS),
         code(
@@ -913,6 +937,32 @@ display(Markdown("\n".join(report_lines)))
 print("Saved report:", report_path)
 '''
         ),
+        md(
+            """
+## 8. Zip toàn bộ output của notebook 02
+
+Cell này gom các file do notebook 02 sinh ra để bạn tải về từ Kaggle:
+
+- `features/iemocap_full_emotion2vec_acoustic_cache.npz`
+- `feature_reports/`
+- `feature_figures/`
+
+Không zip `audio_wav/` vì đó là input raw audio rất lớn, không phải output của notebook.
+"""
+        ),
+        code(
+            r'''
+zip_path = Path("/kaggle/working/iemocap_full_feature_outputs.zip") if Path("/kaggle/working").exists() else WORKING_DATA_DIR.parent / "iemocap_full_feature_outputs.zip"
+zip_folder(
+    WORKING_DATA_DIR,
+    zip_path,
+    exclude_dir_names={"audio_wav"},
+    exclude_suffixes=set(),
+)
+print("ZIP_OUTPUT:", zip_path)
+print("ZIP_SIZE_MB:", round(zip_path.stat().st_size / (1024 * 1024), 2))
+'''
+        ),
     ]
 
 
@@ -943,6 +993,7 @@ Head 2: valence/arousal/dominance regression
 """
         ),
         code(COMMON_IMPORTS),
+        code(ZIP_HELPERS),
         code(PATH_RESOLVER),
         code(
             f'''
@@ -1094,6 +1145,26 @@ for _, row in summary.iterrows():
 report_path = REPORT_DIR / f"{PROTOCOL}_full_model_report.md"
 report_path.write_text("\n".join(report), encoding="utf-8")
 display(Markdown("\n".join(report)))
+'''
+        ),
+        md(
+            """
+## Zip toàn bộ output của notebook train
+
+Cell cuối gom các file sinh ra sau khi train để tải về từ Kaggle:
+
+- `reports/`
+- `predictions/`
+- `models/`
+- `figures/`
+"""
+        ),
+        code(
+            r'''
+zip_path = Path("/kaggle/working") / f"{PROTOCOL}_full_model_outputs.zip" if Path("/kaggle/working").exists() else NOTEBOOK_DIR / f"{PROTOCOL}_full_model_outputs.zip"
+zip_folder(NOTEBOOK_DIR, zip_path)
+print("ZIP_OUTPUT:", zip_path)
+print("ZIP_SIZE_MB:", round(zip_path.stat().st_size / (1024 * 1024), 2))
 '''
         ),
     ]
