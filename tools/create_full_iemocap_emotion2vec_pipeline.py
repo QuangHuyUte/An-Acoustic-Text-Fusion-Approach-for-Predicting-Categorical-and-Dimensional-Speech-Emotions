@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 import nbformat as nbf
 
@@ -292,15 +292,54 @@ def extract_emotion2vec_embedding(model, wav_path):
         arr = arr.reshape(-1, arr.shape[-1]).mean(axis=0)
     return arr.astype(np.float32)
 
+_AUDIO_INDEX = None
+
+def build_audio_index():
+    global _AUDIO_INDEX
+    if _AUDIO_INDEX is None:
+        _AUDIO_INDEX = {p.name: p for p in AUDIO_DIR.rglob("*.wav")} if AUDIO_DIR.exists() else {}
+        print(f"Audio index: {len(_AUDIO_INDEX)} wav files under {AUDIO_DIR}")
+    return _AUDIO_INDEX
+
+def path_basename_any_os(value):
+    text = str(value or "").strip()
+    if not text or text.lower() == "nan":
+        return ""
+    # Metadata was created on Windows, while Kaggle runs Linux. Normalize both styles.
+    return Path(text.replace("\\", "/")).name or PureWindowsPath(text).name
+
+def wav_name_candidates(row):
+    candidates = []
+    for key in ["source_filename", "wav_path", "utterance_id"]:
+        if key in row and pd.notna(row.get(key)):
+            value = str(row.get(key))
+            if key == "utterance_id" and not value.lower().endswith(".wav"):
+                value = value + ".wav"
+            name = path_basename_any_os(value)
+            if name:
+                candidates.append(name)
+    # Keep order but remove duplicates.
+    return list(dict.fromkeys(candidates))
+
 def resolve_wav_path(row):
-    name = Path(str(row.get("wav_path", row.get("source_filename", "")))).name
-    direct = AUDIO_DIR / name
-    if direct.exists():
-        return direct
     original = Path(str(row.get("wav_path", "")))
     if original.exists():
         return original
-    raise FileNotFoundError(f"Cannot find WAV for sample {row.get('train_sample_id')} ({name})")
+
+    audio_index = build_audio_index()
+    candidates = wav_name_candidates(row)
+    for name in candidates:
+        direct = AUDIO_DIR / name
+        if direct.exists():
+            return direct
+        if name in audio_index:
+            return audio_index[name]
+
+    raise FileNotFoundError(
+        "Không tìm thấy WAV cho sample "
+        f"{row.get('train_sample_id')}. Candidates={candidates}. "
+        f"AUDIO_DIR={AUDIO_DIR}. Số file wav đã index={len(audio_index)}."
+    )
 '''
 
 
