@@ -2,6 +2,7 @@
 datasets/
 **/datasets/
 **/audio_16k/
+**/audio_wav/
 **/log_mel/
 
 # Papers / proposal binaries
