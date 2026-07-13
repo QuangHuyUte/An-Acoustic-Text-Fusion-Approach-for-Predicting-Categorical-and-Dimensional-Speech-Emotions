@@ -204,10 +204,11 @@ def candidate_data_roots(base):
             roots.append(meta_path.parent.parent)
     return roots
 
-def resolve_metadata_path():
+def resolve_metadata_path(require_exists=False):
     return find_named_file(
         "iemocap_metadata_full.csv",
         env_var="IEMOCAP_METADATA_PATH",
+        require_exists=require_exists,
         description="metadata IEMOCAP `iemocap_metadata_full.csv`",
     )
 
@@ -218,9 +219,19 @@ def resolve_split_path(split_file):
         description=f"split file `{split_file}`",
     )
 
-FULL_METADATA_PATH = resolve_metadata_path()
-METADATA_DIR = FULL_METADATA_PATH.parent
-DATA_DIR = METADATA_DIR.parent if METADATA_DIR.name == "metadata" else METADATA_DIR
+def resolve_fallback_data_dir():
+    roots = search_roots()
+    if roots:
+        return roots[0].resolve()
+    return PROJECT_ROOT.resolve()
+
+FULL_METADATA_PATH = resolve_metadata_path(require_exists=False)
+if FULL_METADATA_PATH is not None:
+    METADATA_DIR = FULL_METADATA_PATH.parent
+    DATA_DIR = METADATA_DIR.parent if METADATA_DIR.name == "metadata" else METADATA_DIR
+else:
+    DATA_DIR = resolve_fallback_data_dir()
+    METADATA_DIR = DATA_DIR / "metadata"
 SPLIT_DIR = None
 AUDIO_DIR = DATA_DIR / "audio_wav"
 
@@ -267,7 +278,7 @@ def resolve_feature_cache_path(require_exists=False):
     return WORKING_FEATURE_CACHE_PATH
 
 print("DATA_DIR:", DATA_DIR)
-print("FULL_METADATA_PATH:", FULL_METADATA_PATH, FULL_METADATA_PATH.exists())
+print("FULL_METADATA_PATH:", FULL_METADATA_PATH, bool(FULL_METADATA_PATH and FULL_METADATA_PATH.exists()))
 print("AUDIO_DIR:", AUDIO_DIR, AUDIO_DIR.exists())
 print("INPUT_FEATURE_CACHE_PATH:", INPUT_FEATURE_CACHE_PATH, INPUT_FEATURE_CACHE_PATH.exists())
 print("WORKING_FEATURE_CACHE_PATH:", WORKING_FEATURE_CACHE_PATH, WORKING_FEATURE_CACHE_PATH.exists())
@@ -482,10 +493,27 @@ def load_feature_cache(path):
 
 def load_and_align_split(split_path, metadata_path, cache):
     split_df = pd.read_csv(split_path)
-    meta = pd.read_csv(metadata_path)
-    extra_cols = ["train_sample_id", "transcription", "source_filename", "duration", "sample_rate", "channels"]
-    extra_cols = [c for c in extra_cols if c in meta.columns]
-    split_df = split_df.merge(meta[extra_cols].drop_duplicates("train_sample_id"), on="train_sample_id", how="left")
+    required_cols = ["train_sample_id", "fold", "split", "emotion_id", "valence", "arousal", "dominance"]
+    missing_required = [c for c in required_cols if c not in split_df.columns]
+    if missing_required:
+        raise ValueError(
+            f"Split file thiếu các cột bắt buộc để train: {missing_required}. "
+            "Notebook 03/04 cần split long CSV có sẵn label emotion_id, valence, arousal, dominance."
+        )
+
+    if metadata_path is not None and Path(metadata_path).exists():
+        meta = pd.read_csv(metadata_path)
+        extra_cols = ["train_sample_id", "transcription", "source_filename", "duration", "sample_rate", "channels"]
+        extra_cols = [c for c in extra_cols if c in meta.columns and c not in split_df.columns]
+        if extra_cols:
+            split_df = split_df.merge(
+                meta[["train_sample_id", *extra_cols]].drop_duplicates("train_sample_id"),
+                on="train_sample_id",
+                how="left",
+            )
+    else:
+        print("Metadata full không có trong Kaggle input. Tiếp tục train bằng split long CSV vì split đã có label.")
+
     split_df = normalize_avd(split_df)
 
     id_to_idx = {sid: i for i, sid in enumerate(cache["sample_ids"])}
