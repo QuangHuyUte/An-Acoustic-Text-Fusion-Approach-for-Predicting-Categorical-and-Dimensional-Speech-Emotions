@@ -1,0 +1,6 @@
+Put full feature caches here when they are available:
+
+- iemocap_emotion2vec_tokens.npz
+- iemocap_acoustic_features.npz
+
+The current notebook 03/04 sanity baseline does not require these files.

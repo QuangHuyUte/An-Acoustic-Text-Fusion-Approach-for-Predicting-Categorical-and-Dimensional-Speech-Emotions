@@ -452,7 +452,55 @@ Chỉ làm AVD sau khi:
 
 Nếu emotion classification chưa ổn, không nên vội thêm AVD vì sẽ làm project loãng.
 
-### 9.2 Kiến trúc multi-task đề xuất
+### 9.2 Hai phương án thiết kế cho emotion và AVD
+
+Khi mở rộng từ emotion classification sang Arousal/Valence/Dominance, có hai cách thiết kế hợp lý. Không nên mặc định rằng multi-task luôn tốt hơn. Cần xem đây là một câu hỏi thực nghiệm.
+
+#### Cách 1 - Hai mô hình riêng biệt cho hai task
+
+Thiết kế:
+
+```text
+Model A:
+audio
+-> 06D / emotion2vec / co-attention encoder
+-> emotion classifier
+-> output: angry, sad, neutral, happy
+
+Model B:
+audio
+-> emotion2vec / HuBERT / WavLM / 06D-style encoder
+-> AVD regressor
+-> output: arousal, valence, dominance
+```
+
+Ưu điểm:
+
+- Mỗi mô hình được tối ưu riêng cho một mục tiêu.
+- Emotion classification không bị kéo bởi regression loss.
+- AVD regression không bị ép học theo categorical emotion boundary.
+- Dễ so sánh với các paper hiện có, vì nhiều paper emotion và AVD dùng model/protocol khác nhau.
+- Nếu AVD không tốt, nó không làm hỏng kết quả chính của emotion classification.
+
+Rủi ro:
+
+- Tốn thời gian train/test hơn vì có hai pipeline.
+- Tốn tài nguyên lưu feature/checkpoint hơn.
+- Report dễ bị tách thành hai bài toán rời rạc.
+- Khó chứng minh đóng góp chính vẫn là nâng cấp 06D nếu model AVD quá khác model emotion.
+- Demo phải quyết định lấy output từ hai mô hình riêng rồi ghép lại.
+
+Khi nào nên chọn:
+
+```text
+Nếu mục tiêu cuối kỳ là an toàn:
+ưu tiên emotion classification là chính,
+AVD chỉ là thí nghiệm phụ hoặc baseline regression riêng.
+```
+
+#### Cách 2 - Một mô hình chung với hai head
+
+Thiết kế:
 
 ```text
 shared 06D encoder
@@ -462,6 +510,15 @@ shared 06D encoder
 -> AVD head:
       3 regression outputs: EmoAct, EmoVal, EmoDom
       loss: MSELoss hoặc CCCLoss
+```
+
+Trong cách này, `head` nghĩa là phần đầu ra nhỏ ở cuối mô hình. Encoder phía trước được dùng chung để học representation cảm xúc từ speech, sau đó tách thành hai đầu ra:
+
+```text
+shared = encoder(audio)
+
+emotion_logits = emotion_head(shared)
+avd_scores = avd_head(shared)
 ```
 
 Loss tổng:
@@ -476,7 +533,80 @@ Trong đó:
 - `AVD_loss`: MSE hoặc CCC loss cho 3 điểm AVD.
 - `lambda`: trọng số cân bằng hai task.
 
-### 9.3 Cách báo cáo AVD
+Ưu điểm:
+
+- Giữ được một mô hình trung tâm, bám sát hướng nâng cấp 06D.
+- Emotion và AVD đều là các biểu diễn khác nhau của affective state, nên có thể hỗ trợ nhau.
+- AVD có thể đóng vai trò auxiliary supervision giúp encoder học representation mượt hơn.
+- Demo gọn hơn: một lần chạy audio có thể ra cả emotion và AVD.
+- Có cơ sở nghiên cứu từ các paper multi-task emotion prediction.
+
+Rủi ro:
+
+- Có thể xảy ra negative transfer: task này làm giảm performance task kia.
+- Nếu `lambda` quá lớn, AVD loss có thể kéo encoder làm emotion accuracy giảm.
+- Nếu `lambda` quá nhỏ, AVD head gần như không học được gì.
+- Valence thường khó học từ audio-only hơn arousal, nên có thể làm training bất ổn.
+- CCC/MSE và CE có scale khác nhau, cần chuẩn hóa loss hoặc tune loss weight.
+- Nếu nhãn AVD nhiễu hoặc thiếu, mô hình multi-task có thể yếu hơn single-task emotion.
+
+Khi nào nên chọn:
+
+```text
+Nếu emotion classification đã ổn,
+và muốn chứng minh 06D có thể mở rộng thành affective speech model,
+thì thử một mô hình chung với hai head.
+```
+
+### 9.3 Cơ sở nghiên cứu cho thiết kế multi-task / two-head
+
+Các paper liên quan đã được lưu trong thư mục paper:
+
+| Paper | Link | Liên quan thế nào? | Trạng thái code |
+|---|---|---|---|
+| Attention-Augmented End-to-End Multi-Task Learning for Emotion Prediction from Speech | <https://arxiv.org/abs/1903.12424> | Speech-based multi-task cho Arousal/Valence/Dominance; dùng IEMOCAP; cho thấy auxiliary related tasks có thể giúp representation bền hơn | Chưa tìm thấy official repo |
+| Representation Learning through Cross-Modal Conditional Teacher-Student Training for Speech Emotion Recognition | <https://arxiv.org/abs/2112.00158> | Dự đoán đồng thời Activation/Valence/Dominance bằng shared representation và CCC loss; có audio-only student | Chưa tìm thấy official repo |
+| Learning Arousal-Valence Representation from Categorical Emotion Labels of Speech | <https://arxiv.org/abs/2311.14816> | Chứng minh categorical emotion representation có liên hệ với arousal-valence space | Chưa tìm thấy official repo |
+| A Multi-Task, Multi-Modal Approach for Predicting Categorical and Dimensional Emotions | <https://arxiv.org/abs/2401.00536> | Gần nhất với ý tưởng categorical emotion + dimensional emotion cùng lúc; paper báo multi-task tốt hơn học riêng trong setup của họ | Chưa tìm thấy official repo |
+
+Kết luận từ các paper này:
+
+```text
+Ý tưởng một encoder chung + nhiều head có cơ sở nghiên cứu.
+Tuy nhiên, nó phải được kiểm chứng bằng ablation,
+vì multi-task learning có thể giúp hoặc làm giảm performance tùy loss, dataset và task relation.
+```
+
+### 9.4 Ablation bắt buộc để kiểm tra có bị yếu không
+
+Cần chạy ít nhất ba cấu hình:
+
+| Cấu hình | Mục đích |
+|---|---|
+| Emotion-only 06D | Baseline chính cho emotion classification |
+| AVD-only regressor | Kiểm tra AVD có học được từ audio/feature không |
+| Multi-task 06D + 2 heads | Kiểm tra học chung có giúp hay làm hại |
+
+Bảng so sánh cần tách metric:
+
+| Model | Emotion WA | Emotion UA | Macro-F1 | CCC-Arousal | CCC-Valence | CCC-Dominance | Nhận xét |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Emotion-only 06D | ... | ... | ... | N/A | N/A | N/A | baseline chính |
+| AVD-only model | N/A | N/A | N/A | ... | ... | ... | kiểm tra regression riêng |
+| 06D multi-task 2 heads | ... | ... | ... | ... | ... | ... | chỉ giữ nếu không làm emotion giảm quá nhiều |
+
+Quy tắc ra quyết định:
+
+```text
+Nếu multi-task tăng hoặc giữ ổn emotion performance và có CCC chấp nhận được:
+  dùng 2-head như contribution mở rộng.
+
+Nếu multi-task làm emotion giảm rõ:
+  giữ emotion-only 06D là model chính,
+  báo AVD như separate auxiliary experiment.
+```
+
+### 9.5 Cách báo cáo AVD
 
 Không trộn metric emotion và AVD vào cùng một cột.
 
@@ -522,6 +652,7 @@ Papers/Papers for main models emotion classification and valence arousal, domina
 | Cross-modal conditional teacher-student | <https://arxiv.org/abs/2112.00158> | Chưa tìm thấy official repo | HuBERT audio, BERT text teacher | audio-only AVD regression student | 5-fold speaker-independent | CCC act 0.667, val 0.582, dom 0.545 | Tham khảo nếu muốn dùng transcript nhẹ |
 | Attention-augmented multi-task learning | <https://arxiv.org/abs/1903.12424> | Chưa tìm thấy official repo | raw audio/eGeMAPS | AVD low/mid/high classification | Session 1-3 train, Session 4 dev, Session 5 test | UAR arousal 48.5, valence 63.8, dominance 51.6; không phải CCC/MAE vì bài này discretize nhãn | Tham khảo multi-task AVD |
 | AV from categorical emotion labels | <https://arxiv.org/abs/2311.14816> | Chưa tìm thấy official repo | WavLM | arousal/valence từ categorical emotion | speaker-independent | valence CCC 0.529-0.566, arousal CCC 0.632-0.672; không có dominance | Rất liên quan nếu muốn suy ra AV từ emotion classifier |
+| Multi-task categorical + dimensional emotions | <https://arxiv.org/abs/2401.00536> | Chưa tìm thấy official repo | acoustic + linguistic features | categorical emotion + dimensional emotion multi-task | 10-fold validation reported for categorical experiments | paper báo multi-task tốt hơn học riêng trong setup của họ | Cơ sở trực tiếp cho việc thử một encoder chung với emotion head và AVD head |
 
 Hiện tại các paper AVD/CCC đã được tải PDF về thư mục `papers/`, nhưng chưa có repo code chính thức để clone. Vì vậy, phần AVD nên được đặt là hướng mở rộng dựa trên ý tưởng và metric của paper, không nên hứa reproduce đầy đủ các paper CCC/MAE này.
 

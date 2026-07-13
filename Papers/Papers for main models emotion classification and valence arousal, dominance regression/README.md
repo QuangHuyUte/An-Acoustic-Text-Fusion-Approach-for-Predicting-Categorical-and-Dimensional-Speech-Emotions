@@ -33,6 +33,7 @@ This folder collects papers and code repositories for the revised project scope:
 | `papers/2102.06357_contrastive_unsupervised_AVD_SER.pdf` | Contrastive Unsupervised Learning for SER and emotion primitives |
 | `papers/2112.00158_cross_modal_teacher_student_AVD.pdf` | Cross-modal conditional teacher-student learning for AVD |
 | `papers/2311.14816_AV_from_categorical_emotion_labels.pdf` | Learning arousal-valence from categorical emotion labels |
+| `papers/2401.00536_multitask_multimodal_categorical_dimensional_emotions.pdf` | A Multi-Task, Multi-Modal Approach for Predicting Categorical and Dimensional Emotions |
 
 Extracted `.txt` files are stored beside each PDF to make later search and summarization easier.
 
@@ -46,10 +47,12 @@ These are the main references for activation/arousal, valence, and dominance pre
 | Representation learning through cross-modal conditional teacher-student training for speech emotion recognition | `papers/2112.00158_cross_modal_teacher_student_AVD.pdf` | https://arxiv.org/abs/2112.00158 | Continuous activation, valence, dominance regression | IEMOCAP CCC activation 0.667, valence 0.582, dominance 0.545 | Official repo not found |
 | Learning Arousal-Valence Representation from Categorical Emotion Labels of Speech | `papers/2311.14816_AV_from_categorical_emotion_labels.pdf` | https://arxiv.org/abs/2311.14816 | Arousal/valence prediction from categorical emotion labels | Valence CCC 0.529-0.566; arousal CCC 0.632-0.672 depending setup | Official repo not found |
 | Attention-Augmented End-to-End Multi-Task Learning for Emotion Prediction from Speech | `papers/1903.12424_attention_augmented_multitask_AVD.pdf` | https://arxiv.org/abs/1903.12424 | AVD discretized low/mid/high classification, not continuous CCC regression | Test UAR: arousal 48.5, valence 63.8, dominance 51.6 | Official repo not found |
+| A Multi-Task, Multi-Modal Approach for Predicting Categorical and Dimensional Emotions | `papers/2401.00536_multitask_multimodal_categorical_dimensional_emotions.pdf` | https://arxiv.org/abs/2401.00536 | Joint categorical emotion classification and dimensional emotion prediction | Paper reports that multi-task learning can outperform learning each paradigm separately in its configuration | Official repo not found |
 
 Practical note for this project:
 
 - Use the CCC papers above mainly to design the optional AVD regression head and evaluation table.
+- Use the categorical + dimensional multi-task paper to justify comparing two strategies: separate models versus one shared encoder with task-specific heads.
 - Do not promise reproduction of these AVD papers unless an official or reliable third-party implementation is later found.
 - For runnable baselines, prioritize the code-backed SER repositories: emotion2vec, FT-w2v2-ser, CA-MSER, DST, TIM-Net, and SpeechFormer.
 
