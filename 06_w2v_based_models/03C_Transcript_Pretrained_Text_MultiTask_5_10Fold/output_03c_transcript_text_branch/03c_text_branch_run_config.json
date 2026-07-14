@@ -1,0 +1,21 @@
+{
+  "notebook": "03C transcript pretrained text multi-task branch",
+  "text_model": "roberta-base",
+  "max_length": 96,
+  "epochs": 6,
+  "batch_size": 12,
+  "lr_backbone": 1.5e-05,
+  "lr_head": 0.0003,
+  "dropout": 0.25,
+  "run_protocols": [
+    "5fold_session",
+    "10fold_speaker"
+  ],
+  "max_folds": 0,
+  "architecture": {
+    "backbone": "pretrained text transformer",
+    "pooling": "CLS + masked mean + attentive pooling",
+    "heads": "emotion classification + VAD regression",
+    "output": "fusion_features for notebook 04"
+  }
+}

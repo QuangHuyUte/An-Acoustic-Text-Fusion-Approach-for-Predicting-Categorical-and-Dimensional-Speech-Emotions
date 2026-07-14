@@ -1,0 +1,6 @@
+﻿feature_group,shape,contains,used_by,why
+X_temporal,"(N, C_temporal, T)","MFCC/delta/delta2, RMS, ZCR, spectral centroid/bandwidth/rolloff/flatness/contrast, F0, voiced flag","03B temporal branch, TIM-Net-style Conv1D, ablation",Giữ cấu trúc theo thời gian để học biến thiên prosody và spectral dynamics.
+X_spectral,"(N, 3, n_mels, T)","log-Mel, delta log-Mel, delta-delta log-Mel",03B spectral CNN/ResNet branch,"Biểu diễn time-frequency mạnh cho emotion cues như intensity, pitch contour, timbre."
+X_stats,"(N, D_stats)",mean/std/min/max/median/p10/p90/iqr over acoustic features,"03B stats MLP, reports, interpretable ablation",Tóm tắt utterance-level giúp model thấy global speaking style.
+X_e2v,"(N, D_e2v)",emotion2vec utterance embedding or zero fallback,03B emotion2vec-guided co-attention,Cung cấp pretrained speech emotion representation.
+text_ready,CSV/JSONL,transcript + labels + VAD + speaker/session ids,future pretrained transcript model,Cho phép train nhánh text độc lập nhưng giữ cùng fold/split.

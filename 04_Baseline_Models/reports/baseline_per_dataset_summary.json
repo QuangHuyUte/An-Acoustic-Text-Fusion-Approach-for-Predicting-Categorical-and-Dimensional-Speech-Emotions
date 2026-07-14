@@ -1,6 +1,0 @@
-{
-  "notebook": "04_Baseline_Per_Dataset_Comparison",
-  "output_dir": "/kaggle/working/04_Baseline_Per_Dataset_outputs",
-  "metrics_csv": "/kaggle/working/04_Baseline_Per_Dataset_outputs/reports/baseline_per_dataset_metrics.csv",
-  "purpose": "Classical ML baseline for combined random, combined strict and single-dataset comparison."
-}

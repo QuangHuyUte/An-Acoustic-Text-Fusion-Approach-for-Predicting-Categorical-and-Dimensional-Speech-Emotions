@@ -1,0 +1,22 @@
+{
+  "notebook": "06D_Emotion2Vec_CoAttention_Full_SER",
+  "objective": "Full SER model with temporal, spectrogram, frozen emotion2vec, statistical branch, co-attention fusion and stacking.",
+  "output_dir": "/kaggle/working/06D_Emotion2Vec_CoAttention_outputs",
+  "metrics_csv": "/kaggle/working/06D_Emotion2Vec_CoAttention_outputs/reports/06D_emotion2vec_coattention_metrics.csv",
+  "history_csv": "/kaggle/working/06D_Emotion2Vec_CoAttention_outputs/reports/06D_emotion2vec_coattention_history.csv",
+  "per_dataset_csv": "/kaggle/working/06D_Emotion2Vec_CoAttention_outputs/reports/06D_emotion2vec_coattention_per_dataset.csv",
+  "protocols": [
+    "combined_random",
+    "combined_strict_no_tess"
+  ],
+  "labels": [
+    "neutral",
+    "happy",
+    "sad",
+    "angry",
+    "fear",
+    "disgust"
+  ],
+  "emotion2vec_model": "iic/emotion2vec_base",
+  "notes": "Use validation split for stacking. Test split is only used for final reporting."
+}

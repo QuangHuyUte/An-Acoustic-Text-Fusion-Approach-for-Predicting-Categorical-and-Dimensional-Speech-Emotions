@@ -1,0 +1,1737 @@
+[2026-07-14 08:57:47] TEXT_MODEL_SOURCE=/kaggle/input/datasets/linhlaz225/robert/roberta-base-kaggle
+[2026-07-14 08:57:47] ALLOW_HF_DOWNLOAD=False
+[2026-07-14 08:59:33] Loading tokenizer from: /kaggle/input/datasets/linhlaz225/robert/roberta-base-kaggle
+[2026-07-14 08:59:33] Loaded tokenizer from: /kaggle/input/datasets/linhlaz225/robert/roberta-base-kaggle
+[2026-07-14 08:59:33] === 5fold_session | fold_1_test_Ses01_val_Ses02 | acoustic_text_bridge_rmm ===
+[2026-07-14 08:59:33] Train/Val/Test: 3423 1023 1085
+[2026-07-14 08:59:33] Start compute_scalers()
+[2026-07-14 08:59:33] Computing scalers without full-fold tensor copy...
+[2026-07-14 08:59:33] Scaler start: X_temporal, n=3423, chunk=128
+[2026-07-14 08:59:33] Scaler progress X_temporal: 128/3423 samples
+[2026-07-14 08:59:34] Scaler progress X_temporal: 1408/3423 samples
+[2026-07-14 08:59:35] Scaler progress X_temporal: 2688/3423 samples
+[2026-07-14 08:59:35] Scaler done: X_temporal
+[2026-07-14 08:59:35] Scaler start: X_spectral, n=3423, chunk=128
+[2026-07-14 08:59:35] Scaler progress X_spectral: 128/3423 samples
+[2026-07-14 08:59:37] Scaler progress X_spectral: 1408/3423 samples
+[2026-07-14 08:59:38] Scaler progress X_spectral: 2688/3423 samples
+[2026-07-14 08:59:39] Scaler done: X_spectral
+[2026-07-14 08:59:39] Fitting StandardScaler for X_stats and X_e2v...
+[2026-07-14 08:59:39] All scalers are ready.
+[2026-07-14 08:59:39] Build Dataset objects
+[2026-07-14 08:59:39] Build DataLoaders
+[2026-07-14 08:59:39] Build model with TEXT_MODEL_NAME=roberta-base
+[2026-07-14 08:59:39] Loading text backbone from: /kaggle/input/datasets/linhlaz225/robert/roberta-base-kaggle
+[2026-07-14 09:00:01] Loaded text backbone.
+[2026-07-14 09:00:05] Model ready. Trainable params: 4,197,719/128,843,351 (3.26%)
+[2026-07-14 09:00:05] Optimizer, scheduler, scaler are ready. Start training loop.
+[2026-07-14 09:00:05] Epoch 001 started. Train batches=286
+[2026-07-14 09:00:07] Epoch 001 step 1/286 loss=0.9604 elapsed=2.1s
+[2026-07-14 09:00:09] Epoch 001 step 25/286 loss=0.9459 elapsed=4.1s
+[2026-07-14 09:00:12] Epoch 001 step 50/286 loss=0.9387 elapsed=6.2s
+[2026-07-14 09:00:14] Epoch 001 step 75/286 loss=0.9225 elapsed=8.2s
+[2026-07-14 09:00:16] Epoch 001 step 100/286 loss=0.9011 elapsed=10.2s
+[2026-07-14 09:00:18] Epoch 001 step 125/286 loss=0.8736 elapsed=12.3s
+[2026-07-14 09:00:20] Epoch 001 step 150/286 loss=0.8514 elapsed=14.3s
+[2026-07-14 09:00:22] Epoch 001 step 175/286 loss=0.8292 elapsed=16.3s
+[2026-07-14 09:00:24] Epoch 001 step 200/286 loss=0.8167 elapsed=18.4s
+[2026-07-14 09:00:26] Epoch 001 step 225/286 loss=0.8006 elapsed=20.4s
+[2026-07-14 09:00:28] Epoch 001 step 250/286 loss=0.7894 elapsed=22.4s
+[2026-07-14 09:00:30] Epoch 001 step 275/286 loss=0.7798 elapsed=24.4s
+[2026-07-14 09:00:31] Epoch 001 step 286/286 loss=0.7736 elapsed=25.3s
+[2026-07-14 09:00:31] Epoch 001 training done. Start validation.
+[2026-07-14 09:00:34] Epoch 001 | loss=0.7736 | val_UAR=0.6053 | val_CCC=0.4432 (V=0.3012, A=0.6151, D=0.4134) | vad_pred_std=0.1734/true_std=0.1948 | score=0.5081
+[2026-07-14 09:00:35] Saved new best checkpoint: epoch=1, score=0.5081, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_1_test_Ses01_val_Ses02_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:00:35] Epoch 002 started. Train batches=286
+[2026-07-14 09:00:35] Epoch 002 step 1/286 loss=0.8269 elapsed=0.1s
+[2026-07-14 09:00:37] Epoch 002 step 25/286 loss=0.5858 elapsed=2.0s
+[2026-07-14 09:00:39] Epoch 002 step 50/286 loss=0.5828 elapsed=4.1s
+[2026-07-14 09:00:41] Epoch 002 step 75/286 loss=0.5654 elapsed=6.1s
+[2026-07-14 09:00:43] Epoch 002 step 100/286 loss=0.5648 elapsed=8.1s
+[2026-07-14 09:00:45] Epoch 002 step 125/286 loss=0.5582 elapsed=10.1s
+[2026-07-14 09:00:47] Epoch 002 step 150/286 loss=0.5519 elapsed=12.2s
+[2026-07-14 09:00:49] Epoch 002 step 175/286 loss=0.5474 elapsed=14.3s
+[2026-07-14 09:00:51] Epoch 002 step 200/286 loss=0.5464 elapsed=16.3s
+[2026-07-14 09:00:53] Epoch 002 step 225/286 loss=0.5416 elapsed=18.3s
+[2026-07-14 09:00:55] Epoch 002 step 250/286 loss=0.5339 elapsed=20.3s
+[2026-07-14 09:00:57] Epoch 002 step 275/286 loss=0.5288 elapsed=22.4s
+[2026-07-14 09:00:58] Epoch 002 step 286/286 loss=0.5276 elapsed=23.3s
+[2026-07-14 09:00:58] Epoch 002 training done. Start validation.
+[2026-07-14 09:01:02] Epoch 002 | loss=0.5276 | val_UAR=0.7139 | val_CCC=0.5908 (V=0.6114, A=0.6769, D=0.4841) | vad_pred_std=0.2179/true_std=0.1948 | score=0.6400
+[2026-07-14 09:01:03] Saved new best checkpoint: epoch=2, score=0.6400, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_1_test_Ses01_val_Ses02_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:01:03] Epoch 003 started. Train batches=286
+[2026-07-14 09:01:03] Epoch 003 step 1/286 loss=0.2975 elapsed=0.1s
+[2026-07-14 09:01:05] Epoch 003 step 25/286 loss=0.4214 elapsed=2.0s
+[2026-07-14 09:01:07] Epoch 003 step 50/286 loss=0.4133 elapsed=4.0s
+[2026-07-14 09:01:09] Epoch 003 step 75/286 loss=0.4132 elapsed=6.1s
+[2026-07-14 09:01:11] Epoch 003 step 100/286 loss=0.4138 elapsed=8.1s
+[2026-07-14 09:01:13] Epoch 003 step 125/286 loss=0.4156 elapsed=10.1s
+[2026-07-14 09:01:15] Epoch 003 step 150/286 loss=0.4244 elapsed=12.2s
+[2026-07-14 09:01:17] Epoch 003 step 175/286 loss=0.4272 elapsed=14.2s
+[2026-07-14 09:01:19] Epoch 003 step 200/286 loss=0.4269 elapsed=16.3s
+[2026-07-14 09:01:21] Epoch 003 step 225/286 loss=0.4212 elapsed=18.3s
+[2026-07-14 09:01:23] Epoch 003 step 250/286 loss=0.4245 elapsed=20.4s
+[2026-07-14 09:01:25] Epoch 003 step 275/286 loss=0.4241 elapsed=22.4s
+[2026-07-14 09:01:26] Epoch 003 step 286/286 loss=0.4229 elapsed=23.2s
+[2026-07-14 09:01:26] Epoch 003 training done. Start validation.
+[2026-07-14 09:01:29] Epoch 003 | loss=0.4229 | val_UAR=0.7491 | val_CCC=0.6048 (V=0.6773, A=0.6684, D=0.4686) | vad_pred_std=0.2527/true_std=0.1948 | score=0.6625
+[2026-07-14 09:01:30] Saved new best checkpoint: epoch=3, score=0.6625, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_1_test_Ses01_val_Ses02_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:01:30] Epoch 004 started. Train batches=286
+[2026-07-14 09:01:30] Epoch 004 step 1/286 loss=0.2262 elapsed=0.1s
+[2026-07-14 09:01:32] Epoch 004 step 25/286 loss=0.3885 elapsed=2.0s
+[2026-07-14 09:01:34] Epoch 004 step 50/286 loss=0.3774 elapsed=4.1s
+[2026-07-14 09:01:36] Epoch 004 step 75/286 loss=0.3698 elapsed=6.1s
+[2026-07-14 09:01:38] Epoch 004 step 100/286 loss=0.3638 elapsed=8.1s
+[2026-07-14 09:01:40] Epoch 004 step 125/286 loss=0.3602 elapsed=10.2s
+[2026-07-14 09:01:43] Epoch 004 step 150/286 loss=0.3618 elapsed=12.2s
+[2026-07-14 09:01:45] Epoch 004 step 175/286 loss=0.3672 elapsed=14.2s
+[2026-07-14 09:01:47] Epoch 004 step 200/286 loss=0.3703 elapsed=16.3s
+[2026-07-14 09:01:49] Epoch 004 step 225/286 loss=0.3730 elapsed=18.3s
+[2026-07-14 09:01:51] Epoch 004 step 250/286 loss=0.3727 elapsed=20.4s
+[2026-07-14 09:01:53] Epoch 004 step 275/286 loss=0.3758 elapsed=22.4s
+[2026-07-14 09:01:54] Epoch 004 step 286/286 loss=0.3752 elapsed=23.3s
+[2026-07-14 09:01:54] Epoch 004 training done. Start validation.
+[2026-07-14 09:01:57] Epoch 004 | loss=0.3752 | val_UAR=0.7214 | val_CCC=0.6058 (V=0.6460, A=0.6703, D=0.5010) | vad_pred_std=0.2248/true_std=0.1948 | score=0.6520
+[2026-07-14 09:01:57] Epoch 005 started. Train batches=286
+[2026-07-14 09:01:57] Epoch 005 step 1/286 loss=0.3636 elapsed=0.1s
+[2026-07-14 09:01:59] Epoch 005 step 25/286 loss=0.3444 elapsed=2.1s
+[2026-07-14 09:02:01] Epoch 005 step 50/286 loss=0.3338 elapsed=4.1s
+[2026-07-14 09:02:03] Epoch 005 step 75/286 loss=0.3466 elapsed=6.1s
+[2026-07-14 09:02:05] Epoch 005 step 100/286 loss=0.3468 elapsed=8.2s
+[2026-07-14 09:02:08] Epoch 005 step 125/286 loss=0.3388 elapsed=10.3s
+[2026-07-14 09:02:10] Epoch 005 step 150/286 loss=0.3405 elapsed=12.3s
+[2026-07-14 09:02:12] Epoch 005 step 175/286 loss=0.3443 elapsed=14.4s
+[2026-07-14 09:02:14] Epoch 005 step 200/286 loss=0.3489 elapsed=16.5s
+[2026-07-14 09:02:16] Epoch 005 step 225/286 loss=0.3493 elapsed=18.5s
+[2026-07-14 09:02:18] Epoch 005 step 250/286 loss=0.3521 elapsed=20.6s
+[2026-07-14 09:02:20] Epoch 005 step 275/286 loss=0.3521 elapsed=22.6s
+[2026-07-14 09:02:21] Epoch 005 step 286/286 loss=0.3528 elapsed=23.5s
+[2026-07-14 09:02:21] Epoch 005 training done. Start validation.
+[2026-07-14 09:02:24] Epoch 005 | loss=0.3528 | val_UAR=0.7381 | val_CCC=0.6256 (V=0.7137, A=0.6743, D=0.4889) | vad_pred_std=0.2183/true_std=0.1948 | score=0.6706
+[2026-07-14 09:02:25] Saved new best checkpoint: epoch=5, score=0.6706, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_1_test_Ses01_val_Ses02_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:02:25] RMM epoch 6: mask text
+[2026-07-14 09:02:25] Epoch 006 started. Train batches=286
+[2026-07-14 09:02:25] Epoch 006 step 1/286 loss=0.3653 elapsed=0.1s
+[2026-07-14 09:02:27] Epoch 006 step 25/286 loss=0.4292 elapsed=2.1s
+[2026-07-14 09:02:29] Epoch 006 step 50/286 loss=0.4289 elapsed=4.1s
+[2026-07-14 09:02:31] Epoch 006 step 75/286 loss=0.4145 elapsed=6.2s
+[2026-07-14 09:02:33] Epoch 006 step 100/286 loss=0.4226 elapsed=8.3s
+[2026-07-14 09:02:35] Epoch 006 step 125/286 loss=0.4208 elapsed=10.3s
+[2026-07-14 09:02:37] Epoch 006 step 150/286 loss=0.4265 elapsed=12.4s
+[2026-07-14 09:02:40] Epoch 006 step 175/286 loss=0.4261 elapsed=14.4s
+[2026-07-14 09:02:42] Epoch 006 step 200/286 loss=0.4242 elapsed=16.5s
+[2026-07-14 09:02:44] Epoch 006 step 225/286 loss=0.4276 elapsed=18.5s
+[2026-07-14 09:02:46] Epoch 006 step 250/286 loss=0.4313 elapsed=20.5s
+[2026-07-14 09:02:48] Epoch 006 step 275/286 loss=0.4279 elapsed=22.6s
+[2026-07-14 09:02:49] Epoch 006 step 286/286 loss=0.4266 elapsed=23.5s
+[2026-07-14 09:02:49] Epoch 006 training done. Start validation.
+[2026-07-14 09:02:52] Epoch 006 | loss=0.4266 | val_UAR=0.7351 | val_CCC=0.5789 (V=0.6360, A=0.6379, D=0.4628) | vad_pred_std=0.2365/true_std=0.1948 | score=0.6414
+[2026-07-14 09:02:52] RMM epoch 7: mask text
+[2026-07-14 09:02:52] Epoch 007 started. Train batches=286
+[2026-07-14 09:02:52] Epoch 007 step 1/286 loss=0.4097 elapsed=0.1s
+[2026-07-14 09:02:54] Epoch 007 step 25/286 loss=0.3298 elapsed=2.0s
+[2026-07-14 09:02:56] Epoch 007 step 50/286 loss=0.3610 elapsed=4.1s
+[2026-07-14 09:02:58] Epoch 007 step 75/286 loss=0.3573 elapsed=6.1s
+[2026-07-14 09:03:00] Epoch 007 step 100/286 loss=0.3544 elapsed=8.2s
+[2026-07-14 09:03:02] Epoch 007 step 125/286 loss=0.3537 elapsed=10.2s
+[2026-07-14 09:03:04] Epoch 007 step 150/286 loss=0.3550 elapsed=12.2s
+[2026-07-14 09:03:06] Epoch 007 step 175/286 loss=0.3595 elapsed=14.3s
+[2026-07-14 09:03:08] Epoch 007 step 200/286 loss=0.3607 elapsed=16.3s
+[2026-07-14 09:03:11] Epoch 007 step 225/286 loss=0.3572 elapsed=18.4s
+[2026-07-14 09:03:13] Epoch 007 step 250/286 loss=0.3533 elapsed=20.4s
+[2026-07-14 09:03:15] Epoch 007 step 275/286 loss=0.3541 elapsed=22.4s
+[2026-07-14 09:03:15] Epoch 007 step 286/286 loss=0.3534 elapsed=23.3s
+[2026-07-14 09:03:15] Epoch 007 training done. Start validation.
+[2026-07-14 09:03:19] Epoch 007 | loss=0.3534 | val_UAR=0.7269 | val_CCC=0.6129 (V=0.6637, A=0.7038, D=0.4712) | vad_pred_std=0.1875/true_std=0.1948 | score=0.6585
+[2026-07-14 09:03:19] Epoch 008 started. Train batches=286
+[2026-07-14 09:03:19] Epoch 008 step 1/286 loss=0.2355 elapsed=0.1s
+[2026-07-14 09:03:21] Epoch 008 step 25/286 loss=0.2761 elapsed=2.1s
+[2026-07-14 09:03:23] Epoch 008 step 50/286 loss=0.2685 elapsed=4.1s
+[2026-07-14 09:03:25] Epoch 008 step 75/286 loss=0.2746 elapsed=6.1s
+[2026-07-14 09:03:27] Epoch 008 step 100/286 loss=0.2810 elapsed=8.3s
+[2026-07-14 09:03:29] Epoch 008 step 125/286 loss=0.2819 elapsed=10.3s
+[2026-07-14 09:03:31] Epoch 008 step 150/286 loss=0.2807 elapsed=12.4s
+[2026-07-14 09:03:33] Epoch 008 step 175/286 loss=0.2850 elapsed=14.4s
+[2026-07-14 09:03:36] Epoch 008 step 200/286 loss=0.2789 elapsed=16.5s
+[2026-07-14 09:03:38] Epoch 008 step 225/286 loss=0.2781 elapsed=18.5s
+[2026-07-14 09:03:40] Epoch 008 step 250/286 loss=0.2819 elapsed=20.6s
+[2026-07-14 09:03:42] Epoch 008 step 275/286 loss=0.2850 elapsed=22.6s
+[2026-07-14 09:03:43] Epoch 008 step 286/286 loss=0.2839 elapsed=23.5s
+[2026-07-14 09:03:43] Epoch 008 training done. Start validation.
+[2026-07-14 09:03:46] Epoch 008 | loss=0.2839 | val_UAR=0.7593 | val_CCC=0.6267 (V=0.7042, A=0.7087, D=0.4673) | vad_pred_std=0.1972/true_std=0.1948 | score=0.6797
+[2026-07-14 09:03:47] Saved new best checkpoint: epoch=8, score=0.6797, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_1_test_Ses01_val_Ses02_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:03:47] Epoch 009 started. Train batches=286
+[2026-07-14 09:03:47] Epoch 009 step 1/286 loss=0.1869 elapsed=0.1s
+[2026-07-14 09:03:49] Epoch 009 step 25/286 loss=0.2545 elapsed=2.1s
+[2026-07-14 09:03:51] Epoch 009 step 50/286 loss=0.2494 elapsed=4.1s
+[2026-07-14 09:03:53] Epoch 009 step 75/286 loss=0.2524 elapsed=6.2s
+[2026-07-14 09:03:55] Epoch 009 step 100/286 loss=0.2536 elapsed=8.2s
+[2026-07-14 09:03:57] Epoch 009 step 125/286 loss=0.2553 elapsed=10.3s
+[2026-07-14 09:03:59] Epoch 009 step 150/286 loss=0.2551 elapsed=12.4s
+[2026-07-14 09:04:01] Epoch 009 step 175/286 loss=0.2567 elapsed=14.4s
+[2026-07-14 09:04:03] Epoch 009 step 200/286 loss=0.2579 elapsed=16.4s
+[2026-07-14 09:04:06] Epoch 009 step 225/286 loss=0.2548 elapsed=18.5s
+[2026-07-14 09:04:08] Epoch 009 step 250/286 loss=0.2533 elapsed=20.5s
+[2026-07-14 09:04:10] Epoch 009 step 275/286 loss=0.2534 elapsed=22.6s
+[2026-07-14 09:04:10] Epoch 009 step 286/286 loss=0.2536 elapsed=23.4s
+[2026-07-14 09:04:10] Epoch 009 training done. Start validation.
+[2026-07-14 09:04:14] Epoch 009 | loss=0.2536 | val_UAR=0.7690 | val_CCC=0.6329 (V=0.7174, A=0.6907, D=0.4907) | vad_pred_std=0.2211/true_std=0.1948 | score=0.6874
+[2026-07-14 09:04:15] Saved new best checkpoint: epoch=9, score=0.6874, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_1_test_Ses01_val_Ses02_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:04:15] Epoch 010 started. Train batches=286
+[2026-07-14 09:04:15] Epoch 010 step 1/286 loss=0.2370 elapsed=0.1s
+[2026-07-14 09:04:17] Epoch 010 step 25/286 loss=0.2485 elapsed=2.0s
+[2026-07-14 09:04:19] Epoch 010 step 50/286 loss=0.2302 elapsed=4.1s
+[2026-07-14 09:04:21] Epoch 010 step 75/286 loss=0.2254 elapsed=6.2s
+[2026-07-14 09:04:23] Epoch 010 step 100/286 loss=0.2210 elapsed=8.2s
+[2026-07-14 09:04:25] Epoch 010 step 125/286 loss=0.2270 elapsed=10.2s
+[2026-07-14 09:04:27] Epoch 010 step 150/286 loss=0.2295 elapsed=12.3s
+[2026-07-14 09:04:29] Epoch 010 step 175/286 loss=0.2294 elapsed=14.3s
+[2026-07-14 09:04:31] Epoch 010 step 200/286 loss=0.2270 elapsed=16.3s
+[2026-07-14 09:04:33] Epoch 010 step 225/286 loss=0.2278 elapsed=18.4s
+[2026-07-14 09:04:35] Epoch 010 step 250/286 loss=0.2283 elapsed=20.4s
+[2026-07-14 09:04:37] Epoch 010 step 275/286 loss=0.2304 elapsed=22.5s
+[2026-07-14 09:04:38] Epoch 010 step 286/286 loss=0.2315 elapsed=23.4s
+[2026-07-14 09:04:38] Epoch 010 training done. Start validation.
+[2026-07-14 09:04:42] Epoch 010 | loss=0.2315 | val_UAR=0.7672 | val_CCC=0.6179 (V=0.7078, A=0.7128, D=0.4330) | vad_pred_std=0.2146/true_std=0.1948 | score=0.6776
+[2026-07-14 09:04:42] Epoch 011 started. Train batches=286
+[2026-07-14 09:04:42] Epoch 011 step 1/286 loss=0.1989 elapsed=0.1s
+[2026-07-14 09:04:44] Epoch 011 step 25/286 loss=0.1893 elapsed=2.0s
+[2026-07-14 09:04:46] Epoch 011 step 50/286 loss=0.2038 elapsed=4.1s
+[2026-07-14 09:04:48] Epoch 011 step 75/286 loss=0.2110 elapsed=6.1s
+[2026-07-14 09:04:50] Epoch 011 step 100/286 loss=0.2171 elapsed=8.2s
+[2026-07-14 09:04:52] Epoch 011 step 125/286 loss=0.2166 elapsed=10.2s
+[2026-07-14 09:04:54] Epoch 011 step 150/286 loss=0.2186 elapsed=12.2s
+[2026-07-14 09:04:56] Epoch 011 step 175/286 loss=0.2203 elapsed=14.3s
+[2026-07-14 09:04:58] Epoch 011 step 200/286 loss=0.2206 elapsed=16.3s
+[2026-07-14 09:05:00] Epoch 011 step 225/286 loss=0.2193 elapsed=18.3s
+[2026-07-14 09:05:02] Epoch 011 step 250/286 loss=0.2180 elapsed=20.4s
+[2026-07-14 09:05:04] Epoch 011 step 275/286 loss=0.2164 elapsed=22.4s
+[2026-07-14 09:05:05] Epoch 011 step 286/286 loss=0.2168 elapsed=23.3s
+[2026-07-14 09:05:05] Epoch 011 training done. Start validation.
+[2026-07-14 09:05:09] Epoch 011 | loss=0.2168 | val_UAR=0.7311 | val_CCC=0.6275 (V=0.6971, A=0.7044, D=0.4810) | vad_pred_std=0.2016/true_std=0.1948 | score=0.6690
+[2026-07-14 09:05:09] RMM epoch 12: mask text
+[2026-07-14 09:05:09] Epoch 012 started. Train batches=286
+[2026-07-14 09:05:09] Epoch 012 step 1/286 loss=0.1902 elapsed=0.1s
+[2026-07-14 09:05:11] Epoch 012 step 25/286 loss=0.2273 elapsed=2.0s
+[2026-07-14 09:05:13] Epoch 012 step 50/286 loss=0.2457 elapsed=4.0s
+[2026-07-14 09:05:15] Epoch 012 step 75/286 loss=0.2389 elapsed=6.1s
+[2026-07-14 09:05:17] Epoch 012 step 100/286 loss=0.2377 elapsed=8.1s
+[2026-07-14 09:05:19] Epoch 012 step 125/286 loss=0.2353 elapsed=10.1s
+[2026-07-14 09:05:21] Epoch 012 step 150/286 loss=0.2373 elapsed=12.2s
+[2026-07-14 09:05:23] Epoch 012 step 175/286 loss=0.2362 elapsed=14.2s
+[2026-07-14 09:05:25] Epoch 012 step 200/286 loss=0.2374 elapsed=16.2s
+[2026-07-14 09:05:27] Epoch 012 step 225/286 loss=0.2377 elapsed=18.2s
+[2026-07-14 09:05:29] Epoch 012 step 250/286 loss=0.2350 elapsed=20.3s
+[2026-07-14 09:05:31] Epoch 012 step 275/286 loss=0.2359 elapsed=22.3s
+[2026-07-14 09:05:32] Epoch 012 step 286/286 loss=0.2354 elapsed=23.2s
+[2026-07-14 09:05:32] Epoch 012 training done. Start validation.
+[2026-07-14 09:05:36] Epoch 012 | loss=0.2354 | val_UAR=0.7525 | val_CCC=0.5981 (V=0.6666, A=0.6668, D=0.4610) | vad_pred_std=0.2045/true_std=0.1948 | score=0.6599
+[2026-07-14 09:05:36] Epoch 013 started. Train batches=286
+[2026-07-14 09:05:36] Epoch 013 step 1/286 loss=0.1586 elapsed=0.1s
+[2026-07-14 09:05:38] Epoch 013 step 25/286 loss=0.1806 elapsed=2.0s
+[2026-07-14 09:05:40] Epoch 013 step 50/286 loss=0.1887 elapsed=4.1s
+[2026-07-14 09:05:42] Epoch 013 step 75/286 loss=0.1893 elapsed=6.1s
+[2026-07-14 09:05:44] Epoch 013 step 100/286 loss=0.1892 elapsed=8.2s
+[2026-07-14 09:05:46] Epoch 013 step 125/286 loss=0.1928 elapsed=10.2s
+[2026-07-14 09:05:48] Epoch 013 step 150/286 loss=0.1935 elapsed=12.2s
+[2026-07-14 09:05:50] Epoch 013 step 175/286 loss=0.1955 elapsed=14.3s
+[2026-07-14 09:05:52] Epoch 013 step 200/286 loss=0.1974 elapsed=16.4s
+[2026-07-14 09:05:54] Epoch 013 step 225/286 loss=0.1977 elapsed=18.4s
+[2026-07-14 09:05:56] Epoch 013 step 250/286 loss=0.1990 elapsed=20.5s
+[2026-07-14 09:05:58] Epoch 013 step 275/286 loss=0.1987 elapsed=22.5s
+[2026-07-14 09:05:59] Epoch 013 step 286/286 loss=0.1994 elapsed=23.4s
+[2026-07-14 09:05:59] Epoch 013 training done. Start validation.
+[2026-07-14 09:06:03] Epoch 013 | loss=0.1994 | val_UAR=0.7437 | val_CCC=0.6154 (V=0.7054, A=0.6599, D=0.4811) | vad_pred_std=0.1753/true_std=0.1948 | score=0.6668
+[2026-07-14 09:06:03] Epoch 014 started. Train batches=286
+[2026-07-14 09:06:03] Epoch 014 step 1/286 loss=0.2080 elapsed=0.1s
+[2026-07-14 09:06:05] Epoch 014 step 25/286 loss=0.1768 elapsed=2.1s
+[2026-07-14 09:06:07] Epoch 014 step 50/286 loss=0.1799 elapsed=4.1s
+[2026-07-14 09:06:09] Epoch 014 step 75/286 loss=0.1782 elapsed=6.1s
+[2026-07-14 09:06:11] Epoch 014 step 100/286 loss=0.1787 elapsed=8.2s
+[2026-07-14 09:06:13] Epoch 014 step 125/286 loss=0.1823 elapsed=10.2s
+[2026-07-14 09:06:15] Epoch 014 step 150/286 loss=0.1813 elapsed=12.3s
+[2026-07-14 09:06:17] Epoch 014 step 175/286 loss=0.1816 elapsed=14.3s
+[2026-07-14 09:06:19] Epoch 014 step 200/286 loss=0.1830 elapsed=16.3s
+[2026-07-14 09:06:21] Epoch 014 step 225/286 loss=0.1820 elapsed=18.4s
+[2026-07-14 09:06:23] Epoch 014 step 250/286 loss=0.1841 elapsed=20.4s
+[2026-07-14 09:06:25] Epoch 014 step 275/286 loss=0.1835 elapsed=22.4s
+[2026-07-14 09:06:26] Epoch 014 step 286/286 loss=0.1843 elapsed=23.3s
+[2026-07-14 09:06:26] Epoch 014 training done. Start validation.
+[2026-07-14 09:06:30] Epoch 014 | loss=0.1843 | val_UAR=0.7361 | val_CCC=0.6152 (V=0.7107, A=0.6752, D=0.4598) | vad_pred_std=0.2048/true_std=0.1948 | score=0.6636
+[2026-07-14 09:06:30] Epoch 015 started. Train batches=286
+[2026-07-14 09:06:30] Epoch 015 step 1/286 loss=0.1252 elapsed=0.1s
+[2026-07-14 09:06:32] Epoch 015 step 25/286 loss=0.1657 elapsed=2.0s
+[2026-07-14 09:06:34] Epoch 015 step 50/286 loss=0.1668 elapsed=4.1s
+[2026-07-14 09:06:36] Epoch 015 step 75/286 loss=0.1690 elapsed=6.1s
+[2026-07-14 09:06:38] Epoch 015 step 100/286 loss=0.1663 elapsed=8.1s
+[2026-07-14 09:06:40] Epoch 015 step 125/286 loss=0.1673 elapsed=10.2s
+[2026-07-14 09:06:42] Epoch 015 step 150/286 loss=0.1714 elapsed=12.2s
+[2026-07-14 09:06:44] Epoch 015 step 175/286 loss=0.1724 elapsed=14.2s
+[2026-07-14 09:06:46] Epoch 015 step 200/286 loss=0.1738 elapsed=16.3s
+[2026-07-14 09:06:48] Epoch 015 step 225/286 loss=0.1750 elapsed=18.3s
+[2026-07-14 09:06:50] Epoch 015 step 250/286 loss=0.1752 elapsed=20.4s
+[2026-07-14 09:06:52] Epoch 015 step 275/286 loss=0.1758 elapsed=22.4s
+[2026-07-14 09:06:53] Epoch 015 step 286/286 loss=0.1750 elapsed=23.3s
+[2026-07-14 09:06:53] Epoch 015 training done. Start validation.
+[2026-07-14 09:06:56] Epoch 015 | loss=0.1750 | val_UAR=0.7412 | val_CCC=0.5937 (V=0.6924, A=0.6664, D=0.4223) | vad_pred_std=0.1894/true_std=0.1948 | score=0.6527
+[2026-07-14 09:06:56] Epoch 016 started. Train batches=286
+[2026-07-14 09:06:57] Epoch 016 step 1/286 loss=0.1574 elapsed=0.1s
+[2026-07-14 09:06:58] Epoch 016 step 25/286 loss=0.1666 elapsed=2.1s
+[2026-07-14 09:07:01] Epoch 016 step 50/286 loss=0.1729 elapsed=4.1s
+[2026-07-14 09:07:03] Epoch 016 step 75/286 loss=0.1691 elapsed=6.1s
+[2026-07-14 09:07:05] Epoch 016 step 100/286 loss=0.1681 elapsed=8.1s
+[2026-07-14 09:07:07] Epoch 016 step 125/286 loss=0.1675 elapsed=10.2s
+[2026-07-14 09:07:09] Epoch 016 step 150/286 loss=0.1666 elapsed=12.2s
+[2026-07-14 09:07:11] Epoch 016 step 175/286 loss=0.1670 elapsed=14.3s
+[2026-07-14 09:07:13] Epoch 016 step 200/286 loss=0.1662 elapsed=16.3s
+[2026-07-14 09:07:15] Epoch 016 step 225/286 loss=0.1685 elapsed=18.3s
+[2026-07-14 09:07:17] Epoch 016 step 250/286 loss=0.1694 elapsed=20.4s
+[2026-07-14 09:07:19] Epoch 016 step 275/286 loss=0.1700 elapsed=22.4s
+[2026-07-14 09:07:20] Epoch 016 step 286/286 loss=0.1700 elapsed=23.3s
+[2026-07-14 09:07:20] Epoch 016 training done. Start validation.
+[2026-07-14 09:07:23] Epoch 016 | loss=0.1700 | val_UAR=0.7450 | val_CCC=0.5734 (V=0.6358, A=0.6381, D=0.4464) | vad_pred_std=0.2089/true_std=0.1948 | score=0.6420
+[2026-07-14 09:07:23] Epoch 017 started. Train batches=286
+[2026-07-14 09:07:23] Epoch 017 step 1/286 loss=0.1316 elapsed=0.1s
+[2026-07-14 09:07:25] Epoch 017 step 25/286 loss=0.1545 elapsed=2.0s
+[2026-07-14 09:07:28] Epoch 017 step 50/286 loss=0.1543 elapsed=4.1s
+[2026-07-14 09:07:30] Epoch 017 step 75/286 loss=0.1565 elapsed=6.2s
+[2026-07-14 09:07:32] Epoch 017 step 100/286 loss=0.1587 elapsed=8.2s
+[2026-07-14 09:07:34] Epoch 017 step 125/286 loss=0.1606 elapsed=10.2s
+[2026-07-14 09:07:36] Epoch 017 step 150/286 loss=0.1616 elapsed=12.3s
+[2026-07-14 09:07:38] Epoch 017 step 175/286 loss=0.1619 elapsed=14.3s
+[2026-07-14 09:07:40] Epoch 017 step 200/286 loss=0.1615 elapsed=16.4s
+[2026-07-14 09:07:42] Epoch 017 step 225/286 loss=0.1605 elapsed=18.4s
+[2026-07-14 09:07:44] Epoch 017 step 250/286 loss=0.1612 elapsed=20.5s
+[2026-07-14 09:07:46] Epoch 017 step 275/286 loss=0.1613 elapsed=22.5s
+[2026-07-14 09:07:47] Epoch 017 step 286/286 loss=0.1618 elapsed=23.3s
+[2026-07-14 09:07:47] Epoch 017 training done. Start validation.
+[2026-07-14 09:07:50] Epoch 017 | loss=0.1618 | val_UAR=0.7198 | val_CCC=0.5986 (V=0.6625, A=0.6848, D=0.4486) | vad_pred_std=0.1992/true_std=0.1948 | score=0.6471
+[2026-07-14 09:07:50] Epoch 018 started. Train batches=286
+[2026-07-14 09:07:51] Epoch 018 step 1/286 loss=0.1887 elapsed=0.1s
+[2026-07-14 09:07:53] Epoch 018 step 25/286 loss=0.1548 elapsed=2.1s
+[2026-07-14 09:07:55] Epoch 018 step 50/286 loss=0.1460 elapsed=4.1s
+[2026-07-14 09:07:57] Epoch 018 step 75/286 loss=0.1480 elapsed=6.2s
+[2026-07-14 09:07:59] Epoch 018 step 100/286 loss=0.1499 elapsed=8.2s
+[2026-07-14 09:08:01] Epoch 018 step 125/286 loss=0.1500 elapsed=10.3s
+[2026-07-14 09:08:03] Epoch 018 step 150/286 loss=0.1500 elapsed=12.3s
+[2026-07-14 09:08:05] Epoch 018 step 175/286 loss=0.1517 elapsed=14.3s
+[2026-07-14 09:08:07] Epoch 018 step 200/286 loss=0.1516 elapsed=16.3s
+[2026-07-14 09:08:09] Epoch 018 step 225/286 loss=0.1556 elapsed=18.4s
+[2026-07-14 09:08:11] Epoch 018 step 250/286 loss=0.1564 elapsed=20.4s
+[2026-07-14 09:08:13] Epoch 018 step 275/286 loss=0.1568 elapsed=22.4s
+[2026-07-14 09:08:14] Epoch 018 step 286/286 loss=0.1567 elapsed=23.3s
+[2026-07-14 09:08:14] Epoch 018 training done. Start validation.
+[2026-07-14 09:08:17] Epoch 018 | loss=0.1567 | val_UAR=0.7575 | val_CCC=0.5879 (V=0.6762, A=0.6450, D=0.4424) | vad_pred_std=0.1824/true_std=0.1948 | score=0.6557
+[2026-07-14 09:08:17] Epoch 019 started. Train batches=286
+[2026-07-14 09:08:17] Epoch 019 step 1/286 loss=0.1733 elapsed=0.1s
+[2026-07-14 09:08:19] Epoch 019 step 25/286 loss=0.1502 elapsed=2.0s
+[2026-07-14 09:08:21] Epoch 019 step 50/286 loss=0.1438 elapsed=4.1s
+[2026-07-14 09:08:24] Epoch 019 step 75/286 loss=0.1477 elapsed=6.1s
+[2026-07-14 09:08:26] Epoch 019 step 100/286 loss=0.1476 elapsed=8.1s
+[2026-07-14 09:08:28] Epoch 019 step 125/286 loss=0.1490 elapsed=10.2s
+[2026-07-14 09:08:30] Epoch 019 step 150/286 loss=0.1490 elapsed=12.2s
+[2026-07-14 09:08:32] Epoch 019 step 175/286 loss=0.1490 elapsed=14.3s
+[2026-07-14 09:08:34] Epoch 019 step 200/286 loss=0.1487 elapsed=16.3s
+[2026-07-14 09:08:36] Epoch 019 step 225/286 loss=0.1488 elapsed=18.3s
+[2026-07-14 09:08:38] Epoch 019 step 250/286 loss=0.1480 elapsed=20.4s
+[2026-07-14 09:08:40] Epoch 019 step 275/286 loss=0.1495 elapsed=22.4s
+[2026-07-14 09:08:41] Epoch 019 step 286/286 loss=0.1496 elapsed=23.3s
+[2026-07-14 09:08:41] Epoch 019 training done. Start validation.
+[2026-07-14 09:08:44] Epoch 019 | loss=0.1496 | val_UAR=0.7200 | val_CCC=0.5870 (V=0.7027, A=0.6382, D=0.4200) | vad_pred_std=0.1967/true_std=0.1948 | score=0.6402
+[2026-07-14 09:08:44] Early stopping
+[2026-07-14 09:08:44] Load best checkpoint from /kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_1_test_Ses01_val_Ses02_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:08:45] Evaluate/export split=train
+[2026-07-14 09:08:58] Evaluate/export split=val
+[2026-07-14 09:09:01] Evaluate/export split=test
+[2026-07-14 09:09:05] Test: {'WA': 0.6535, 'UAR': 0.6916, 'Macro_F1': 0.6593, 'CCC_mean': 0.6287, 'CCC_valence': 0.6246, 'CCC_arousal': 0.7033, 'CCC_dominance': 0.5583, 'VAD_pred_std_mean': 0.2675, 'VAD_true_std_mean': 0.2231, 'MAE_mean': 0.6554}
+[2026-07-14 09:09:06] === 5fold_session | fold_2_test_Ses02_val_Ses03 | acoustic_text_bridge_rmm ===
+[2026-07-14 09:09:06] Train/Val/Test: 3357 1151 1023
+[2026-07-14 09:09:06] Start compute_scalers()
+[2026-07-14 09:09:06] Computing scalers without full-fold tensor copy...
+[2026-07-14 09:09:06] Scaler start: X_temporal, n=3357, chunk=128
+[2026-07-14 09:09:06] Scaler progress X_temporal: 128/3357 samples
+[2026-07-14 09:09:06] Scaler progress X_temporal: 1408/3357 samples
+[2026-07-14 09:09:07] Scaler progress X_temporal: 2688/3357 samples
+[2026-07-14 09:09:07] Scaler done: X_temporal
+[2026-07-14 09:09:07] Scaler start: X_spectral, n=3357, chunk=128
+[2026-07-14 09:09:07] Scaler progress X_spectral: 128/3357 samples
+[2026-07-14 09:09:09] Scaler progress X_spectral: 1408/3357 samples
+[2026-07-14 09:09:10] Scaler progress X_spectral: 2688/3357 samples
+[2026-07-14 09:09:11] Scaler done: X_spectral
+[2026-07-14 09:09:11] Fitting StandardScaler for X_stats and X_e2v...
+[2026-07-14 09:09:11] All scalers are ready.
+[2026-07-14 09:09:11] Build Dataset objects
+[2026-07-14 09:09:11] Build DataLoaders
+[2026-07-14 09:09:11] Build model with TEXT_MODEL_NAME=roberta-base
+[2026-07-14 09:09:11] Loading text backbone from: /kaggle/input/datasets/linhlaz225/robert/roberta-base-kaggle
+[2026-07-14 09:09:11] Loaded text backbone.
+[2026-07-14 09:09:11] Model ready. Trainable params: 4,197,719/128,843,351 (3.26%)
+[2026-07-14 09:09:11] Optimizer, scheduler, scaler are ready. Start training loop.
+[2026-07-14 09:09:11] Epoch 001 started. Train batches=280
+[2026-07-14 09:09:11] Epoch 001 step 1/280 loss=0.9619 elapsed=0.1s
+[2026-07-14 09:09:13] Epoch 001 step 25/280 loss=0.9521 elapsed=2.1s
+[2026-07-14 09:09:15] Epoch 001 step 50/280 loss=0.9399 elapsed=4.2s
+[2026-07-14 09:09:17] Epoch 001 step 75/280 loss=0.9193 elapsed=6.2s
+[2026-07-14 09:09:19] Epoch 001 step 100/280 loss=0.8948 elapsed=8.3s
+[2026-07-14 09:09:21] Epoch 001 step 125/280 loss=0.8680 elapsed=10.3s
+[2026-07-14 09:09:23] Epoch 001 step 150/280 loss=0.8438 elapsed=12.3s
+[2026-07-14 09:09:25] Epoch 001 step 175/280 loss=0.8225 elapsed=14.4s
+[2026-07-14 09:09:27] Epoch 001 step 200/280 loss=0.8066 elapsed=16.4s
+[2026-07-14 09:09:29] Epoch 001 step 225/280 loss=0.7924 elapsed=18.4s
+[2026-07-14 09:09:32] Epoch 001 step 250/280 loss=0.7779 elapsed=20.5s
+[2026-07-14 09:09:34] Epoch 001 step 275/280 loss=0.7662 elapsed=22.6s
+[2026-07-14 09:09:34] Epoch 001 step 280/280 loss=0.7643 elapsed=23.0s
+[2026-07-14 09:09:34] Epoch 001 training done. Start validation.
+[2026-07-14 09:09:38] Epoch 001 | loss=0.7643 | val_UAR=0.5281 | val_CCC=0.4376 (V=0.1385, A=0.6311, D=0.5432) | vad_pred_std=0.2068/true_std=0.2082 | score=0.4738
+[2026-07-14 09:09:39] Saved new best checkpoint: epoch=1, score=0.4738, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_2_test_Ses02_val_Ses03_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:09:39] Epoch 002 started. Train batches=280
+[2026-07-14 09:09:39] Epoch 002 step 1/280 loss=0.7281 elapsed=0.1s
+[2026-07-14 09:09:41] Epoch 002 step 25/280 loss=0.6236 elapsed=2.1s
+[2026-07-14 09:09:43] Epoch 002 step 50/280 loss=0.6083 elapsed=4.1s
+[2026-07-14 09:09:45] Epoch 002 step 75/280 loss=0.5893 elapsed=6.2s
+[2026-07-14 09:09:47] Epoch 002 step 100/280 loss=0.5741 elapsed=8.2s
+[2026-07-14 09:09:49] Epoch 002 step 125/280 loss=0.5616 elapsed=10.3s
+[2026-07-14 09:09:51] Epoch 002 step 150/280 loss=0.5514 elapsed=12.3s
+[2026-07-14 09:09:53] Epoch 002 step 175/280 loss=0.5476 elapsed=14.4s
+[2026-07-14 09:09:55] Epoch 002 step 200/280 loss=0.5487 elapsed=16.5s
+[2026-07-14 09:09:57] Epoch 002 step 225/280 loss=0.5401 elapsed=18.5s
+[2026-07-14 09:09:59] Epoch 002 step 250/280 loss=0.5362 elapsed=20.6s
+[2026-07-14 09:10:01] Epoch 002 step 275/280 loss=0.5315 elapsed=22.6s
+[2026-07-14 09:10:02] Epoch 002 step 280/280 loss=0.5290 elapsed=23.0s
+[2026-07-14 09:10:02] Epoch 002 training done. Start validation.
+[2026-07-14 09:10:06] Epoch 002 | loss=0.5290 | val_UAR=0.6103 | val_CCC=0.5687 (V=0.4909, A=0.6337, D=0.5816) | vad_pred_std=0.2002/true_std=0.2082 | score=0.5853
+[2026-07-14 09:10:07] Saved new best checkpoint: epoch=2, score=0.5853, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_2_test_Ses02_val_Ses03_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:10:07] Epoch 003 started. Train batches=280
+[2026-07-14 09:10:07] Epoch 003 step 1/280 loss=0.4446 elapsed=0.1s
+[2026-07-14 09:10:09] Epoch 003 step 25/280 loss=0.4237 elapsed=2.1s
+[2026-07-14 09:10:11] Epoch 003 step 50/280 loss=0.4283 elapsed=4.1s
+[2026-07-14 09:10:13] Epoch 003 step 75/280 loss=0.4222 elapsed=6.2s
+[2026-07-14 09:10:15] Epoch 003 step 100/280 loss=0.4193 elapsed=8.2s
+[2026-07-14 09:10:17] Epoch 003 step 125/280 loss=0.4220 elapsed=10.2s
+[2026-07-14 09:10:19] Epoch 003 step 150/280 loss=0.4289 elapsed=12.3s
+[2026-07-14 09:10:21] Epoch 003 step 175/280 loss=0.4280 elapsed=14.3s
+[2026-07-14 09:10:23] Epoch 003 step 200/280 loss=0.4274 elapsed=16.3s
+[2026-07-14 09:10:25] Epoch 003 step 225/280 loss=0.4286 elapsed=18.3s
+[2026-07-14 09:10:27] Epoch 003 step 250/280 loss=0.4276 elapsed=20.4s
+[2026-07-14 09:10:29] Epoch 003 step 275/280 loss=0.4295 elapsed=22.4s
+[2026-07-14 09:10:29] Epoch 003 step 280/280 loss=0.4296 elapsed=22.8s
+[2026-07-14 09:10:29] Epoch 003 training done. Start validation.
+[2026-07-14 09:10:33] Epoch 003 | loss=0.4296 | val_UAR=0.6894 | val_CCC=0.6127 (V=0.6032, A=0.6434, D=0.5914) | vad_pred_std=0.2163/true_std=0.2082 | score=0.6434
+[2026-07-14 09:10:34] Saved new best checkpoint: epoch=3, score=0.6434, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_2_test_Ses02_val_Ses03_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:10:34] Epoch 004 started. Train batches=280
+[2026-07-14 09:10:34] Epoch 004 step 1/280 loss=0.3153 elapsed=0.1s
+[2026-07-14 09:10:36] Epoch 004 step 25/280 loss=0.3382 elapsed=2.0s
+[2026-07-14 09:10:38] Epoch 004 step 50/280 loss=0.3437 elapsed=4.1s
+[2026-07-14 09:10:40] Epoch 004 step 75/280 loss=0.3469 elapsed=6.1s
+[2026-07-14 09:10:42] Epoch 004 step 100/280 loss=0.3585 elapsed=8.2s
+[2026-07-14 09:10:44] Epoch 004 step 125/280 loss=0.3604 elapsed=10.2s
+[2026-07-14 09:10:46] Epoch 004 step 150/280 loss=0.3630 elapsed=12.3s
+[2026-07-14 09:10:48] Epoch 004 step 175/280 loss=0.3632 elapsed=14.3s
+[2026-07-14 09:10:51] Epoch 004 step 200/280 loss=0.3712 elapsed=16.4s
+[2026-07-14 09:10:53] Epoch 004 step 225/280 loss=0.3712 elapsed=18.4s
+[2026-07-14 09:10:55] Epoch 004 step 250/280 loss=0.3714 elapsed=20.4s
+[2026-07-14 09:10:57] Epoch 004 step 275/280 loss=0.3739 elapsed=22.5s
+[2026-07-14 09:10:57] Epoch 004 step 280/280 loss=0.3745 elapsed=22.9s
+[2026-07-14 09:10:57] Epoch 004 training done. Start validation.
+[2026-07-14 09:11:01] Epoch 004 | loss=0.3745 | val_UAR=0.6795 | val_CCC=0.6003 (V=0.6191, A=0.6206, D=0.5611) | vad_pred_std=0.1921/true_std=0.2082 | score=0.6320
+[2026-07-14 09:11:01] Epoch 005 started. Train batches=280
+[2026-07-14 09:11:01] Epoch 005 step 1/280 loss=0.4242 elapsed=0.1s
+[2026-07-14 09:11:03] Epoch 005 step 25/280 loss=0.3669 elapsed=2.0s
+[2026-07-14 09:11:05] Epoch 005 step 50/280 loss=0.3626 elapsed=4.0s
+[2026-07-14 09:11:07] Epoch 005 step 75/280 loss=0.3469 elapsed=6.1s
+[2026-07-14 09:11:09] Epoch 005 step 100/280 loss=0.3471 elapsed=8.2s
+[2026-07-14 09:11:11] Epoch 005 step 125/280 loss=0.3449 elapsed=10.2s
+[2026-07-14 09:11:13] Epoch 005 step 150/280 loss=0.3409 elapsed=12.4s
+[2026-07-14 09:11:16] Epoch 005 step 175/280 loss=0.3457 elapsed=14.5s
+[2026-07-14 09:11:18] Epoch 005 step 200/280 loss=0.3483 elapsed=16.5s
+[2026-07-14 09:11:20] Epoch 005 step 225/280 loss=0.3510 elapsed=18.6s
+[2026-07-14 09:11:22] Epoch 005 step 250/280 loss=0.3518 elapsed=20.6s
+[2026-07-14 09:11:24] Epoch 005 step 275/280 loss=0.3528 elapsed=22.7s
+[2026-07-14 09:11:24] Epoch 005 step 280/280 loss=0.3530 elapsed=23.1s
+[2026-07-14 09:11:24] Epoch 005 training done. Start validation.
+[2026-07-14 09:11:28] Epoch 005 | loss=0.3530 | val_UAR=0.6931 | val_CCC=0.6343 (V=0.6115, A=0.7024, D=0.5891) | vad_pred_std=0.2161/true_std=0.2082 | score=0.6578
+[2026-07-14 09:11:29] Saved new best checkpoint: epoch=5, score=0.6578, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_2_test_Ses02_val_Ses03_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:11:29] Epoch 006 started. Train batches=280
+[2026-07-14 09:11:29] Epoch 006 step 1/280 loss=0.2477 elapsed=0.1s
+[2026-07-14 09:11:31] Epoch 006 step 25/280 loss=0.2991 elapsed=2.0s
+[2026-07-14 09:11:33] Epoch 006 step 50/280 loss=0.3010 elapsed=4.1s
+[2026-07-14 09:11:35] Epoch 006 step 75/280 loss=0.3035 elapsed=6.1s
+[2026-07-14 09:11:37] Epoch 006 step 100/280 loss=0.3121 elapsed=8.1s
+[2026-07-14 09:11:39] Epoch 006 step 125/280 loss=0.3163 elapsed=10.2s
+[2026-07-14 09:11:41] Epoch 006 step 150/280 loss=0.3182 elapsed=12.2s
+[2026-07-14 09:11:43] Epoch 006 step 175/280 loss=0.3183 elapsed=14.3s
+[2026-07-14 09:11:45] Epoch 006 step 200/280 loss=0.3168 elapsed=16.4s
+[2026-07-14 09:11:47] Epoch 006 step 225/280 loss=0.3175 elapsed=18.5s
+[2026-07-14 09:11:49] Epoch 006 step 250/280 loss=0.3183 elapsed=20.5s
+[2026-07-14 09:11:51] Epoch 006 step 275/280 loss=0.3209 elapsed=22.5s
+[2026-07-14 09:11:52] Epoch 006 step 280/280 loss=0.3217 elapsed=22.9s
+[2026-07-14 09:11:52] Epoch 006 training done. Start validation.
+[2026-07-14 09:11:56] Epoch 006 | loss=0.3217 | val_UAR=0.6597 | val_CCC=0.6184 (V=0.5568, A=0.6932, D=0.6053) | vad_pred_std=0.1973/true_std=0.2082 | score=0.6349
+[2026-07-14 09:11:56] Epoch 007 started. Train batches=280
+[2026-07-14 09:11:56] Epoch 007 step 1/280 loss=0.2800 elapsed=0.1s
+[2026-07-14 09:11:58] Epoch 007 step 25/280 loss=0.2835 elapsed=2.1s
+[2026-07-14 09:12:00] Epoch 007 step 50/280 loss=0.3005 elapsed=4.1s
+[2026-07-14 09:12:02] Epoch 007 step 75/280 loss=0.3025 elapsed=6.1s
+[2026-07-14 09:12:04] Epoch 007 step 100/280 loss=0.2960 elapsed=8.2s
+[2026-07-14 09:12:06] Epoch 007 step 125/280 loss=0.2948 elapsed=10.2s
+[2026-07-14 09:12:08] Epoch 007 step 150/280 loss=0.2937 elapsed=12.3s
+[2026-07-14 09:12:10] Epoch 007 step 175/280 loss=0.2912 elapsed=14.3s
+[2026-07-14 09:12:12] Epoch 007 step 200/280 loss=0.2939 elapsed=16.4s
+[2026-07-14 09:12:14] Epoch 007 step 225/280 loss=0.2935 elapsed=18.4s
+[2026-07-14 09:12:16] Epoch 007 step 250/280 loss=0.2944 elapsed=20.4s
+[2026-07-14 09:12:19] Epoch 007 step 275/280 loss=0.2957 elapsed=22.5s
+[2026-07-14 09:12:19] Epoch 007 step 280/280 loss=0.2956 elapsed=22.9s
+[2026-07-14 09:12:19] Epoch 007 training done. Start validation.
+[2026-07-14 09:12:23] Epoch 007 | loss=0.2956 | val_UAR=0.7116 | val_CCC=0.6367 (V=0.6154, A=0.6859, D=0.6089) | vad_pred_std=0.1912/true_std=0.2082 | score=0.6667
+[2026-07-14 09:12:24] Saved new best checkpoint: epoch=7, score=0.6667, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_2_test_Ses02_val_Ses03_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:12:24] Epoch 008 started. Train batches=280
+[2026-07-14 09:12:24] Epoch 008 step 1/280 loss=0.2415 elapsed=0.1s
+[2026-07-14 09:12:26] Epoch 008 step 25/280 loss=0.2452 elapsed=2.0s
+[2026-07-14 09:12:28] Epoch 008 step 50/280 loss=0.2737 elapsed=4.1s
+[2026-07-14 09:12:30] Epoch 008 step 75/280 loss=0.2633 elapsed=6.1s
+[2026-07-14 09:12:32] Epoch 008 step 100/280 loss=0.2637 elapsed=8.1s
+[2026-07-14 09:12:34] Epoch 008 step 125/280 loss=0.2621 elapsed=10.2s
+[2026-07-14 09:12:36] Epoch 008 step 150/280 loss=0.2606 elapsed=12.2s
+[2026-07-14 09:12:38] Epoch 008 step 175/280 loss=0.2618 elapsed=14.3s
+[2026-07-14 09:12:40] Epoch 008 step 200/280 loss=0.2637 elapsed=16.3s
+[2026-07-14 09:12:42] Epoch 008 step 225/280 loss=0.2649 elapsed=18.4s
+[2026-07-14 09:12:44] Epoch 008 step 250/280 loss=0.2647 elapsed=20.4s
+[2026-07-14 09:12:46] Epoch 008 step 275/280 loss=0.2649 elapsed=22.4s
+[2026-07-14 09:12:47] Epoch 008 step 280/280 loss=0.2646 elapsed=22.8s
+[2026-07-14 09:12:47] Epoch 008 training done. Start validation.
+[2026-07-14 09:12:51] Epoch 008 | loss=0.2646 | val_UAR=0.6715 | val_CCC=0.6231 (V=0.5956, A=0.6805, D=0.5933) | vad_pred_std=0.1809/true_std=0.2082 | score=0.6425
+[2026-07-14 09:12:51] RMM epoch 9: mask text
+[2026-07-14 09:12:51] Epoch 009 started. Train batches=280
+[2026-07-14 09:12:51] Epoch 009 step 1/280 loss=0.2895 elapsed=0.1s
+[2026-07-14 09:12:53] Epoch 009 step 25/280 loss=0.3486 elapsed=2.1s
+[2026-07-14 09:12:55] Epoch 009 step 50/280 loss=0.3548 elapsed=4.1s
+[2026-07-14 09:12:57] Epoch 009 step 75/280 loss=0.3431 elapsed=6.3s
+[2026-07-14 09:12:59] Epoch 009 step 100/280 loss=0.3312 elapsed=8.4s
+[2026-07-14 09:13:01] Epoch 009 step 125/280 loss=0.3284 elapsed=10.4s
+[2026-07-14 09:13:03] Epoch 009 step 150/280 loss=0.3286 elapsed=12.5s
+[2026-07-14 09:13:05] Epoch 009 step 175/280 loss=0.3240 elapsed=14.5s
+[2026-07-14 09:13:07] Epoch 009 step 200/280 loss=0.3224 elapsed=16.5s
+[2026-07-14 09:13:09] Epoch 009 step 225/280 loss=0.3202 elapsed=18.6s
+[2026-07-14 09:13:11] Epoch 009 step 250/280 loss=0.3224 elapsed=20.6s
+[2026-07-14 09:13:13] Epoch 009 step 275/280 loss=0.3206 elapsed=22.6s
+[2026-07-14 09:13:14] Epoch 009 step 280/280 loss=0.3198 elapsed=23.0s
+[2026-07-14 09:13:14] Epoch 009 training done. Start validation.
+[2026-07-14 09:13:18] Epoch 009 | loss=0.3198 | val_UAR=0.6876 | val_CCC=0.6459 (V=0.6451, A=0.6902, D=0.6023) | vad_pred_std=0.2014/true_std=0.2082 | score=0.6626
+[2026-07-14 09:13:18] RMM epoch 10: mask text
+[2026-07-14 09:13:18] Epoch 010 started. Train batches=280
+[2026-07-14 09:13:18] Epoch 010 step 1/280 loss=0.2411 elapsed=0.1s
+[2026-07-14 09:13:20] Epoch 010 step 25/280 loss=0.2585 elapsed=2.0s
+[2026-07-14 09:13:22] Epoch 010 step 50/280 loss=0.2676 elapsed=4.1s
+[2026-07-14 09:13:24] Epoch 010 step 75/280 loss=0.2665 elapsed=6.1s
+[2026-07-14 09:13:26] Epoch 010 step 100/280 loss=0.2660 elapsed=8.2s
+[2026-07-14 09:13:28] Epoch 010 step 125/280 loss=0.2669 elapsed=10.3s
+[2026-07-14 09:13:30] Epoch 010 step 150/280 loss=0.2693 elapsed=12.3s
+[2026-07-14 09:13:32] Epoch 010 step 175/280 loss=0.2701 elapsed=14.3s
+[2026-07-14 09:13:34] Epoch 010 step 200/280 loss=0.2684 elapsed=16.4s
+[2026-07-14 09:13:36] Epoch 010 step 225/280 loss=0.2675 elapsed=18.4s
+[2026-07-14 09:13:38] Epoch 010 step 250/280 loss=0.2680 elapsed=20.5s
+[2026-07-14 09:13:40] Epoch 010 step 275/280 loss=0.2690 elapsed=22.5s
+[2026-07-14 09:13:41] Epoch 010 step 280/280 loss=0.2710 elapsed=22.9s
+[2026-07-14 09:13:41] Epoch 010 training done. Start validation.
+[2026-07-14 09:13:45] Epoch 010 | loss=0.2710 | val_UAR=0.7016 | val_CCC=0.6434 (V=0.6109, A=0.7179, D=0.6015) | vad_pred_std=0.2016/true_std=0.2082 | score=0.6667
+[2026-07-14 09:13:45] RMM epoch 11: mask text
+[2026-07-14 09:13:45] Epoch 011 started. Train batches=280
+[2026-07-14 09:13:45] Epoch 011 step 1/280 loss=0.1355 elapsed=0.1s
+[2026-07-14 09:13:47] Epoch 011 step 25/280 loss=0.2444 elapsed=2.1s
+[2026-07-14 09:13:49] Epoch 011 step 50/280 loss=0.2431 elapsed=4.1s
+[2026-07-14 09:13:51] Epoch 011 step 75/280 loss=0.2520 elapsed=6.2s
+[2026-07-14 09:13:53] Epoch 011 step 100/280 loss=0.2478 elapsed=8.2s
+[2026-07-14 09:13:55] Epoch 011 step 125/280 loss=0.2476 elapsed=10.3s
+[2026-07-14 09:13:57] Epoch 011 step 150/280 loss=0.2463 elapsed=12.3s
+[2026-07-14 09:13:59] Epoch 011 step 175/280 loss=0.2464 elapsed=14.4s
+[2026-07-14 09:14:01] Epoch 011 step 200/280 loss=0.2469 elapsed=16.4s
+[2026-07-14 09:14:03] Epoch 011 step 225/280 loss=0.2478 elapsed=18.5s
+[2026-07-14 09:14:05] Epoch 011 step 250/280 loss=0.2467 elapsed=20.5s
+[2026-07-14 09:14:07] Epoch 011 step 275/280 loss=0.2478 elapsed=22.6s
+[2026-07-14 09:14:08] Epoch 011 step 280/280 loss=0.2471 elapsed=23.0s
+[2026-07-14 09:14:08] Epoch 011 training done. Start validation.
+[2026-07-14 09:14:12] Epoch 011 | loss=0.2471 | val_UAR=0.6986 | val_CCC=0.6301 (V=0.6022, A=0.6914, D=0.5968) | vad_pred_std=0.2001/true_std=0.2082 | score=0.6575
+[2026-07-14 09:14:12] Epoch 012 started. Train batches=280
+[2026-07-14 09:14:12] Epoch 012 step 1/280 loss=0.1526 elapsed=0.1s
+[2026-07-14 09:14:14] Epoch 012 step 25/280 loss=0.2177 elapsed=2.1s
+[2026-07-14 09:14:16] Epoch 012 step 50/280 loss=0.2073 elapsed=4.1s
+[2026-07-14 09:14:18] Epoch 012 step 75/280 loss=0.2005 elapsed=6.2s
+[2026-07-14 09:14:20] Epoch 012 step 100/280 loss=0.1994 elapsed=8.2s
+[2026-07-14 09:14:22] Epoch 012 step 125/280 loss=0.1978 elapsed=10.3s
+[2026-07-14 09:14:24] Epoch 012 step 150/280 loss=0.2006 elapsed=12.3s
+[2026-07-14 09:14:26] Epoch 012 step 175/280 loss=0.1996 elapsed=14.3s
+[2026-07-14 09:14:28] Epoch 012 step 200/280 loss=0.2019 elapsed=16.4s
+[2026-07-14 09:14:30] Epoch 012 step 225/280 loss=0.2020 elapsed=18.4s
+[2026-07-14 09:14:32] Epoch 012 step 250/280 loss=0.2030 elapsed=20.5s
+[2026-07-14 09:14:34] Epoch 012 step 275/280 loss=0.2019 elapsed=22.5s
+[2026-07-14 09:14:35] Epoch 012 step 280/280 loss=0.2031 elapsed=22.9s
+[2026-07-14 09:14:35] Epoch 012 training done. Start validation.
+[2026-07-14 09:14:39] Epoch 012 | loss=0.2031 | val_UAR=0.7019 | val_CCC=0.6241 (V=0.6300, A=0.6930, D=0.5494) | vad_pred_std=0.2136/true_std=0.2082 | score=0.6552
+[2026-07-14 09:14:39] Epoch 013 started. Train batches=280
+[2026-07-14 09:14:39] Epoch 013 step 1/280 loss=0.1562 elapsed=0.1s
+[2026-07-14 09:14:41] Epoch 013 step 25/280 loss=0.1872 elapsed=2.0s
+[2026-07-14 09:14:43] Epoch 013 step 50/280 loss=0.1915 elapsed=4.1s
+[2026-07-14 09:14:45] Epoch 013 step 75/280 loss=0.1870 elapsed=6.1s
+[2026-07-14 09:14:47] Epoch 013 step 100/280 loss=0.1872 elapsed=8.2s
+[2026-07-14 09:14:49] Epoch 013 step 125/280 loss=0.1860 elapsed=10.3s
+[2026-07-14 09:14:51] Epoch 013 step 150/280 loss=0.1838 elapsed=12.3s
+[2026-07-14 09:14:53] Epoch 013 step 175/280 loss=0.1844 elapsed=14.4s
+[2026-07-14 09:14:55] Epoch 013 step 200/280 loss=0.1852 elapsed=16.4s
+[2026-07-14 09:14:57] Epoch 013 step 225/280 loss=0.1874 elapsed=18.5s
+[2026-07-14 09:14:59] Epoch 013 step 250/280 loss=0.1872 elapsed=20.5s
+[2026-07-14 09:15:01] Epoch 013 step 275/280 loss=0.1883 elapsed=22.6s
+[2026-07-14 09:15:02] Epoch 013 step 280/280 loss=0.1877 elapsed=23.0s
+[2026-07-14 09:15:02] Epoch 013 training done. Start validation.
+[2026-07-14 09:15:06] Epoch 013 | loss=0.1877 | val_UAR=0.6834 | val_CCC=0.6122 (V=0.6020, A=0.6782, D=0.5562) | vad_pred_std=0.1906/true_std=0.2082 | score=0.6407
+[2026-07-14 09:15:06] Epoch 014 started. Train batches=280
+[2026-07-14 09:15:06] Epoch 014 step 1/280 loss=0.1579 elapsed=0.1s
+[2026-07-14 09:15:08] Epoch 014 step 25/280 loss=0.1708 elapsed=2.1s
+[2026-07-14 09:15:10] Epoch 014 step 50/280 loss=0.1685 elapsed=4.1s
+[2026-07-14 09:15:12] Epoch 014 step 75/280 loss=0.1703 elapsed=6.1s
+[2026-07-14 09:15:14] Epoch 014 step 100/280 loss=0.1716 elapsed=8.2s
+[2026-07-14 09:15:16] Epoch 014 step 125/280 loss=0.1674 elapsed=10.2s
+[2026-07-14 09:15:18] Epoch 014 step 150/280 loss=0.1704 elapsed=12.3s
+[2026-07-14 09:15:20] Epoch 014 step 175/280 loss=0.1704 elapsed=14.3s
+[2026-07-14 09:15:22] Epoch 014 step 200/280 loss=0.1723 elapsed=16.4s
+[2026-07-14 09:15:24] Epoch 014 step 225/280 loss=0.1744 elapsed=18.4s
+[2026-07-14 09:15:26] Epoch 014 step 250/280 loss=0.1754 elapsed=20.4s
+[2026-07-14 09:15:28] Epoch 014 step 275/280 loss=0.1761 elapsed=22.5s
+[2026-07-14 09:15:29] Epoch 014 step 280/280 loss=0.1758 elapsed=22.9s
+[2026-07-14 09:15:29] Epoch 014 training done. Start validation.
+[2026-07-14 09:15:33] Epoch 014 | loss=0.1758 | val_UAR=0.6894 | val_CCC=0.5962 (V=0.6167, A=0.6532, D=0.5187) | vad_pred_std=0.1787/true_std=0.2082 | score=0.6335
+[2026-07-14 09:15:33] Epoch 015 started. Train batches=280
+[2026-07-14 09:15:33] Epoch 015 step 1/280 loss=0.1319 elapsed=0.1s
+[2026-07-14 09:15:35] Epoch 015 step 25/280 loss=0.1684 elapsed=2.0s
+[2026-07-14 09:15:37] Epoch 015 step 50/280 loss=0.1659 elapsed=4.1s
+[2026-07-14 09:15:39] Epoch 015 step 75/280 loss=0.1635 elapsed=6.2s
+[2026-07-14 09:15:41] Epoch 015 step 100/280 loss=0.1648 elapsed=8.3s
+[2026-07-14 09:15:43] Epoch 015 step 125/280 loss=0.1652 elapsed=10.4s
+[2026-07-14 09:15:45] Epoch 015 step 150/280 loss=0.1698 elapsed=12.4s
+[2026-07-14 09:15:47] Epoch 015 step 175/280 loss=0.1687 elapsed=14.5s
+[2026-07-14 09:15:49] Epoch 015 step 200/280 loss=0.1683 elapsed=16.6s
+[2026-07-14 09:15:52] Epoch 015 step 225/280 loss=0.1669 elapsed=18.6s
+[2026-07-14 09:15:54] Epoch 015 step 250/280 loss=0.1685 elapsed=20.7s
+[2026-07-14 09:15:56] Epoch 015 step 275/280 loss=0.1677 elapsed=22.7s
+[2026-07-14 09:15:56] Epoch 015 step 280/280 loss=0.1677 elapsed=23.1s
+[2026-07-14 09:15:56] Epoch 015 training done. Start validation.
+[2026-07-14 09:16:00] Epoch 015 | loss=0.1677 | val_UAR=0.6804 | val_CCC=0.6231 (V=0.5771, A=0.7010, D=0.5913) | vad_pred_std=0.2009/true_std=0.2082 | score=0.6461
+[2026-07-14 09:16:00] Epoch 016 started. Train batches=280
+[2026-07-14 09:16:00] Epoch 016 step 1/280 loss=0.1385 elapsed=0.1s
+[2026-07-14 09:16:02] Epoch 016 step 25/280 loss=0.1450 elapsed=2.0s
+[2026-07-14 09:16:04] Epoch 016 step 50/280 loss=0.1504 elapsed=4.0s
+[2026-07-14 09:16:06] Epoch 016 step 75/280 loss=0.1525 elapsed=6.0s
+[2026-07-14 09:16:08] Epoch 016 step 100/280 loss=0.1558 elapsed=8.1s
+[2026-07-14 09:16:10] Epoch 016 step 125/280 loss=0.1554 elapsed=10.1s
+[2026-07-14 09:16:12] Epoch 016 step 150/280 loss=0.1547 elapsed=12.2s
+[2026-07-14 09:16:14] Epoch 016 step 175/280 loss=0.1561 elapsed=14.2s
+[2026-07-14 09:16:16] Epoch 016 step 200/280 loss=0.1578 elapsed=16.2s
+[2026-07-14 09:16:18] Epoch 016 step 225/280 loss=0.1588 elapsed=18.3s
+[2026-07-14 09:16:20] Epoch 016 step 250/280 loss=0.1591 elapsed=20.3s
+[2026-07-14 09:16:22] Epoch 016 step 275/280 loss=0.1605 elapsed=22.3s
+[2026-07-14 09:16:23] Epoch 016 step 280/280 loss=0.1612 elapsed=22.7s
+[2026-07-14 09:16:23] Epoch 016 training done. Start validation.
+[2026-07-14 09:16:27] Epoch 016 | loss=0.1612 | val_UAR=0.6997 | val_CCC=0.6156 (V=0.6030, A=0.6767, D=0.5672) | vad_pred_std=0.1956/true_std=0.2082 | score=0.6493
+[2026-07-14 09:16:27] Epoch 017 started. Train batches=280
+[2026-07-14 09:16:27] Epoch 017 step 1/280 loss=0.1244 elapsed=0.1s
+[2026-07-14 09:16:29] Epoch 017 step 25/280 loss=0.1568 elapsed=2.1s
+[2026-07-14 09:16:31] Epoch 017 step 50/280 loss=0.1560 elapsed=4.1s
+[2026-07-14 09:16:33] Epoch 017 step 75/280 loss=0.1552 elapsed=6.2s
+[2026-07-14 09:16:35] Epoch 017 step 100/280 loss=0.1575 elapsed=8.2s
+[2026-07-14 09:16:37] Epoch 017 step 125/280 loss=0.1571 elapsed=10.3s
+[2026-07-14 09:16:39] Epoch 017 step 150/280 loss=0.1566 elapsed=12.3s
+[2026-07-14 09:16:41] Epoch 017 step 175/280 loss=0.1557 elapsed=14.4s
+[2026-07-14 09:16:43] Epoch 017 step 200/280 loss=0.1556 elapsed=16.4s
+[2026-07-14 09:16:45] Epoch 017 step 225/280 loss=0.1565 elapsed=18.4s
+[2026-07-14 09:16:47] Epoch 017 step 250/280 loss=0.1576 elapsed=20.4s
+[2026-07-14 09:16:49] Epoch 017 step 275/280 loss=0.1575 elapsed=22.5s
+[2026-07-14 09:16:50] Epoch 017 step 280/280 loss=0.1575 elapsed=22.9s
+[2026-07-14 09:16:50] Epoch 017 training done. Start validation.
+[2026-07-14 09:16:54] Epoch 017 | loss=0.1575 | val_UAR=0.6995 | val_CCC=0.6006 (V=0.5845, A=0.6767, D=0.5407) | vad_pred_std=0.1973/true_std=0.2082 | score=0.6402
+[2026-07-14 09:16:54] Early stopping
+[2026-07-14 09:16:54] Load best checkpoint from /kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_2_test_Ses02_val_Ses03_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:16:54] Evaluate/export split=train
+[2026-07-14 09:17:06] Evaluate/export split=val
+[2026-07-14 09:17:11] Evaluate/export split=test
+[2026-07-14 09:17:14] Test: {'WA': 0.7273, 'UAR': 0.7447, 'Macro_F1': 0.7292, 'CCC_mean': 0.6480, 'CCC_valence': 0.7289, 'CCC_arousal': 0.7371, 'CCC_dominance': 0.4781, 'VAD_pred_std_mean': 0.1944, 'VAD_true_std_mean': 0.1948, 'MAE_mean': 0.4983}
+[2026-07-14 09:17:14] === 5fold_session | fold_3_test_Ses03_val_Ses04 | acoustic_text_bridge_rmm ===
+[2026-07-14 09:17:14] Train/Val/Test: 3349 1031 1151
+[2026-07-14 09:17:15] Start compute_scalers()
+[2026-07-14 09:17:15] Computing scalers without full-fold tensor copy...
+[2026-07-14 09:17:15] Scaler start: X_temporal, n=3349, chunk=128
+[2026-07-14 09:17:15] Scaler progress X_temporal: 128/3349 samples
+[2026-07-14 09:17:15] Scaler progress X_temporal: 1408/3349 samples
+[2026-07-14 09:17:16] Scaler progress X_temporal: 2688/3349 samples
+[2026-07-14 09:17:16] Scaler done: X_temporal
+[2026-07-14 09:17:16] Scaler start: X_spectral, n=3349, chunk=128
+[2026-07-14 09:17:16] Scaler progress X_spectral: 128/3349 samples
+[2026-07-14 09:17:18] Scaler progress X_spectral: 1408/3349 samples
+[2026-07-14 09:17:19] Scaler progress X_spectral: 2688/3349 samples
+[2026-07-14 09:17:20] Scaler done: X_spectral
+[2026-07-14 09:17:20] Fitting StandardScaler for X_stats and X_e2v...
+[2026-07-14 09:17:20] All scalers are ready.
+[2026-07-14 09:17:20] Build Dataset objects
+[2026-07-14 09:17:20] Build DataLoaders
+[2026-07-14 09:17:20] Build model with TEXT_MODEL_NAME=roberta-base
+[2026-07-14 09:17:20] Loading text backbone from: /kaggle/input/datasets/linhlaz225/robert/roberta-base-kaggle
+[2026-07-14 09:17:20] Loaded text backbone.
+[2026-07-14 09:17:20] Model ready. Trainable params: 4,197,719/128,843,351 (3.26%)
+[2026-07-14 09:17:20] Optimizer, scheduler, scaler are ready. Start training loop.
+[2026-07-14 09:17:20] Epoch 001 started. Train batches=280
+[2026-07-14 09:17:20] Epoch 001 step 1/280 loss=0.9646 elapsed=0.1s
+[2026-07-14 09:17:22] Epoch 001 step 25/280 loss=0.9675 elapsed=2.1s
+[2026-07-14 09:17:24] Epoch 001 step 50/280 loss=0.9519 elapsed=4.1s
+[2026-07-14 09:17:26] Epoch 001 step 75/280 loss=0.9349 elapsed=6.1s
+[2026-07-14 09:17:28] Epoch 001 step 100/280 loss=0.9119 elapsed=8.2s
+[2026-07-14 09:17:30] Epoch 001 step 125/280 loss=0.8886 elapsed=10.2s
+[2026-07-14 09:17:32] Epoch 001 step 150/280 loss=0.8665 elapsed=12.2s
+[2026-07-14 09:17:34] Epoch 001 step 175/280 loss=0.8460 elapsed=14.3s
+[2026-07-14 09:17:36] Epoch 001 step 200/280 loss=0.8238 elapsed=16.4s
+[2026-07-14 09:17:39] Epoch 001 step 225/280 loss=0.8085 elapsed=18.5s
+[2026-07-14 09:17:41] Epoch 001 step 250/280 loss=0.7925 elapsed=20.6s
+[2026-07-14 09:17:43] Epoch 001 step 275/280 loss=0.7774 elapsed=22.7s
+[2026-07-14 09:17:43] Epoch 001 step 280/280 loss=0.7772 elapsed=23.1s
+[2026-07-14 09:17:43] Epoch 001 training done. Start validation.
+[2026-07-14 09:17:47] Epoch 001 | loss=0.7772 | val_UAR=0.5990 | val_CCC=0.5183 (V=0.2279, A=0.6895, D=0.6374) | vad_pred_std=0.1860/true_std=0.2072 | score=0.5506
+[2026-07-14 09:17:48] Saved new best checkpoint: epoch=1, score=0.5506, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_3_test_Ses03_val_Ses04_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:17:48] Epoch 002 started. Train batches=280
+[2026-07-14 09:17:48] Epoch 002 step 1/280 loss=0.5695 elapsed=0.1s
+[2026-07-14 09:17:50] Epoch 002 step 25/280 loss=0.6425 elapsed=2.1s
+[2026-07-14 09:17:52] Epoch 002 step 50/280 loss=0.6170 elapsed=4.2s
+[2026-07-14 09:17:54] Epoch 002 step 75/280 loss=0.5994 elapsed=6.2s
+[2026-07-14 09:17:56] Epoch 002 step 100/280 loss=0.5858 elapsed=8.3s
+[2026-07-14 09:17:58] Epoch 002 step 125/280 loss=0.5759 elapsed=10.3s
+[2026-07-14 09:18:00] Epoch 002 step 150/280 loss=0.5660 elapsed=12.4s
+[2026-07-14 09:18:02] Epoch 002 step 175/280 loss=0.5560 elapsed=14.4s
+[2026-07-14 09:18:04] Epoch 002 step 200/280 loss=0.5506 elapsed=16.5s
+[2026-07-14 09:18:06] Epoch 002 step 225/280 loss=0.5450 elapsed=18.5s
+[2026-07-14 09:18:08] Epoch 002 step 250/280 loss=0.5373 elapsed=20.6s
+[2026-07-14 09:18:10] Epoch 002 step 275/280 loss=0.5318 elapsed=22.6s
+[2026-07-14 09:18:11] Epoch 002 step 280/280 loss=0.5309 elapsed=23.0s
+[2026-07-14 09:18:11] Epoch 002 training done. Start validation.
+[2026-07-14 09:18:14] Epoch 002 | loss=0.5309 | val_UAR=0.7016 | val_CCC=0.6562 (V=0.6529, A=0.7148, D=0.6008) | vad_pred_std=0.2224/true_std=0.2072 | score=0.6744
+[2026-07-14 09:18:15] Saved new best checkpoint: epoch=2, score=0.6744, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_3_test_Ses03_val_Ses04_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:18:15] Epoch 003 started. Train batches=280
+[2026-07-14 09:18:15] Epoch 003 step 1/280 loss=0.3194 elapsed=0.1s
+[2026-07-14 09:18:17] Epoch 003 step 25/280 loss=0.4652 elapsed=2.0s
+[2026-07-14 09:18:19] Epoch 003 step 50/280 loss=0.4558 elapsed=4.1s
+[2026-07-14 09:18:21] Epoch 003 step 75/280 loss=0.4376 elapsed=6.1s
+[2026-07-14 09:18:23] Epoch 003 step 100/280 loss=0.4310 elapsed=8.1s
+[2026-07-14 09:18:25] Epoch 003 step 125/280 loss=0.4204 elapsed=10.1s
+[2026-07-14 09:18:27] Epoch 003 step 150/280 loss=0.4276 elapsed=12.1s
+[2026-07-14 09:18:29] Epoch 003 step 175/280 loss=0.4297 elapsed=14.2s
+[2026-07-14 09:18:31] Epoch 003 step 200/280 loss=0.4312 elapsed=16.2s
+[2026-07-14 09:18:33] Epoch 003 step 225/280 loss=0.4284 elapsed=18.2s
+[2026-07-14 09:18:35] Epoch 003 step 250/280 loss=0.4307 elapsed=20.2s
+[2026-07-14 09:18:37] Epoch 003 step 275/280 loss=0.4324 elapsed=22.2s
+[2026-07-14 09:18:38] Epoch 003 step 280/280 loss=0.4325 elapsed=22.6s
+[2026-07-14 09:18:38] Epoch 003 training done. Start validation.
+[2026-07-14 09:18:41] Epoch 003 | loss=0.4325 | val_UAR=0.5896 | val_CCC=0.6010 (V=0.5552, A=0.6494, D=0.5985) | vad_pred_std=0.2324/true_std=0.2072 | score=0.5965
+[2026-07-14 09:18:41] Epoch 004 started. Train batches=280
+[2026-07-14 09:18:41] Epoch 004 step 1/280 loss=0.5303 elapsed=0.1s
+[2026-07-14 09:18:43] Epoch 004 step 25/280 loss=0.3905 elapsed=2.0s
+[2026-07-14 09:18:45] Epoch 004 step 50/280 loss=0.3904 elapsed=4.0s
+[2026-07-14 09:18:47] Epoch 004 step 75/280 loss=0.3835 elapsed=6.1s
+[2026-07-14 09:18:49] Epoch 004 step 100/280 loss=0.3832 elapsed=8.2s
+[2026-07-14 09:18:51] Epoch 004 step 125/280 loss=0.3839 elapsed=10.2s
+[2026-07-14 09:18:53] Epoch 004 step 150/280 loss=0.3879 elapsed=12.3s
+[2026-07-14 09:18:55] Epoch 004 step 175/280 loss=0.3869 elapsed=14.3s
+[2026-07-14 09:18:57] Epoch 004 step 200/280 loss=0.3833 elapsed=16.3s
+[2026-07-14 09:18:59] Epoch 004 step 225/280 loss=0.3835 elapsed=18.4s
+[2026-07-14 09:19:01] Epoch 004 step 250/280 loss=0.3837 elapsed=20.4s
+[2026-07-14 09:19:04] Epoch 004 step 275/280 loss=0.3846 elapsed=22.4s
+[2026-07-14 09:19:04] Epoch 004 step 280/280 loss=0.3859 elapsed=22.8s
+[2026-07-14 09:19:04] Epoch 004 training done. Start validation.
+[2026-07-14 09:19:07] Epoch 004 | loss=0.3859 | val_UAR=0.6994 | val_CCC=0.6637 (V=0.6561, A=0.7105, D=0.6244) | vad_pred_std=0.2063/true_std=0.2072 | score=0.6780
+[2026-07-14 09:19:08] Saved new best checkpoint: epoch=4, score=0.6780, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_3_test_Ses03_val_Ses04_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:19:08] Epoch 005 started. Train batches=280
+[2026-07-14 09:19:08] Epoch 005 step 1/280 loss=0.4473 elapsed=0.1s
+[2026-07-14 09:19:10] Epoch 005 step 25/280 loss=0.3576 elapsed=2.0s
+[2026-07-14 09:19:12] Epoch 005 step 50/280 loss=0.3585 elapsed=4.0s
+[2026-07-14 09:19:14] Epoch 005 step 75/280 loss=0.3573 elapsed=6.0s
+[2026-07-14 09:19:16] Epoch 005 step 100/280 loss=0.3623 elapsed=8.0s
+[2026-07-14 09:19:18] Epoch 005 step 125/280 loss=0.3610 elapsed=10.1s
+[2026-07-14 09:19:20] Epoch 005 step 150/280 loss=0.3595 elapsed=12.1s
+[2026-07-14 09:19:22] Epoch 005 step 175/280 loss=0.3556 elapsed=14.1s
+[2026-07-14 09:19:24] Epoch 005 step 200/280 loss=0.3585 elapsed=16.1s
+[2026-07-14 09:19:26] Epoch 005 step 225/280 loss=0.3655 elapsed=18.2s
+[2026-07-14 09:19:28] Epoch 005 step 250/280 loss=0.3638 elapsed=20.2s
+[2026-07-14 09:19:30] Epoch 005 step 275/280 loss=0.3645 elapsed=22.2s
+[2026-07-14 09:19:31] Epoch 005 step 280/280 loss=0.3645 elapsed=22.6s
+[2026-07-14 09:19:31] Epoch 005 training done. Start validation.
+[2026-07-14 09:19:34] Epoch 005 | loss=0.3645 | val_UAR=0.6972 | val_CCC=0.6701 (V=0.6882, A=0.6884, D=0.6337) | vad_pred_std=0.2123/true_std=0.2072 | score=0.6809
+[2026-07-14 09:19:35] Saved new best checkpoint: epoch=5, score=0.6809, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_3_test_Ses03_val_Ses04_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:19:35] Epoch 006 started. Train batches=280
+[2026-07-14 09:19:35] Epoch 006 step 1/280 loss=0.3732 elapsed=0.1s
+[2026-07-14 09:19:37] Epoch 006 step 25/280 loss=0.3384 elapsed=2.0s
+[2026-07-14 09:19:39] Epoch 006 step 50/280 loss=0.3112 elapsed=4.1s
+[2026-07-14 09:19:41] Epoch 006 step 75/280 loss=0.3174 elapsed=6.1s
+[2026-07-14 09:19:43] Epoch 006 step 100/280 loss=0.3269 elapsed=8.1s
+[2026-07-14 09:19:45] Epoch 006 step 125/280 loss=0.3242 elapsed=10.1s
+[2026-07-14 09:19:47] Epoch 006 step 150/280 loss=0.3187 elapsed=12.1s
+[2026-07-14 09:19:49] Epoch 006 step 175/280 loss=0.3217 elapsed=14.2s
+[2026-07-14 09:19:51] Epoch 006 step 200/280 loss=0.3246 elapsed=16.2s
+[2026-07-14 09:19:53] Epoch 006 step 225/280 loss=0.3269 elapsed=18.2s
+[2026-07-14 09:19:55] Epoch 006 step 250/280 loss=0.3273 elapsed=20.2s
+[2026-07-14 09:19:57] Epoch 006 step 275/280 loss=0.3297 elapsed=22.2s
+[2026-07-14 09:19:58] Epoch 006 step 280/280 loss=0.3308 elapsed=22.6s
+[2026-07-14 09:19:58] Epoch 006 training done. Start validation.
+[2026-07-14 09:20:01] Epoch 006 | loss=0.3308 | val_UAR=0.6609 | val_CCC=0.6305 (V=0.5742, A=0.7145, D=0.6030) | vad_pred_std=0.1970/true_std=0.2072 | score=0.6427
+[2026-07-14 09:20:01] Epoch 007 started. Train batches=280
+[2026-07-14 09:20:01] Epoch 007 step 1/280 loss=0.4960 elapsed=0.1s
+[2026-07-14 09:20:03] Epoch 007 step 25/280 loss=0.2919 elapsed=2.0s
+[2026-07-14 09:20:05] Epoch 007 step 50/280 loss=0.2970 elapsed=4.1s
+[2026-07-14 09:20:07] Epoch 007 step 75/280 loss=0.2931 elapsed=6.1s
+[2026-07-14 09:20:09] Epoch 007 step 100/280 loss=0.2967 elapsed=8.2s
+[2026-07-14 09:20:11] Epoch 007 step 125/280 loss=0.2898 elapsed=10.3s
+[2026-07-14 09:20:13] Epoch 007 step 150/280 loss=0.2909 elapsed=12.3s
+[2026-07-14 09:20:16] Epoch 007 step 175/280 loss=0.2951 elapsed=14.4s
+[2026-07-14 09:20:18] Epoch 007 step 200/280 loss=0.2973 elapsed=16.4s
+[2026-07-14 09:20:20] Epoch 007 step 225/280 loss=0.2996 elapsed=18.4s
+[2026-07-14 09:20:22] Epoch 007 step 250/280 loss=0.3030 elapsed=20.4s
+[2026-07-14 09:20:24] Epoch 007 step 275/280 loss=0.3062 elapsed=22.4s
+[2026-07-14 09:20:24] Epoch 007 step 280/280 loss=0.3088 elapsed=22.8s
+[2026-07-14 09:20:24] Epoch 007 training done. Start validation.
+[2026-07-14 09:20:28] Epoch 007 | loss=0.3088 | val_UAR=0.6868 | val_CCC=0.6622 (V=0.6811, A=0.7146, D=0.5909) | vad_pred_std=0.2083/true_std=0.2072 | score=0.6720
+[2026-07-14 09:20:28] RMM epoch 8: mask text
+[2026-07-14 09:20:28] Epoch 008 started. Train batches=280
+[2026-07-14 09:20:28] Epoch 008 step 1/280 loss=0.1727 elapsed=0.1s
+[2026-07-14 09:20:30] Epoch 008 step 25/280 loss=0.3457 elapsed=2.0s
+[2026-07-14 09:20:31] Epoch 008 step 50/280 loss=0.3645 elapsed=4.0s
+[2026-07-14 09:20:34] Epoch 008 step 75/280 loss=0.3592 elapsed=6.1s
+[2026-07-14 09:20:36] Epoch 008 step 100/280 loss=0.3523 elapsed=8.1s
+[2026-07-14 09:20:38] Epoch 008 step 125/280 loss=0.3548 elapsed=10.1s
+[2026-07-14 09:20:40] Epoch 008 step 150/280 loss=0.3547 elapsed=12.1s
+[2026-07-14 09:20:42] Epoch 008 step 175/280 loss=0.3546 elapsed=14.1s
+[2026-07-14 09:20:44] Epoch 008 step 200/280 loss=0.3508 elapsed=16.2s
+[2026-07-14 09:20:46] Epoch 008 step 225/280 loss=0.3549 elapsed=18.2s
+[2026-07-14 09:20:48] Epoch 008 step 250/280 loss=0.3549 elapsed=20.2s
+[2026-07-14 09:20:50] Epoch 008 step 275/280 loss=0.3560 elapsed=22.2s
+[2026-07-14 09:20:50] Epoch 008 step 280/280 loss=0.3562 elapsed=22.6s
+[2026-07-14 09:20:50] Epoch 008 training done. Start validation.
+[2026-07-14 09:20:54] Epoch 008 | loss=0.3562 | val_UAR=0.6645 | val_CCC=0.6777 (V=0.7024, A=0.7474, D=0.5834) | vad_pred_std=0.1993/true_std=0.2072 | score=0.6724
+[2026-07-14 09:20:54] RMM epoch 9: mask text
+[2026-07-14 09:20:54] Epoch 009 started. Train batches=280
+[2026-07-14 09:20:54] Epoch 009 step 1/280 loss=0.2168 elapsed=0.1s
+[2026-07-14 09:20:56] Epoch 009 step 25/280 loss=0.3224 elapsed=2.0s
+[2026-07-14 09:20:58] Epoch 009 step 50/280 loss=0.3250 elapsed=4.1s
+[2026-07-14 09:21:00] Epoch 009 step 75/280 loss=0.3248 elapsed=6.1s
+[2026-07-14 09:21:02] Epoch 009 step 100/280 loss=0.3188 elapsed=8.1s
+[2026-07-14 09:21:04] Epoch 009 step 125/280 loss=0.3096 elapsed=10.1s
+[2026-07-14 09:21:06] Epoch 009 step 150/280 loss=0.3060 elapsed=12.2s
+[2026-07-14 09:21:08] Epoch 009 step 175/280 loss=0.3084 elapsed=14.2s
+[2026-07-14 09:21:10] Epoch 009 step 200/280 loss=0.3113 elapsed=16.3s
+[2026-07-14 09:21:12] Epoch 009 step 225/280 loss=0.3110 elapsed=18.3s
+[2026-07-14 09:21:14] Epoch 009 step 250/280 loss=0.3093 elapsed=20.3s
+[2026-07-14 09:21:16] Epoch 009 step 275/280 loss=0.3080 elapsed=22.3s
+[2026-07-14 09:21:17] Epoch 009 step 280/280 loss=0.3086 elapsed=22.7s
+[2026-07-14 09:21:17] Epoch 009 training done. Start validation.
+[2026-07-14 09:21:20] Epoch 009 | loss=0.3086 | val_UAR=0.6640 | val_CCC=0.6703 (V=0.6954, A=0.7325, D=0.5829) | vad_pred_std=0.2067/true_std=0.2072 | score=0.6678
+[2026-07-14 09:21:20] Epoch 010 started. Train batches=280
+[2026-07-14 09:21:20] Epoch 010 step 1/280 loss=0.2042 elapsed=0.1s
+[2026-07-14 09:21:22] Epoch 010 step 25/280 loss=0.2251 elapsed=2.1s
+[2026-07-14 09:21:24] Epoch 010 step 50/280 loss=0.2176 elapsed=4.1s
+[2026-07-14 09:21:26] Epoch 010 step 75/280 loss=0.2257 elapsed=6.1s
+[2026-07-14 09:21:28] Epoch 010 step 100/280 loss=0.2350 elapsed=8.1s
+[2026-07-14 09:21:30] Epoch 010 step 125/280 loss=0.2383 elapsed=10.1s
+[2026-07-14 09:21:32] Epoch 010 step 150/280 loss=0.2340 elapsed=12.1s
+[2026-07-14 09:21:34] Epoch 010 step 175/280 loss=0.2335 elapsed=14.2s
+[2026-07-14 09:21:36] Epoch 010 step 200/280 loss=0.2355 elapsed=16.2s
+[2026-07-14 09:21:39] Epoch 010 step 225/280 loss=0.2358 elapsed=18.2s
+[2026-07-14 09:21:41] Epoch 010 step 250/280 loss=0.2410 elapsed=20.2s
+[2026-07-14 09:21:43] Epoch 010 step 275/280 loss=0.2413 elapsed=22.3s
+[2026-07-14 09:21:43] Epoch 010 step 280/280 loss=0.2433 elapsed=22.7s
+[2026-07-14 09:21:43] Epoch 010 training done. Start validation.
+[2026-07-14 09:21:47] Epoch 010 | loss=0.2433 | val_UAR=0.7093 | val_CCC=0.6657 (V=0.6863, A=0.7393, D=0.5714) | vad_pred_std=0.2092/true_std=0.2072 | score=0.6832
+[2026-07-14 09:21:47] Saved new best checkpoint: epoch=10, score=0.6832, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_3_test_Ses03_val_Ses04_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:21:47] RMM epoch 11: mask text
+[2026-07-14 09:21:47] Epoch 011 started. Train batches=280
+[2026-07-14 09:21:47] Epoch 011 step 1/280 loss=0.3129 elapsed=0.1s
+[2026-07-14 09:21:49] Epoch 011 step 25/280 loss=0.2125 elapsed=2.0s
+[2026-07-14 09:21:51] Epoch 011 step 50/280 loss=0.2188 elapsed=4.1s
+[2026-07-14 09:21:53] Epoch 011 step 75/280 loss=0.2322 elapsed=6.1s
+[2026-07-14 09:21:55] Epoch 011 step 100/280 loss=0.2373 elapsed=8.1s
+[2026-07-14 09:21:57] Epoch 011 step 125/280 loss=0.2399 elapsed=10.2s
+[2026-07-14 09:22:00] Epoch 011 step 150/280 loss=0.2376 elapsed=12.2s
+[2026-07-14 09:22:02] Epoch 011 step 175/280 loss=0.2394 elapsed=14.2s
+[2026-07-14 09:22:04] Epoch 011 step 200/280 loss=0.2425 elapsed=16.3s
+[2026-07-14 09:22:06] Epoch 011 step 225/280 loss=0.2428 elapsed=18.3s
+[2026-07-14 09:22:08] Epoch 011 step 250/280 loss=0.2469 elapsed=20.3s
+[2026-07-14 09:22:10] Epoch 011 step 275/280 loss=0.2470 elapsed=22.4s
+[2026-07-14 09:22:10] Epoch 011 step 280/280 loss=0.2499 elapsed=22.7s
+[2026-07-14 09:22:10] Epoch 011 training done. Start validation.
+[2026-07-14 09:22:14] Epoch 011 | loss=0.2499 | val_UAR=0.6783 | val_CCC=0.6434 (V=0.6503, A=0.7096, D=0.5703) | vad_pred_std=0.2108/true_std=0.2072 | score=0.6574
+[2026-07-14 09:22:14] Epoch 012 started. Train batches=280
+[2026-07-14 09:22:14] Epoch 012 step 1/280 loss=0.2037 elapsed=0.1s
+[2026-07-14 09:22:16] Epoch 012 step 25/280 loss=0.2110 elapsed=2.0s
+[2026-07-14 09:22:18] Epoch 012 step 50/280 loss=0.2120 elapsed=4.2s
+[2026-07-14 09:22:20] Epoch 012 step 75/280 loss=0.2071 elapsed=6.2s
+[2026-07-14 09:22:22] Epoch 012 step 100/280 loss=0.2068 elapsed=8.3s
+[2026-07-14 09:22:24] Epoch 012 step 125/280 loss=0.2042 elapsed=10.3s
+[2026-07-14 09:22:26] Epoch 012 step 150/280 loss=0.2025 elapsed=12.3s
+[2026-07-14 09:22:28] Epoch 012 step 175/280 loss=0.2026 elapsed=14.4s
+[2026-07-14 09:22:30] Epoch 012 step 200/280 loss=0.2050 elapsed=16.4s
+[2026-07-14 09:22:32] Epoch 012 step 225/280 loss=0.2058 elapsed=18.5s
+[2026-07-14 09:22:34] Epoch 012 step 250/280 loss=0.2051 elapsed=20.5s
+[2026-07-14 09:22:36] Epoch 012 step 275/280 loss=0.2067 elapsed=22.5s
+[2026-07-14 09:22:37] Epoch 012 step 280/280 loss=0.2081 elapsed=22.9s
+[2026-07-14 09:22:37] Epoch 012 training done. Start validation.
+[2026-07-14 09:22:40] Epoch 012 | loss=0.2081 | val_UAR=0.7283 | val_CCC=0.6501 (V=0.7057, A=0.7240, D=0.5205) | vad_pred_std=0.2027/true_std=0.2072 | score=0.6814
+[2026-07-14 09:22:40] RMM epoch 13: mask text
+[2026-07-14 09:22:40] Epoch 013 started. Train batches=280
+[2026-07-14 09:22:40] Epoch 013 step 1/280 loss=0.1507 elapsed=0.1s
+[2026-07-14 09:22:42] Epoch 013 step 25/280 loss=0.2373 elapsed=2.0s
+[2026-07-14 09:22:44] Epoch 013 step 50/280 loss=0.2175 elapsed=4.1s
+[2026-07-14 09:22:46] Epoch 013 step 75/280 loss=0.2116 elapsed=6.1s
+[2026-07-14 09:22:48] Epoch 013 step 100/280 loss=0.2089 elapsed=8.1s
+[2026-07-14 09:22:50] Epoch 013 step 125/280 loss=0.2128 elapsed=10.1s
+[2026-07-14 09:22:52] Epoch 013 step 150/280 loss=0.2105 elapsed=12.1s
+[2026-07-14 09:22:54] Epoch 013 step 175/280 loss=0.2149 elapsed=14.1s
+[2026-07-14 09:22:56] Epoch 013 step 200/280 loss=0.2166 elapsed=16.1s
+[2026-07-14 09:22:58] Epoch 013 step 225/280 loss=0.2168 elapsed=18.2s
+[2026-07-14 09:23:00] Epoch 013 step 250/280 loss=0.2172 elapsed=20.2s
+[2026-07-14 09:23:02] Epoch 013 step 275/280 loss=0.2179 elapsed=22.2s
+[2026-07-14 09:23:03] Epoch 013 step 280/280 loss=0.2202 elapsed=22.6s
+[2026-07-14 09:23:03] Epoch 013 training done. Start validation.
+[2026-07-14 09:23:06] Epoch 013 | loss=0.2202 | val_UAR=0.7383 | val_CCC=0.6493 (V=0.6689, A=0.7194, D=0.5595) | vad_pred_std=0.1922/true_std=0.2072 | score=0.6849
+[2026-07-14 09:23:07] Saved new best checkpoint: epoch=13, score=0.6849, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_3_test_Ses03_val_Ses04_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:23:07] RMM epoch 14: mask text
+[2026-07-14 09:23:07] Epoch 014 started. Train batches=280
+[2026-07-14 09:23:07] Epoch 014 step 1/280 loss=0.1825 elapsed=0.1s
+[2026-07-14 09:23:09] Epoch 014 step 25/280 loss=0.1810 elapsed=2.0s
+[2026-07-14 09:23:11] Epoch 014 step 50/280 loss=0.1868 elapsed=4.1s
+[2026-07-14 09:23:13] Epoch 014 step 75/280 loss=0.1935 elapsed=6.1s
+[2026-07-14 09:23:15] Epoch 014 step 100/280 loss=0.1983 elapsed=8.1s
+[2026-07-14 09:23:17] Epoch 014 step 125/280 loss=0.1987 elapsed=10.1s
+[2026-07-14 09:23:19] Epoch 014 step 150/280 loss=0.1983 elapsed=12.2s
+[2026-07-14 09:23:21] Epoch 014 step 175/280 loss=0.1997 elapsed=14.2s
+[2026-07-14 09:23:23] Epoch 014 step 200/280 loss=0.2001 elapsed=16.2s
+[2026-07-14 09:23:25] Epoch 014 step 225/280 loss=0.2016 elapsed=18.3s
+[2026-07-14 09:23:27] Epoch 014 step 250/280 loss=0.2010 elapsed=20.3s
+[2026-07-14 09:23:29] Epoch 014 step 275/280 loss=0.2019 elapsed=22.3s
+[2026-07-14 09:23:30] Epoch 014 step 280/280 loss=0.2034 elapsed=22.7s
+[2026-07-14 09:23:30] Epoch 014 training done. Start validation.
+[2026-07-14 09:23:33] Epoch 014 | loss=0.2034 | val_UAR=0.6684 | val_CCC=0.6373 (V=0.6340, A=0.7179, D=0.5599) | vad_pred_std=0.2166/true_std=0.2072 | score=0.6497
+[2026-07-14 09:23:33] Epoch 015 started. Train batches=280
+[2026-07-14 09:23:33] Epoch 015 step 1/280 loss=0.1588 elapsed=0.1s
+[2026-07-14 09:23:35] Epoch 015 step 25/280 loss=0.1724 elapsed=2.0s
+[2026-07-14 09:23:37] Epoch 015 step 50/280 loss=0.1740 elapsed=4.0s
+[2026-07-14 09:23:39] Epoch 015 step 75/280 loss=0.1714 elapsed=6.1s
+[2026-07-14 09:23:41] Epoch 015 step 100/280 loss=0.1711 elapsed=8.2s
+[2026-07-14 09:23:43] Epoch 015 step 125/280 loss=0.1713 elapsed=10.2s
+[2026-07-14 09:23:45] Epoch 015 step 150/280 loss=0.1721 elapsed=12.2s
+[2026-07-14 09:23:47] Epoch 015 step 175/280 loss=0.1742 elapsed=14.3s
+[2026-07-14 09:23:49] Epoch 015 step 200/280 loss=0.1767 elapsed=16.3s
+[2026-07-14 09:23:52] Epoch 015 step 225/280 loss=0.1766 elapsed=18.3s
+[2026-07-14 09:23:54] Epoch 015 step 250/280 loss=0.1772 elapsed=20.4s
+[2026-07-14 09:23:56] Epoch 015 step 275/280 loss=0.1773 elapsed=22.4s
+[2026-07-14 09:23:56] Epoch 015 step 280/280 loss=0.1783 elapsed=22.7s
+[2026-07-14 09:23:56] Epoch 015 training done. Start validation.
+[2026-07-14 09:24:00] Epoch 015 | loss=0.1783 | val_UAR=0.6914 | val_CCC=0.6550 (V=0.7006, A=0.7243, D=0.5400) | vad_pred_std=0.2224/true_std=0.2072 | score=0.6696
+[2026-07-14 09:24:00] Epoch 016 started. Train batches=280
+[2026-07-14 09:24:00] Epoch 016 step 1/280 loss=0.1687 elapsed=0.1s
+[2026-07-14 09:24:02] Epoch 016 step 25/280 loss=0.1591 elapsed=2.0s
+[2026-07-14 09:24:04] Epoch 016 step 50/280 loss=0.1653 elapsed=4.1s
+[2026-07-14 09:24:06] Epoch 016 step 75/280 loss=0.1628 elapsed=6.1s
+[2026-07-14 09:24:08] Epoch 016 step 100/280 loss=0.1652 elapsed=8.1s
+[2026-07-14 09:24:10] Epoch 016 step 125/280 loss=0.1661 elapsed=10.2s
+[2026-07-14 09:24:12] Epoch 016 step 150/280 loss=0.1677 elapsed=12.2s
+[2026-07-14 09:24:14] Epoch 016 step 175/280 loss=0.1693 elapsed=14.2s
+[2026-07-14 09:24:16] Epoch 016 step 200/280 loss=0.1683 elapsed=16.2s
+[2026-07-14 09:24:18] Epoch 016 step 225/280 loss=0.1679 elapsed=18.2s
+[2026-07-14 09:24:20] Epoch 016 step 250/280 loss=0.1697 elapsed=20.2s
+[2026-07-14 09:24:22] Epoch 016 step 275/280 loss=0.1709 elapsed=22.3s
+[2026-07-14 09:24:22] Epoch 016 step 280/280 loss=0.1722 elapsed=22.6s
+[2026-07-14 09:24:22] Epoch 016 training done. Start validation.
+[2026-07-14 09:24:26] Epoch 016 | loss=0.1722 | val_UAR=0.6715 | val_CCC=0.6533 (V=0.7078, A=0.7085, D=0.5437) | vad_pred_std=0.1947/true_std=0.2072 | score=0.6606
+[2026-07-14 09:24:26] Epoch 017 started. Train batches=280
+[2026-07-14 09:24:26] Epoch 017 step 1/280 loss=0.2104 elapsed=0.1s
+[2026-07-14 09:24:28] Epoch 017 step 25/280 loss=0.1663 elapsed=2.0s
+[2026-07-14 09:24:30] Epoch 017 step 50/280 loss=0.1651 elapsed=4.0s
+[2026-07-14 09:24:32] Epoch 017 step 75/280 loss=0.1668 elapsed=6.0s
+[2026-07-14 09:24:34] Epoch 017 step 100/280 loss=0.1637 elapsed=8.0s
+[2026-07-14 09:24:36] Epoch 017 step 125/280 loss=0.1633 elapsed=10.1s
+[2026-07-14 09:24:38] Epoch 017 step 150/280 loss=0.1624 elapsed=12.1s
+[2026-07-14 09:24:40] Epoch 017 step 175/280 loss=0.1634 elapsed=14.1s
+[2026-07-14 09:24:42] Epoch 017 step 200/280 loss=0.1627 elapsed=16.1s
+[2026-07-14 09:24:44] Epoch 017 step 225/280 loss=0.1640 elapsed=18.1s
+[2026-07-14 09:24:46] Epoch 017 step 250/280 loss=0.1631 elapsed=20.1s
+[2026-07-14 09:24:48] Epoch 017 step 275/280 loss=0.1627 elapsed=22.2s
+[2026-07-14 09:24:48] Epoch 017 step 280/280 loss=0.1645 elapsed=22.5s
+[2026-07-14 09:24:48] Epoch 017 training done. Start validation.
+[2026-07-14 09:24:52] Epoch 017 | loss=0.1645 | val_UAR=0.6937 | val_CCC=0.6488 (V=0.6877, A=0.7252, D=0.5334) | vad_pred_std=0.2071/true_std=0.2072 | score=0.6667
+[2026-07-14 09:24:52] Epoch 018 started. Train batches=280
+[2026-07-14 09:24:52] Epoch 018 step 1/280 loss=0.1232 elapsed=0.1s
+[2026-07-14 09:24:54] Epoch 018 step 25/280 loss=0.1545 elapsed=2.0s
+[2026-07-14 09:24:56] Epoch 018 step 50/280 loss=0.1608 elapsed=4.0s
+[2026-07-14 09:24:58] Epoch 018 step 75/280 loss=0.1539 elapsed=6.0s
+[2026-07-14 09:25:00] Epoch 018 step 100/280 loss=0.1542 elapsed=8.1s
+[2026-07-14 09:25:02] Epoch 018 step 125/280 loss=0.1590 elapsed=10.1s
+[2026-07-14 09:25:04] Epoch 018 step 150/280 loss=0.1591 elapsed=12.1s
+[2026-07-14 09:25:06] Epoch 018 step 175/280 loss=0.1587 elapsed=14.1s
+[2026-07-14 09:25:08] Epoch 018 step 200/280 loss=0.1607 elapsed=16.2s
+[2026-07-14 09:25:10] Epoch 018 step 225/280 loss=0.1606 elapsed=18.2s
+[2026-07-14 09:25:12] Epoch 018 step 250/280 loss=0.1606 elapsed=20.1s
+[2026-07-14 09:25:14] Epoch 018 step 275/280 loss=0.1611 elapsed=22.1s
+[2026-07-14 09:25:14] Epoch 018 step 280/280 loss=0.1630 elapsed=22.5s
+[2026-07-14 09:25:14] Epoch 018 training done. Start validation.
+[2026-07-14 09:25:18] Epoch 018 | loss=0.1630 | val_UAR=0.6938 | val_CCC=0.6510 (V=0.7054, A=0.7142, D=0.5335) | vad_pred_std=0.1981/true_std=0.2072 | score=0.6681
+[2026-07-14 09:25:18] RMM epoch 19: mask text
+[2026-07-14 09:25:18] Epoch 019 started. Train batches=280
+[2026-07-14 09:25:18] Epoch 019 step 1/280 loss=0.1186 elapsed=0.1s
+[2026-07-14 09:25:20] Epoch 019 step 25/280 loss=0.1677 elapsed=2.0s
+[2026-07-14 09:25:22] Epoch 019 step 50/280 loss=0.1646 elapsed=4.0s
+[2026-07-14 09:25:24] Epoch 019 step 75/280 loss=0.1565 elapsed=6.0s
+[2026-07-14 09:25:26] Epoch 019 step 100/280 loss=0.1576 elapsed=8.0s
+[2026-07-14 09:25:28] Epoch 019 step 125/280 loss=0.1579 elapsed=10.0s
+[2026-07-14 09:25:30] Epoch 019 step 150/280 loss=0.1601 elapsed=12.0s
+[2026-07-14 09:25:32] Epoch 019 step 175/280 loss=0.1596 elapsed=14.0s
+[2026-07-14 09:25:34] Epoch 019 step 200/280 loss=0.1598 elapsed=16.1s
+[2026-07-14 09:25:36] Epoch 019 step 225/280 loss=0.1629 elapsed=18.1s
+[2026-07-14 09:25:38] Epoch 019 step 250/280 loss=0.1628 elapsed=20.1s
+[2026-07-14 09:25:40] Epoch 019 step 275/280 loss=0.1640 elapsed=22.1s
+[2026-07-14 09:25:40] Epoch 019 step 280/280 loss=0.1655 elapsed=22.5s
+[2026-07-14 09:25:40] Epoch 019 training done. Start validation.
+[2026-07-14 09:25:44] Epoch 019 | loss=0.1655 | val_UAR=0.7174 | val_CCC=0.6550 (V=0.6715, A=0.7353, D=0.5582) | vad_pred_std=0.1942/true_std=0.2072 | score=0.6799
+[2026-07-14 09:25:44] Epoch 020 started. Train batches=280
+[2026-07-14 09:25:44] Epoch 020 step 1/280 loss=0.2172 elapsed=0.1s
+[2026-07-14 09:25:46] Epoch 020 step 25/280 loss=0.1542 elapsed=2.0s
+[2026-07-14 09:25:48] Epoch 020 step 50/280 loss=0.1513 elapsed=4.1s
+[2026-07-14 09:25:50] Epoch 020 step 75/280 loss=0.1521 elapsed=6.1s
+[2026-07-14 09:25:52] Epoch 020 step 100/280 loss=0.1505 elapsed=8.1s
+[2026-07-14 09:25:54] Epoch 020 step 125/280 loss=0.1499 elapsed=10.1s
+[2026-07-14 09:25:56] Epoch 020 step 150/280 loss=0.1501 elapsed=12.2s
+[2026-07-14 09:25:58] Epoch 020 step 175/280 loss=0.1501 elapsed=14.2s
+[2026-07-14 09:26:00] Epoch 020 step 200/280 loss=0.1493 elapsed=16.2s
+[2026-07-14 09:26:02] Epoch 020 step 225/280 loss=0.1499 elapsed=18.2s
+[2026-07-14 09:26:04] Epoch 020 step 250/280 loss=0.1500 elapsed=20.3s
+[2026-07-14 09:26:06] Epoch 020 step 275/280 loss=0.1495 elapsed=22.3s
+[2026-07-14 09:26:06] Epoch 020 step 280/280 loss=0.1509 elapsed=22.6s
+[2026-07-14 09:26:06] Epoch 020 training done. Start validation.
+[2026-07-14 09:26:10] Epoch 020 | loss=0.1509 | val_UAR=0.6988 | val_CCC=0.6306 (V=0.6959, A=0.6826, D=0.5132) | vad_pred_std=0.1777/true_std=0.2072 | score=0.6579
+[2026-07-14 09:26:10] Epoch 021 started. Train batches=280
+[2026-07-14 09:26:10] Epoch 021 step 1/280 loss=0.1296 elapsed=0.1s
+[2026-07-14 09:26:12] Epoch 021 step 25/280 loss=0.1363 elapsed=2.0s
+[2026-07-14 09:26:14] Epoch 021 step 50/280 loss=0.1340 elapsed=4.0s
+[2026-07-14 09:26:16] Epoch 021 step 75/280 loss=0.1403 elapsed=6.0s
+[2026-07-14 09:26:18] Epoch 021 step 100/280 loss=0.1409 elapsed=8.0s
+[2026-07-14 09:26:20] Epoch 021 step 125/280 loss=0.1410 elapsed=10.0s
+[2026-07-14 09:26:22] Epoch 021 step 150/280 loss=0.1413 elapsed=12.1s
+[2026-07-14 09:26:24] Epoch 021 step 175/280 loss=0.1416 elapsed=14.1s
+[2026-07-14 09:26:26] Epoch 021 step 200/280 loss=0.1407 elapsed=16.1s
+[2026-07-14 09:26:28] Epoch 021 step 225/280 loss=0.1407 elapsed=18.2s
+[2026-07-14 09:26:30] Epoch 021 step 250/280 loss=0.1413 elapsed=20.2s
+[2026-07-14 09:26:32] Epoch 021 step 275/280 loss=0.1416 elapsed=22.2s
+[2026-07-14 09:26:33] Epoch 021 step 280/280 loss=0.1443 elapsed=22.6s
+[2026-07-14 09:26:33] Epoch 021 training done. Start validation.
+[2026-07-14 09:26:36] Epoch 021 | loss=0.1443 | val_UAR=0.7343 | val_CCC=0.6475 (V=0.6952, A=0.7029, D=0.5445) | vad_pred_std=0.1857/true_std=0.2072 | score=0.6822
+[2026-07-14 09:26:36] Epoch 022 started. Train batches=280
+[2026-07-14 09:26:36] Epoch 022 step 1/280 loss=0.1281 elapsed=0.1s
+[2026-07-14 09:26:38] Epoch 022 step 25/280 loss=0.1472 elapsed=2.0s
+[2026-07-14 09:26:40] Epoch 022 step 50/280 loss=0.1386 elapsed=4.1s
+[2026-07-14 09:26:42] Epoch 022 step 75/280 loss=0.1371 elapsed=6.1s
+[2026-07-14 09:26:44] Epoch 022 step 100/280 loss=0.1357 elapsed=8.1s
+[2026-07-14 09:26:46] Epoch 022 step 125/280 loss=0.1358 elapsed=10.1s
+[2026-07-14 09:26:48] Epoch 022 step 150/280 loss=0.1369 elapsed=12.2s
+[2026-07-14 09:26:50] Epoch 022 step 175/280 loss=0.1361 elapsed=14.2s
+[2026-07-14 09:26:52] Epoch 022 step 200/280 loss=0.1361 elapsed=16.2s
+[2026-07-14 09:26:54] Epoch 022 step 225/280 loss=0.1372 elapsed=18.2s
+[2026-07-14 09:26:56] Epoch 022 step 250/280 loss=0.1380 elapsed=20.2s
+[2026-07-14 09:26:58] Epoch 022 step 275/280 loss=0.1387 elapsed=22.2s
+[2026-07-14 09:26:59] Epoch 022 step 280/280 loss=0.1403 elapsed=22.6s
+[2026-07-14 09:26:59] Epoch 022 training done. Start validation.
+[2026-07-14 09:27:02] Epoch 022 | loss=0.1403 | val_UAR=0.7109 | val_CCC=0.6460 (V=0.7047, A=0.6904, D=0.5429) | vad_pred_std=0.1940/true_std=0.2072 | score=0.6720
+[2026-07-14 09:27:02] Epoch 023 started. Train batches=280
+[2026-07-14 09:27:02] Epoch 023 step 1/280 loss=0.1653 elapsed=0.1s
+[2026-07-14 09:27:04] Epoch 023 step 25/280 loss=0.1427 elapsed=2.0s
+[2026-07-14 09:27:06] Epoch 023 step 50/280 loss=0.1336 elapsed=4.0s
+[2026-07-14 09:27:08] Epoch 023 step 75/280 loss=0.1331 elapsed=6.1s
+[2026-07-14 09:27:10] Epoch 023 step 100/280 loss=0.1315 elapsed=8.1s
+[2026-07-14 09:27:12] Epoch 023 step 125/280 loss=0.1369 elapsed=10.1s
+[2026-07-14 09:27:14] Epoch 023 step 150/280 loss=0.1357 elapsed=12.1s
+[2026-07-14 09:27:16] Epoch 023 step 175/280 loss=0.1355 elapsed=14.2s
+[2026-07-14 09:27:19] Epoch 023 step 200/280 loss=0.1352 elapsed=16.2s
+[2026-07-14 09:27:21] Epoch 023 step 225/280 loss=0.1348 elapsed=18.2s
+[2026-07-14 09:27:23] Epoch 023 step 250/280 loss=0.1355 elapsed=20.3s
+[2026-07-14 09:27:25] Epoch 023 step 275/280 loss=0.1361 elapsed=22.3s
+[2026-07-14 09:27:25] Epoch 023 step 280/280 loss=0.1379 elapsed=22.6s
+[2026-07-14 09:27:25] Epoch 023 training done. Start validation.
+[2026-07-14 09:27:29] Epoch 023 | loss=0.1379 | val_UAR=0.6949 | val_CCC=0.6435 (V=0.6880, A=0.7106, D=0.5318) | vad_pred_std=0.1795/true_std=0.2072 | score=0.6640
+[2026-07-14 09:27:29] Early stopping
+[2026-07-14 09:27:29] Load best checkpoint from /kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_3_test_Ses03_val_Ses04_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:27:29] Evaluate/export split=train
+[2026-07-14 09:27:41] Evaluate/export split=val
+[2026-07-14 09:27:45] Evaluate/export split=test
+[2026-07-14 09:27:49] Test: {'WA': 0.6864, 'UAR': 0.6833, 'Macro_F1': 0.6818, 'CCC_mean': 0.5789, 'CCC_valence': 0.5766, 'CCC_arousal': 0.6246, 'CCC_dominance': 0.5355, 'VAD_pred_std_mean': 0.1847, 'VAD_true_std_mean': 0.2082, 'MAE_mean': 0.5616}
+[2026-07-14 09:27:49] === 5fold_session | fold_4_test_Ses04_val_Ses05 | acoustic_text_bridge_rmm ===
+[2026-07-14 09:27:49] Train/Val/Test: 3259 1241 1031
+[2026-07-14 09:27:49] Start compute_scalers()
+[2026-07-14 09:27:49] Computing scalers without full-fold tensor copy...
+[2026-07-14 09:27:49] Scaler start: X_temporal, n=3259, chunk=128
+[2026-07-14 09:27:49] Scaler progress X_temporal: 128/3259 samples
+[2026-07-14 09:27:50] Scaler progress X_temporal: 1408/3259 samples
+[2026-07-14 09:27:50] Scaler progress X_temporal: 2688/3259 samples
+[2026-07-14 09:27:51] Scaler done: X_temporal
+[2026-07-14 09:27:51] Scaler start: X_spectral, n=3259, chunk=128
+[2026-07-14 09:27:51] Scaler progress X_spectral: 128/3259 samples
+[2026-07-14 09:27:52] Scaler progress X_spectral: 1408/3259 samples
+[2026-07-14 09:27:54] Scaler progress X_spectral: 2688/3259 samples
+[2026-07-14 09:27:54] Scaler done: X_spectral
+[2026-07-14 09:27:54] Fitting StandardScaler for X_stats and X_e2v...
+[2026-07-14 09:27:55] All scalers are ready.
+[2026-07-14 09:27:55] Build Dataset objects
+[2026-07-14 09:27:55] Build DataLoaders
+[2026-07-14 09:27:55] Build model with TEXT_MODEL_NAME=roberta-base
+[2026-07-14 09:27:55] Loading text backbone from: /kaggle/input/datasets/linhlaz225/robert/roberta-base-kaggle
+[2026-07-14 09:27:55] Loaded text backbone.
+[2026-07-14 09:27:55] Model ready. Trainable params: 4,197,719/128,843,351 (3.26%)
+[2026-07-14 09:27:55] Optimizer, scheduler, scaler are ready. Start training loop.
+[2026-07-14 09:27:55] Epoch 001 started. Train batches=272
+[2026-07-14 09:27:55] Epoch 001 step 1/272 loss=0.9724 elapsed=0.1s
+[2026-07-14 09:27:57] Epoch 001 step 25/272 loss=0.9459 elapsed=2.1s
+[2026-07-14 09:27:59] Epoch 001 step 50/272 loss=0.9349 elapsed=4.1s
+[2026-07-14 09:28:01] Epoch 001 step 75/272 loss=0.9189 elapsed=6.1s
+[2026-07-14 09:28:03] Epoch 001 step 100/272 loss=0.8947 elapsed=8.2s
+[2026-07-14 09:28:05] Epoch 001 step 125/272 loss=0.8717 elapsed=10.2s
+[2026-07-14 09:28:07] Epoch 001 step 150/272 loss=0.8494 elapsed=12.2s
+[2026-07-14 09:28:09] Epoch 001 step 175/272 loss=0.8317 elapsed=14.2s
+[2026-07-14 09:28:11] Epoch 001 step 200/272 loss=0.8125 elapsed=16.2s
+[2026-07-14 09:28:13] Epoch 001 step 225/272 loss=0.8008 elapsed=18.3s
+[2026-07-14 09:28:15] Epoch 001 step 250/272 loss=0.7886 elapsed=20.3s
+[2026-07-14 09:28:17] Epoch 001 step 272/272 loss=0.7806 elapsed=22.1s
+[2026-07-14 09:28:17] Epoch 001 training done. Start validation.
+[2026-07-14 09:28:21] Epoch 001 | loss=0.7806 | val_UAR=0.5804 | val_CCC=0.4651 (V=0.2247, A=0.6584, D=0.5123) | vad_pred_std=0.1687/true_std=0.2085 | score=0.5112
+[2026-07-14 09:28:22] Saved new best checkpoint: epoch=1, score=0.5112, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_4_test_Ses04_val_Ses05_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:28:22] Epoch 002 started. Train batches=272
+[2026-07-14 09:28:22] Epoch 002 step 1/272 loss=0.5310 elapsed=0.1s
+[2026-07-14 09:28:24] Epoch 002 step 25/272 loss=0.5942 elapsed=2.0s
+[2026-07-14 09:28:26] Epoch 002 step 50/272 loss=0.5990 elapsed=4.1s
+[2026-07-14 09:28:28] Epoch 002 step 75/272 loss=0.5890 elapsed=6.1s
+[2026-07-14 09:28:30] Epoch 002 step 100/272 loss=0.5782 elapsed=8.2s
+[2026-07-14 09:28:32] Epoch 002 step 125/272 loss=0.5738 elapsed=10.2s
+[2026-07-14 09:28:34] Epoch 002 step 150/272 loss=0.5609 elapsed=12.2s
+[2026-07-14 09:28:36] Epoch 002 step 175/272 loss=0.5477 elapsed=14.3s
+[2026-07-14 09:28:38] Epoch 002 step 200/272 loss=0.5452 elapsed=16.3s
+[2026-07-14 09:28:40] Epoch 002 step 225/272 loss=0.5496 elapsed=18.3s
+[2026-07-14 09:28:42] Epoch 002 step 250/272 loss=0.5441 elapsed=20.3s
+[2026-07-14 09:28:44] Epoch 002 step 272/272 loss=0.5416 elapsed=22.1s
+[2026-07-14 09:28:44] Epoch 002 training done. Start validation.
+[2026-07-14 09:28:48] Epoch 002 | loss=0.5416 | val_UAR=0.6403 | val_CCC=0.5862 (V=0.5023, A=0.6788, D=0.5775) | vad_pred_std=0.2020/true_std=0.2085 | score=0.6079
+[2026-07-14 09:28:49] Saved new best checkpoint: epoch=2, score=0.6079, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_4_test_Ses04_val_Ses05_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:28:49] Epoch 003 started. Train batches=272
+[2026-07-14 09:28:49] Epoch 003 step 1/272 loss=0.4379 elapsed=0.1s
+[2026-07-14 09:28:51] Epoch 003 step 25/272 loss=0.4217 elapsed=2.0s
+[2026-07-14 09:28:53] Epoch 003 step 50/272 loss=0.4447 elapsed=4.1s
+[2026-07-14 09:28:55] Epoch 003 step 75/272 loss=0.4422 elapsed=6.1s
+[2026-07-14 09:28:57] Epoch 003 step 100/272 loss=0.4447 elapsed=8.2s
+[2026-07-14 09:28:59] Epoch 003 step 125/272 loss=0.4371 elapsed=10.3s
+[2026-07-14 09:29:02] Epoch 003 step 150/272 loss=0.4366 elapsed=12.3s
+[2026-07-14 09:29:04] Epoch 003 step 175/272 loss=0.4348 elapsed=14.4s
+[2026-07-14 09:29:06] Epoch 003 step 200/272 loss=0.4339 elapsed=16.4s
+[2026-07-14 09:29:08] Epoch 003 step 225/272 loss=0.4337 elapsed=18.5s
+[2026-07-14 09:29:10] Epoch 003 step 250/272 loss=0.4374 elapsed=20.6s
+[2026-07-14 09:29:12] Epoch 003 step 272/272 loss=0.4392 elapsed=22.3s
+[2026-07-14 09:29:12] Epoch 003 training done. Start validation.
+[2026-07-14 09:29:16] Epoch 003 | loss=0.4392 | val_UAR=0.6911 | val_CCC=0.6104 (V=0.6158, A=0.6722, D=0.5431) | vad_pred_std=0.2305/true_std=0.2085 | score=0.6427
+[2026-07-14 09:29:17] Saved new best checkpoint: epoch=3, score=0.6427, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_4_test_Ses04_val_Ses05_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:29:17] Epoch 004 started. Train batches=272
+[2026-07-14 09:29:17] Epoch 004 step 1/272 loss=0.2197 elapsed=0.1s
+[2026-07-14 09:29:19] Epoch 004 step 25/272 loss=0.3757 elapsed=2.1s
+[2026-07-14 09:29:21] Epoch 004 step 50/272 loss=0.3651 elapsed=4.1s
+[2026-07-14 09:29:23] Epoch 004 step 75/272 loss=0.3729 elapsed=6.1s
+[2026-07-14 09:29:25] Epoch 004 step 100/272 loss=0.3723 elapsed=8.2s
+[2026-07-14 09:29:27] Epoch 004 step 125/272 loss=0.3707 elapsed=10.2s
+[2026-07-14 09:29:29] Epoch 004 step 150/272 loss=0.3773 elapsed=12.3s
+[2026-07-14 09:29:31] Epoch 004 step 175/272 loss=0.3810 elapsed=14.3s
+[2026-07-14 09:29:33] Epoch 004 step 200/272 loss=0.3838 elapsed=16.4s
+[2026-07-14 09:29:35] Epoch 004 step 225/272 loss=0.3890 elapsed=18.4s
+[2026-07-14 09:29:37] Epoch 004 step 250/272 loss=0.3867 elapsed=20.4s
+[2026-07-14 09:29:39] Epoch 004 step 272/272 loss=0.3892 elapsed=22.3s
+[2026-07-14 09:29:39] Epoch 004 training done. Start validation.
+[2026-07-14 09:29:44] Epoch 004 | loss=0.3892 | val_UAR=0.5813 | val_CCC=0.5936 (V=0.5682, A=0.6457, D=0.5669) | vad_pred_std=0.1688/true_std=0.2085 | score=0.5886
+[2026-07-14 09:29:44] Epoch 005 started. Train batches=272
+[2026-07-14 09:29:44] Epoch 005 step 1/272 loss=0.4392 elapsed=0.1s
+[2026-07-14 09:29:46] Epoch 005 step 25/272 loss=0.3311 elapsed=2.1s
+[2026-07-14 09:29:48] Epoch 005 step 50/272 loss=0.3441 elapsed=4.2s
+[2026-07-14 09:29:50] Epoch 005 step 75/272 loss=0.3459 elapsed=6.4s
+[2026-07-14 09:29:52] Epoch 005 step 100/272 loss=0.3568 elapsed=8.5s
+[2026-07-14 09:29:54] Epoch 005 step 125/272 loss=0.3582 elapsed=10.6s
+[2026-07-14 09:29:56] Epoch 005 step 150/272 loss=0.3589 elapsed=12.7s
+[2026-07-14 09:29:58] Epoch 005 step 175/272 loss=0.3625 elapsed=14.8s
+[2026-07-14 09:30:00] Epoch 005 step 200/272 loss=0.3651 elapsed=16.9s
+[2026-07-14 09:30:02] Epoch 005 step 225/272 loss=0.3648 elapsed=18.9s
+[2026-07-14 09:30:04] Epoch 005 step 250/272 loss=0.3630 elapsed=21.0s
+[2026-07-14 09:30:06] Epoch 005 step 272/272 loss=0.3630 elapsed=22.8s
+[2026-07-14 09:30:06] Epoch 005 training done. Start validation.
+[2026-07-14 09:30:11] Epoch 005 | loss=0.3630 | val_UAR=0.7180 | val_CCC=0.6332 (V=0.6727, A=0.6722, D=0.5547) | vad_pred_std=0.1651/true_std=0.2085 | score=0.6671
+[2026-07-14 09:30:12] Saved new best checkpoint: epoch=5, score=0.6671, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_4_test_Ses04_val_Ses05_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:30:12] Epoch 006 started. Train batches=272
+[2026-07-14 09:30:12] Epoch 006 step 1/272 loss=0.3299 elapsed=0.1s
+[2026-07-14 09:30:14] Epoch 006 step 25/272 loss=0.3227 elapsed=2.0s
+[2026-07-14 09:30:16] Epoch 006 step 50/272 loss=0.3489 elapsed=4.1s
+[2026-07-14 09:30:18] Epoch 006 step 75/272 loss=0.3498 elapsed=6.2s
+[2026-07-14 09:30:20] Epoch 006 step 100/272 loss=0.3507 elapsed=8.2s
+[2026-07-14 09:30:22] Epoch 006 step 125/272 loss=0.3573 elapsed=10.3s
+[2026-07-14 09:30:24] Epoch 006 step 150/272 loss=0.3546 elapsed=12.3s
+[2026-07-14 09:30:26] Epoch 006 step 175/272 loss=0.3528 elapsed=14.3s
+[2026-07-14 09:30:28] Epoch 006 step 200/272 loss=0.3520 elapsed=16.4s
+[2026-07-14 09:30:30] Epoch 006 step 225/272 loss=0.3489 elapsed=18.4s
+[2026-07-14 09:30:32] Epoch 006 step 250/272 loss=0.3475 elapsed=20.4s
+[2026-07-14 09:30:34] Epoch 006 step 272/272 loss=0.3482 elapsed=22.2s
+[2026-07-14 09:30:34] Epoch 006 training done. Start validation.
+[2026-07-14 09:30:38] Epoch 006 | loss=0.3482 | val_UAR=0.7204 | val_CCC=0.6662 (V=0.6989, A=0.6884, D=0.6114) | vad_pred_std=0.1985/true_std=0.2085 | score=0.6879
+[2026-07-14 09:30:39] Saved new best checkpoint: epoch=6, score=0.6879, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_4_test_Ses04_val_Ses05_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:30:39] Epoch 007 started. Train batches=272
+[2026-07-14 09:30:39] Epoch 007 step 1/272 loss=0.2616 elapsed=0.1s
+[2026-07-14 09:30:41] Epoch 007 step 25/272 loss=0.3247 elapsed=2.0s
+[2026-07-14 09:30:43] Epoch 007 step 50/272 loss=0.3108 elapsed=4.0s
+[2026-07-14 09:30:45] Epoch 007 step 75/272 loss=0.3068 elapsed=6.0s
+[2026-07-14 09:30:47] Epoch 007 step 100/272 loss=0.3108 elapsed=8.0s
+[2026-07-14 09:30:49] Epoch 007 step 125/272 loss=0.3037 elapsed=10.1s
+[2026-07-14 09:30:51] Epoch 007 step 150/272 loss=0.3007 elapsed=12.1s
+[2026-07-14 09:30:53] Epoch 007 step 175/272 loss=0.2993 elapsed=14.2s
+[2026-07-14 09:30:55] Epoch 007 step 200/272 loss=0.3021 elapsed=16.2s
+[2026-07-14 09:30:57] Epoch 007 step 225/272 loss=0.3053 elapsed=18.2s
+[2026-07-14 09:30:59] Epoch 007 step 250/272 loss=0.3052 elapsed=20.3s
+[2026-07-14 09:31:01] Epoch 007 step 272/272 loss=0.3075 elapsed=22.0s
+[2026-07-14 09:31:01] Epoch 007 training done. Start validation.
+[2026-07-14 09:31:05] Epoch 007 | loss=0.3075 | val_UAR=0.6818 | val_CCC=0.6466 (V=0.6875, A=0.6634, D=0.5888) | vad_pred_std=0.1855/true_std=0.2085 | score=0.6607
+[2026-07-14 09:31:05] Epoch 008 started. Train batches=272
+[2026-07-14 09:31:05] Epoch 008 step 1/272 loss=0.3950 elapsed=0.1s
+[2026-07-14 09:31:07] Epoch 008 step 25/272 loss=0.2622 elapsed=2.0s
+[2026-07-14 09:31:09] Epoch 008 step 50/272 loss=0.2747 elapsed=4.1s
+[2026-07-14 09:31:11] Epoch 008 step 75/272 loss=0.2756 elapsed=6.1s
+[2026-07-14 09:31:13] Epoch 008 step 100/272 loss=0.2782 elapsed=8.1s
+[2026-07-14 09:31:15] Epoch 008 step 125/272 loss=0.2800 elapsed=10.1s
+[2026-07-14 09:31:17] Epoch 008 step 150/272 loss=0.2797 elapsed=12.2s
+[2026-07-14 09:31:19] Epoch 008 step 175/272 loss=0.2766 elapsed=14.3s
+[2026-07-14 09:31:21] Epoch 008 step 200/272 loss=0.2793 elapsed=16.4s
+[2026-07-14 09:31:24] Epoch 008 step 225/272 loss=0.2818 elapsed=18.5s
+[2026-07-14 09:31:26] Epoch 008 step 250/272 loss=0.2810 elapsed=20.5s
+[2026-07-14 09:31:27] Epoch 008 step 272/272 loss=0.2803 elapsed=22.3s
+[2026-07-14 09:31:27] Epoch 008 training done. Start validation.
+[2026-07-14 09:31:32] Epoch 008 | loss=0.2803 | val_UAR=0.6960 | val_CCC=0.6315 (V=0.6735, A=0.6436, D=0.5775) | vad_pred_std=0.1789/true_std=0.2085 | score=0.6573
+[2026-07-14 09:31:32] Epoch 009 started. Train batches=272
+[2026-07-14 09:31:32] Epoch 009 step 1/272 loss=0.2379 elapsed=0.1s
+[2026-07-14 09:31:34] Epoch 009 step 25/272 loss=0.2634 elapsed=2.0s
+[2026-07-14 09:31:36] Epoch 009 step 50/272 loss=0.2519 elapsed=4.1s
+[2026-07-14 09:31:38] Epoch 009 step 75/272 loss=0.2560 elapsed=6.2s
+[2026-07-14 09:31:40] Epoch 009 step 100/272 loss=0.2557 elapsed=8.2s
+[2026-07-14 09:31:42] Epoch 009 step 125/272 loss=0.2617 elapsed=10.2s
+[2026-07-14 09:31:44] Epoch 009 step 150/272 loss=0.2575 elapsed=12.2s
+[2026-07-14 09:31:46] Epoch 009 step 175/272 loss=0.2574 elapsed=14.4s
+[2026-07-14 09:31:48] Epoch 009 step 200/272 loss=0.2553 elapsed=16.5s
+[2026-07-14 09:31:50] Epoch 009 step 225/272 loss=0.2549 elapsed=18.5s
+[2026-07-14 09:31:52] Epoch 009 step 250/272 loss=0.2572 elapsed=20.6s
+[2026-07-14 09:31:54] Epoch 009 step 272/272 loss=0.2581 elapsed=22.3s
+[2026-07-14 09:31:54] Epoch 009 training done. Start validation.
+[2026-07-14 09:31:59] Epoch 009 | loss=0.2581 | val_UAR=0.7113 | val_CCC=0.6551 (V=0.6665, A=0.7067, D=0.5921) | vad_pred_std=0.1888/true_std=0.2085 | score=0.6776
+[2026-07-14 09:31:59] Epoch 010 started. Train batches=272
+[2026-07-14 09:31:59] Epoch 010 step 1/272 loss=0.1497 elapsed=0.1s
+[2026-07-14 09:32:01] Epoch 010 step 25/272 loss=0.2197 elapsed=2.1s
+[2026-07-14 09:32:03] Epoch 010 step 50/272 loss=0.2253 elapsed=4.1s
+[2026-07-14 09:32:05] Epoch 010 step 75/272 loss=0.2238 elapsed=6.2s
+[2026-07-14 09:32:07] Epoch 010 step 100/272 loss=0.2353 elapsed=8.2s
+[2026-07-14 09:32:09] Epoch 010 step 125/272 loss=0.2369 elapsed=10.2s
+[2026-07-14 09:32:11] Epoch 010 step 150/272 loss=0.2376 elapsed=12.2s
+[2026-07-14 09:32:13] Epoch 010 step 175/272 loss=0.2359 elapsed=14.2s
+[2026-07-14 09:32:15] Epoch 010 step 200/272 loss=0.2360 elapsed=16.2s
+[2026-07-14 09:32:17] Epoch 010 step 225/272 loss=0.2369 elapsed=18.2s
+[2026-07-14 09:32:19] Epoch 010 step 250/272 loss=0.2371 elapsed=20.3s
+[2026-07-14 09:32:21] Epoch 010 step 272/272 loss=0.2363 elapsed=22.0s
+[2026-07-14 09:32:21] Epoch 010 training done. Start validation.
+[2026-07-14 09:32:25] Epoch 010 | loss=0.2363 | val_UAR=0.7176 | val_CCC=0.6384 (V=0.6503, A=0.7150, D=0.5500) | vad_pred_std=0.1782/true_std=0.2085 | score=0.6701
+[2026-07-14 09:32:25] Epoch 011 started. Train batches=272
+[2026-07-14 09:32:25] Epoch 011 step 1/272 loss=0.2036 elapsed=0.1s
+[2026-07-14 09:32:27] Epoch 011 step 25/272 loss=0.2132 elapsed=2.0s
+[2026-07-14 09:32:29] Epoch 011 step 50/272 loss=0.2204 elapsed=4.0s
+[2026-07-14 09:32:31] Epoch 011 step 75/272 loss=0.2171 elapsed=6.1s
+[2026-07-14 09:32:33] Epoch 011 step 100/272 loss=0.2168 elapsed=8.0s
+[2026-07-14 09:32:35] Epoch 011 step 125/272 loss=0.2167 elapsed=10.1s
+[2026-07-14 09:32:37] Epoch 011 step 150/272 loss=0.2159 elapsed=12.1s
+[2026-07-14 09:32:39] Epoch 011 step 175/272 loss=0.2175 elapsed=14.1s
+[2026-07-14 09:32:41] Epoch 011 step 200/272 loss=0.2188 elapsed=16.2s
+[2026-07-14 09:32:43] Epoch 011 step 225/272 loss=0.2198 elapsed=18.2s
+[2026-07-14 09:32:45] Epoch 011 step 250/272 loss=0.2219 elapsed=20.2s
+[2026-07-14 09:32:47] Epoch 011 step 272/272 loss=0.2215 elapsed=21.9s
+[2026-07-14 09:32:47] Epoch 011 training done. Start validation.
+[2026-07-14 09:32:51] Epoch 011 | loss=0.2215 | val_UAR=0.7083 | val_CCC=0.6390 (V=0.6680, A=0.6913, D=0.5577) | vad_pred_std=0.1680/true_std=0.2085 | score=0.6668
+[2026-07-14 09:32:51] Epoch 012 started. Train batches=272
+[2026-07-14 09:32:51] Epoch 012 step 1/272 loss=0.2247 elapsed=0.1s
+[2026-07-14 09:32:53] Epoch 012 step 25/272 loss=0.1995 elapsed=2.0s
+[2026-07-14 09:32:55] Epoch 012 step 50/272 loss=0.1999 elapsed=4.0s
+[2026-07-14 09:32:57] Epoch 012 step 75/272 loss=0.2076 elapsed=6.0s
+[2026-07-14 09:32:59] Epoch 012 step 100/272 loss=0.2035 elapsed=8.1s
+[2026-07-14 09:33:01] Epoch 012 step 125/272 loss=0.2023 elapsed=10.1s
+[2026-07-14 09:33:03] Epoch 012 step 150/272 loss=0.2055 elapsed=12.1s
+[2026-07-14 09:33:05] Epoch 012 step 175/272 loss=0.2075 elapsed=14.1s
+[2026-07-14 09:33:07] Epoch 012 step 200/272 loss=0.2086 elapsed=16.1s
+[2026-07-14 09:33:09] Epoch 012 step 225/272 loss=0.2104 elapsed=18.2s
+[2026-07-14 09:33:11] Epoch 012 step 250/272 loss=0.2113 elapsed=20.2s
+[2026-07-14 09:33:13] Epoch 012 step 272/272 loss=0.2102 elapsed=22.0s
+[2026-07-14 09:33:13] Epoch 012 training done. Start validation.
+[2026-07-14 09:33:17] Epoch 012 | loss=0.2102 | val_UAR=0.7220 | val_CCC=0.6476 (V=0.6861, A=0.7080, D=0.5486) | vad_pred_std=0.1867/true_std=0.2085 | score=0.6773
+[2026-07-14 09:33:17] Epoch 013 started. Train batches=272
+[2026-07-14 09:33:17] Epoch 013 step 1/272 loss=0.1866 elapsed=0.1s
+[2026-07-14 09:33:19] Epoch 013 step 25/272 loss=0.1920 elapsed=2.0s
+[2026-07-14 09:33:21] Epoch 013 step 50/272 loss=0.2086 elapsed=4.0s
+[2026-07-14 09:33:23] Epoch 013 step 75/272 loss=0.2058 elapsed=6.1s
+[2026-07-14 09:33:25] Epoch 013 step 100/272 loss=0.2048 elapsed=8.1s
+[2026-07-14 09:33:27] Epoch 013 step 125/272 loss=0.2027 elapsed=10.1s
+[2026-07-14 09:33:29] Epoch 013 step 150/272 loss=0.2009 elapsed=12.1s
+[2026-07-14 09:33:31] Epoch 013 step 175/272 loss=0.2008 elapsed=14.1s
+[2026-07-14 09:33:33] Epoch 013 step 200/272 loss=0.2015 elapsed=16.1s
+[2026-07-14 09:33:35] Epoch 013 step 225/272 loss=0.2015 elapsed=18.2s
+[2026-07-14 09:33:38] Epoch 013 step 250/272 loss=0.1999 elapsed=20.2s
+[2026-07-14 09:33:39] Epoch 013 step 272/272 loss=0.2004 elapsed=22.0s
+[2026-07-14 09:33:39] Epoch 013 training done. Start validation.
+[2026-07-14 09:33:44] Epoch 013 | loss=0.2004 | val_UAR=0.7327 | val_CCC=0.6343 (V=0.6835, A=0.7037, D=0.5157) | vad_pred_std=0.1711/true_std=0.2085 | score=0.6736
+[2026-07-14 09:33:44] RMM epoch 14: mask text
+[2026-07-14 09:33:44] Epoch 014 started. Train batches=272
+[2026-07-14 09:33:44] Epoch 014 step 1/272 loss=0.1887 elapsed=0.1s
+[2026-07-14 09:33:46] Epoch 014 step 25/272 loss=0.2852 elapsed=2.0s
+[2026-07-14 09:33:48] Epoch 014 step 50/272 loss=0.2655 elapsed=4.1s
+[2026-07-14 09:33:50] Epoch 014 step 75/272 loss=0.2727 elapsed=6.1s
+[2026-07-14 09:33:52] Epoch 014 step 100/272 loss=0.2698 elapsed=8.0s
+[2026-07-14 09:33:54] Epoch 014 step 125/272 loss=0.2659 elapsed=10.0s
+[2026-07-14 09:33:56] Epoch 014 step 150/272 loss=0.2679 elapsed=12.0s
+[2026-07-14 09:33:58] Epoch 014 step 175/272 loss=0.2655 elapsed=14.1s
+[2026-07-14 09:34:00] Epoch 014 step 200/272 loss=0.2707 elapsed=16.1s
+[2026-07-14 09:34:02] Epoch 014 step 225/272 loss=0.2714 elapsed=18.1s
+[2026-07-14 09:34:04] Epoch 014 step 250/272 loss=0.2722 elapsed=20.1s
+[2026-07-14 09:34:05] Epoch 014 step 272/272 loss=0.2774 elapsed=21.8s
+[2026-07-14 09:34:05] Epoch 014 training done. Start validation.
+[2026-07-14 09:34:10] Epoch 014 | loss=0.2774 | val_UAR=0.6690 | val_CCC=0.6067 (V=0.6180, A=0.6815, D=0.5207) | vad_pred_std=0.1598/true_std=0.2085 | score=0.6316
+[2026-07-14 09:34:10] Epoch 015 started. Train batches=272
+[2026-07-14 09:34:10] Epoch 015 step 1/272 loss=0.1487 elapsed=0.1s
+[2026-07-14 09:34:12] Epoch 015 step 25/272 loss=0.1847 elapsed=2.1s
+[2026-07-14 09:34:14] Epoch 015 step 50/272 loss=0.1871 elapsed=4.1s
+[2026-07-14 09:34:16] Epoch 015 step 75/272 loss=0.1800 elapsed=6.1s
+[2026-07-14 09:34:18] Epoch 015 step 100/272 loss=0.1861 elapsed=8.2s
+[2026-07-14 09:34:20] Epoch 015 step 125/272 loss=0.1884 elapsed=10.2s
+[2026-07-14 09:34:22] Epoch 015 step 150/272 loss=0.1883 elapsed=12.2s
+[2026-07-14 09:34:24] Epoch 015 step 175/272 loss=0.1856 elapsed=14.2s
+[2026-07-14 09:34:26] Epoch 015 step 200/272 loss=0.1865 elapsed=16.2s
+[2026-07-14 09:34:28] Epoch 015 step 225/272 loss=0.1845 elapsed=18.3s
+[2026-07-14 09:34:30] Epoch 015 step 250/272 loss=0.1834 elapsed=20.3s
+[2026-07-14 09:34:32] Epoch 015 step 272/272 loss=0.1835 elapsed=22.1s
+[2026-07-14 09:34:32] Epoch 015 training done. Start validation.
+[2026-07-14 09:34:36] Epoch 015 | loss=0.1835 | val_UAR=0.7375 | val_CCC=0.6383 (V=0.6639, A=0.6959, D=0.5549) | vad_pred_std=0.1889/true_std=0.2085 | score=0.6780
+[2026-07-14 09:34:36] Epoch 016 started. Train batches=272
+[2026-07-14 09:34:36] Epoch 016 step 1/272 loss=0.2106 elapsed=0.1s
+[2026-07-14 09:34:38] Epoch 016 step 25/272 loss=0.1586 elapsed=2.0s
+[2026-07-14 09:34:40] Epoch 016 step 50/272 loss=0.1555 elapsed=4.1s
+[2026-07-14 09:34:42] Epoch 016 step 75/272 loss=0.1527 elapsed=6.1s
+[2026-07-14 09:34:44] Epoch 016 step 100/272 loss=0.1541 elapsed=8.1s
+[2026-07-14 09:34:46] Epoch 016 step 125/272 loss=0.1582 elapsed=10.1s
+[2026-07-14 09:34:48] Epoch 016 step 150/272 loss=0.1600 elapsed=12.1s
+[2026-07-14 09:34:50] Epoch 016 step 175/272 loss=0.1614 elapsed=14.1s
+[2026-07-14 09:34:52] Epoch 016 step 200/272 loss=0.1630 elapsed=16.1s
+[2026-07-14 09:34:54] Epoch 016 step 225/272 loss=0.1638 elapsed=18.1s
+[2026-07-14 09:34:56] Epoch 016 step 250/272 loss=0.1646 elapsed=20.2s
+[2026-07-14 09:34:58] Epoch 016 step 272/272 loss=0.1650 elapsed=22.1s
+[2026-07-14 09:34:58] Epoch 016 training done. Start validation.
+[2026-07-14 09:35:03] Epoch 016 | loss=0.1650 | val_UAR=0.6775 | val_CCC=0.6348 (V=0.6506, A=0.6847, D=0.5691) | vad_pred_std=0.1735/true_std=0.2085 | score=0.6519
+[2026-07-14 09:35:03] Early stopping
+[2026-07-14 09:35:03] Load best checkpoint from /kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_4_test_Ses04_val_Ses05_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:35:03] Evaluate/export split=train
+[2026-07-14 09:35:15] Evaluate/export split=val
+[2026-07-14 09:35:20] Evaluate/export split=test
+[2026-07-14 09:35:24] Test: {'WA': 0.7003, 'UAR': 0.6777, 'Macro_F1': 0.6904, 'CCC_mean': 0.6902, 'CCC_valence': 0.6861, 'CCC_arousal': 0.7381, 'CCC_dominance': 0.6465, 'VAD_pred_std_mean': 0.2123, 'VAD_true_std_mean': 0.2072, 'MAE_mean': 0.5094}
+[2026-07-14 09:35:24] === 5fold_session | fold_5_test_Ses05_val_Ses01 | acoustic_text_bridge_rmm ===
+[2026-07-14 09:35:24] Train/Val/Test: 3205 1085 1241
+[2026-07-14 09:35:24] Start compute_scalers()
+[2026-07-14 09:35:24] Computing scalers without full-fold tensor copy...
+[2026-07-14 09:35:24] Scaler start: X_temporal, n=3205, chunk=128
+[2026-07-14 09:35:24] Scaler progress X_temporal: 128/3205 samples
+[2026-07-14 09:35:25] Scaler progress X_temporal: 1408/3205 samples
+[2026-07-14 09:35:25] Scaler progress X_temporal: 2688/3205 samples
+[2026-07-14 09:35:26] Scaler done: X_temporal
+[2026-07-14 09:35:26] Scaler start: X_spectral, n=3205, chunk=128
+[2026-07-14 09:35:26] Scaler progress X_spectral: 128/3205 samples
+[2026-07-14 09:35:27] Scaler progress X_spectral: 1408/3205 samples
+[2026-07-14 09:35:29] Scaler progress X_spectral: 2688/3205 samples
+[2026-07-14 09:35:30] Scaler done: X_spectral
+[2026-07-14 09:35:30] Fitting StandardScaler for X_stats and X_e2v...
+[2026-07-14 09:35:30] All scalers are ready.
+[2026-07-14 09:35:30] Build Dataset objects
+[2026-07-14 09:35:30] Build DataLoaders
+[2026-07-14 09:35:30] Build model with TEXT_MODEL_NAME=roberta-base
+[2026-07-14 09:35:30] Loading text backbone from: /kaggle/input/datasets/linhlaz225/robert/roberta-base-kaggle
+[2026-07-14 09:35:30] Loaded text backbone.
+[2026-07-14 09:35:30] Model ready. Trainable params: 4,197,719/128,843,351 (3.26%)
+[2026-07-14 09:35:30] Optimizer, scheduler, scaler are ready. Start training loop.
+[2026-07-14 09:35:30] Epoch 001 started. Train batches=268
+[2026-07-14 09:35:30] Epoch 001 step 1/268 loss=0.9356 elapsed=0.1s
+[2026-07-14 09:35:32] Epoch 001 step 25/268 loss=0.9359 elapsed=2.1s
+[2026-07-14 09:35:34] Epoch 001 step 50/268 loss=0.9260 elapsed=4.2s
+[2026-07-14 09:35:36] Epoch 001 step 75/268 loss=0.9083 elapsed=6.3s
+[2026-07-14 09:35:38] Epoch 001 step 100/268 loss=0.8881 elapsed=8.4s
+[2026-07-14 09:35:40] Epoch 001 step 125/268 loss=0.8637 elapsed=10.4s
+[2026-07-14 09:35:42] Epoch 001 step 150/268 loss=0.8380 elapsed=12.5s
+[2026-07-14 09:35:44] Epoch 001 step 175/268 loss=0.8183 elapsed=14.6s
+[2026-07-14 09:35:46] Epoch 001 step 200/268 loss=0.8019 elapsed=16.6s
+[2026-07-14 09:35:49] Epoch 001 step 225/268 loss=0.7883 elapsed=18.7s
+[2026-07-14 09:35:51] Epoch 001 step 250/268 loss=0.7743 elapsed=20.8s
+[2026-07-14 09:35:52] Epoch 001 step 268/268 loss=0.7676 elapsed=22.2s
+[2026-07-14 09:35:52] Epoch 001 training done. Start validation.
+[2026-07-14 09:35:56] Epoch 001 | loss=0.7676 | val_UAR=0.5320 | val_CCC=0.4512 (V=0.1725, A=0.6813, D=0.4999) | vad_pred_std=0.1985/true_std=0.2231 | score=0.4835
+[2026-07-14 09:35:56] Saved new best checkpoint: epoch=1, score=0.4835, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_5_test_Ses05_val_Ses01_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:35:56] Epoch 002 started. Train batches=268
+[2026-07-14 09:35:57] Epoch 002 step 1/268 loss=0.5194 elapsed=0.1s
+[2026-07-14 09:35:59] Epoch 002 step 25/268 loss=0.6270 elapsed=2.1s
+[2026-07-14 09:36:01] Epoch 002 step 50/268 loss=0.6135 elapsed=4.1s
+[2026-07-14 09:36:03] Epoch 002 step 75/268 loss=0.5987 elapsed=6.2s
+[2026-07-14 09:36:05] Epoch 002 step 100/268 loss=0.5791 elapsed=8.2s
+[2026-07-14 09:36:07] Epoch 002 step 125/268 loss=0.5730 elapsed=10.3s
+[2026-07-14 09:36:09] Epoch 002 step 150/268 loss=0.5648 elapsed=12.4s
+[2026-07-14 09:36:11] Epoch 002 step 175/268 loss=0.5528 elapsed=14.5s
+[2026-07-14 09:36:13] Epoch 002 step 200/268 loss=0.5442 elapsed=16.5s
+[2026-07-14 09:36:15] Epoch 002 step 225/268 loss=0.5435 elapsed=18.6s
+[2026-07-14 09:36:17] Epoch 002 step 250/268 loss=0.5379 elapsed=20.6s
+[2026-07-14 09:36:19] Epoch 002 step 268/268 loss=0.5354 elapsed=22.1s
+[2026-07-14 09:36:19] Epoch 002 training done. Start validation.
+[2026-07-14 09:36:22] Epoch 002 | loss=0.5354 | val_UAR=0.6031 | val_CCC=0.5665 (V=0.5493, A=0.6347, D=0.5155) | vad_pred_std=0.2343/true_std=0.2231 | score=0.5811
+[2026-07-14 09:36:23] Saved new best checkpoint: epoch=2, score=0.5811, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_5_test_Ses05_val_Ses01_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:36:23] Epoch 003 started. Train batches=268
+[2026-07-14 09:36:23] Epoch 003 step 1/268 loss=0.4828 elapsed=0.1s
+[2026-07-14 09:36:25] Epoch 003 step 25/268 loss=0.4531 elapsed=2.0s
+[2026-07-14 09:36:27] Epoch 003 step 50/268 loss=0.4399 elapsed=4.1s
+[2026-07-14 09:36:29] Epoch 003 step 75/268 loss=0.4299 elapsed=6.1s
+[2026-07-14 09:36:31] Epoch 003 step 100/268 loss=0.4329 elapsed=8.1s
+[2026-07-14 09:36:33] Epoch 003 step 125/268 loss=0.4344 elapsed=10.2s
+[2026-07-14 09:36:35] Epoch 003 step 150/268 loss=0.4349 elapsed=12.2s
+[2026-07-14 09:36:37] Epoch 003 step 175/268 loss=0.4333 elapsed=14.2s
+[2026-07-14 09:36:39] Epoch 003 step 200/268 loss=0.4339 elapsed=16.3s
+[2026-07-14 09:36:41] Epoch 003 step 225/268 loss=0.4349 elapsed=18.3s
+[2026-07-14 09:36:43] Epoch 003 step 250/268 loss=0.4368 elapsed=20.3s
+[2026-07-14 09:36:45] Epoch 003 step 268/268 loss=0.4354 elapsed=21.8s
+[2026-07-14 09:36:45] Epoch 003 training done. Start validation.
+[2026-07-14 09:36:49] Epoch 003 | loss=0.4354 | val_UAR=0.6773 | val_CCC=0.6329 (V=0.6760, A=0.6823, D=0.5402) | vad_pred_std=0.2422/true_std=0.2231 | score=0.6507
+[2026-07-14 09:36:49] Saved new best checkpoint: epoch=3, score=0.6507, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_5_test_Ses05_val_Ses01_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:36:49] Epoch 004 started. Train batches=268
+[2026-07-14 09:36:50] Epoch 004 step 1/268 loss=0.4937 elapsed=0.1s
+[2026-07-14 09:36:51] Epoch 004 step 25/268 loss=0.3628 elapsed=2.0s
+[2026-07-14 09:36:53] Epoch 004 step 50/268 loss=0.3749 elapsed=4.0s
+[2026-07-14 09:36:56] Epoch 004 step 75/268 loss=0.3748 elapsed=6.1s
+[2026-07-14 09:36:58] Epoch 004 step 100/268 loss=0.3731 elapsed=8.1s
+[2026-07-14 09:37:00] Epoch 004 step 125/268 loss=0.3752 elapsed=10.1s
+[2026-07-14 09:37:02] Epoch 004 step 150/268 loss=0.3790 elapsed=12.1s
+[2026-07-14 09:37:04] Epoch 004 step 175/268 loss=0.3778 elapsed=14.2s
+[2026-07-14 09:37:06] Epoch 004 step 200/268 loss=0.3766 elapsed=16.2s
+[2026-07-14 09:37:08] Epoch 004 step 225/268 loss=0.3829 elapsed=18.2s
+[2026-07-14 09:37:10] Epoch 004 step 250/268 loss=0.3784 elapsed=20.3s
+[2026-07-14 09:37:11] Epoch 004 step 268/268 loss=0.3792 elapsed=21.7s
+[2026-07-14 09:37:11] Epoch 004 training done. Start validation.
+[2026-07-14 09:37:15] Epoch 004 | loss=0.3792 | val_UAR=0.7113 | val_CCC=0.6209 (V=0.5935, A=0.7197, D=0.5495) | vad_pred_std=0.2363/true_std=0.2231 | score=0.6571
+[2026-07-14 09:37:16] Saved new best checkpoint: epoch=4, score=0.6571, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_5_test_Ses05_val_Ses01_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:37:16] Epoch 005 started. Train batches=268
+[2026-07-14 09:37:16] Epoch 005 step 1/268 loss=0.3818 elapsed=0.1s
+[2026-07-14 09:37:18] Epoch 005 step 25/268 loss=0.3388 elapsed=2.1s
+[2026-07-14 09:37:20] Epoch 005 step 50/268 loss=0.3303 elapsed=4.1s
+[2026-07-14 09:37:22] Epoch 005 step 75/268 loss=0.3460 elapsed=6.1s
+[2026-07-14 09:37:24] Epoch 005 step 100/268 loss=0.3457 elapsed=8.2s
+[2026-07-14 09:37:26] Epoch 005 step 125/268 loss=0.3409 elapsed=10.2s
+[2026-07-14 09:37:28] Epoch 005 step 150/268 loss=0.3465 elapsed=12.2s
+[2026-07-14 09:37:30] Epoch 005 step 175/268 loss=0.3500 elapsed=14.3s
+[2026-07-14 09:37:32] Epoch 005 step 200/268 loss=0.3493 elapsed=16.4s
+[2026-07-14 09:37:34] Epoch 005 step 225/268 loss=0.3491 elapsed=18.4s
+[2026-07-14 09:37:36] Epoch 005 step 250/268 loss=0.3502 elapsed=20.5s
+[2026-07-14 09:37:38] Epoch 005 step 268/268 loss=0.3540 elapsed=21.9s
+[2026-07-14 09:37:38] Epoch 005 training done. Start validation.
+[2026-07-14 09:37:41] Epoch 005 | loss=0.3540 | val_UAR=0.7210 | val_CCC=0.6535 (V=0.6839, A=0.7232, D=0.5534) | vad_pred_std=0.2370/true_std=0.2231 | score=0.6805
+[2026-07-14 09:37:42] Saved new best checkpoint: epoch=5, score=0.6805, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_5_test_Ses05_val_Ses01_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:37:42] Epoch 006 started. Train batches=268
+[2026-07-14 09:37:42] Epoch 006 step 1/268 loss=0.4336 elapsed=0.1s
+[2026-07-14 09:37:44] Epoch 006 step 25/268 loss=0.3078 elapsed=2.0s
+[2026-07-14 09:37:46] Epoch 006 step 50/268 loss=0.3101 elapsed=4.0s
+[2026-07-14 09:37:48] Epoch 006 step 75/268 loss=0.3166 elapsed=6.1s
+[2026-07-14 09:37:50] Epoch 006 step 100/268 loss=0.3191 elapsed=8.1s
+[2026-07-14 09:37:52] Epoch 006 step 125/268 loss=0.3248 elapsed=10.1s
+[2026-07-14 09:37:54] Epoch 006 step 150/268 loss=0.3227 elapsed=12.2s
+[2026-07-14 09:37:56] Epoch 006 step 175/268 loss=0.3293 elapsed=14.2s
+[2026-07-14 09:37:58] Epoch 006 step 200/268 loss=0.3284 elapsed=16.2s
+[2026-07-14 09:38:00] Epoch 006 step 225/268 loss=0.3321 elapsed=18.2s
+[2026-07-14 09:38:02] Epoch 006 step 250/268 loss=0.3279 elapsed=20.2s
+[2026-07-14 09:38:04] Epoch 006 step 268/268 loss=0.3300 elapsed=21.6s
+[2026-07-14 09:38:04] Epoch 006 training done. Start validation.
+[2026-07-14 09:38:08] Epoch 006 | loss=0.3300 | val_UAR=0.7159 | val_CCC=0.6243 (V=0.6327, A=0.6973, D=0.5429) | vad_pred_std=0.2503/true_std=0.2231 | score=0.6609
+[2026-07-14 09:38:08] Epoch 007 started. Train batches=268
+[2026-07-14 09:38:08] Epoch 007 step 1/268 loss=0.2512 elapsed=0.1s
+[2026-07-14 09:38:10] Epoch 007 step 25/268 loss=0.3065 elapsed=2.0s
+[2026-07-14 09:38:12] Epoch 007 step 50/268 loss=0.3171 elapsed=4.1s
+[2026-07-14 09:38:14] Epoch 007 step 75/268 loss=0.3065 elapsed=6.2s
+[2026-07-14 09:38:16] Epoch 007 step 100/268 loss=0.3024 elapsed=8.2s
+[2026-07-14 09:38:18] Epoch 007 step 125/268 loss=0.3046 elapsed=10.3s
+[2026-07-14 09:38:20] Epoch 007 step 150/268 loss=0.3012 elapsed=12.3s
+[2026-07-14 09:38:22] Epoch 007 step 175/268 loss=0.3044 elapsed=14.3s
+[2026-07-14 09:38:24] Epoch 007 step 200/268 loss=0.3021 elapsed=16.4s
+[2026-07-14 09:38:26] Epoch 007 step 225/268 loss=0.3009 elapsed=18.4s
+[2026-07-14 09:38:28] Epoch 007 step 250/268 loss=0.3017 elapsed=20.4s
+[2026-07-14 09:38:29] Epoch 007 step 268/268 loss=0.3026 elapsed=21.8s
+[2026-07-14 09:38:29] Epoch 007 training done. Start validation.
+[2026-07-14 09:38:33] Epoch 007 | loss=0.3026 | val_UAR=0.6949 | val_CCC=0.6208 (V=0.6769, A=0.7083, D=0.4773) | vad_pred_std=0.2354/true_std=0.2231 | score=0.6505
+[2026-07-14 09:38:33] Epoch 008 started. Train batches=268
+[2026-07-14 09:38:33] Epoch 008 step 1/268 loss=0.1520 elapsed=0.1s
+[2026-07-14 09:38:35] Epoch 008 step 25/268 loss=0.2721 elapsed=2.0s
+[2026-07-14 09:38:37] Epoch 008 step 50/268 loss=0.2771 elapsed=4.1s
+[2026-07-14 09:38:39] Epoch 008 step 75/268 loss=0.2781 elapsed=6.1s
+[2026-07-14 09:38:41] Epoch 008 step 100/268 loss=0.2781 elapsed=8.1s
+[2026-07-14 09:38:43] Epoch 008 step 125/268 loss=0.2783 elapsed=10.2s
+[2026-07-14 09:38:45] Epoch 008 step 150/268 loss=0.2803 elapsed=12.2s
+[2026-07-14 09:38:47] Epoch 008 step 175/268 loss=0.2799 elapsed=14.3s
+[2026-07-14 09:38:49] Epoch 008 step 200/268 loss=0.2825 elapsed=16.3s
+[2026-07-14 09:38:51] Epoch 008 step 225/268 loss=0.2810 elapsed=18.3s
+[2026-07-14 09:38:53] Epoch 008 step 250/268 loss=0.2821 elapsed=20.4s
+[2026-07-14 09:38:55] Epoch 008 step 268/268 loss=0.2845 elapsed=21.8s
+[2026-07-14 09:38:55] Epoch 008 training done. Start validation.
+[2026-07-14 09:38:59] Epoch 008 | loss=0.2845 | val_UAR=0.7266 | val_CCC=0.6588 (V=0.6416, A=0.7362, D=0.5986) | vad_pred_std=0.2433/true_std=0.2231 | score=0.6859
+[2026-07-14 09:38:59] Saved new best checkpoint: epoch=8, score=0.6859, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_5_test_Ses05_val_Ses01_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:38:59] Epoch 009 started. Train batches=268
+[2026-07-14 09:38:59] Epoch 009 step 1/268 loss=0.4118 elapsed=0.1s
+[2026-07-14 09:39:01] Epoch 009 step 25/268 loss=0.2392 elapsed=2.0s
+[2026-07-14 09:39:03] Epoch 009 step 50/268 loss=0.2445 elapsed=4.0s
+[2026-07-14 09:39:05] Epoch 009 step 75/268 loss=0.2359 elapsed=6.1s
+[2026-07-14 09:39:08] Epoch 009 step 100/268 loss=0.2344 elapsed=8.1s
+[2026-07-14 09:39:10] Epoch 009 step 125/268 loss=0.2339 elapsed=10.1s
+[2026-07-14 09:39:12] Epoch 009 step 150/268 loss=0.2335 elapsed=12.2s
+[2026-07-14 09:39:14] Epoch 009 step 175/268 loss=0.2353 elapsed=14.2s
+[2026-07-14 09:39:16] Epoch 009 step 200/268 loss=0.2410 elapsed=16.3s
+[2026-07-14 09:39:18] Epoch 009 step 225/268 loss=0.2408 elapsed=18.3s
+[2026-07-14 09:39:20] Epoch 009 step 250/268 loss=0.2426 elapsed=20.3s
+[2026-07-14 09:39:21] Epoch 009 step 268/268 loss=0.2441 elapsed=21.7s
+[2026-07-14 09:39:21] Epoch 009 training done. Start validation.
+[2026-07-14 09:39:25] Epoch 009 | loss=0.2441 | val_UAR=0.7046 | val_CCC=0.6275 (V=0.6562, A=0.6805, D=0.5458) | vad_pred_std=0.2469/true_std=0.2231 | score=0.6583
+[2026-07-14 09:39:25] Epoch 010 started. Train batches=268
+[2026-07-14 09:39:25] Epoch 010 step 1/268 loss=0.2792 elapsed=0.1s
+[2026-07-14 09:39:27] Epoch 010 step 25/268 loss=0.2038 elapsed=2.0s
+[2026-07-14 09:39:29] Epoch 010 step 50/268 loss=0.2083 elapsed=4.1s
+[2026-07-14 09:39:31] Epoch 010 step 75/268 loss=0.2180 elapsed=6.2s
+[2026-07-14 09:39:33] Epoch 010 step 100/268 loss=0.2152 elapsed=8.2s
+[2026-07-14 09:39:35] Epoch 010 step 125/268 loss=0.2195 elapsed=10.2s
+[2026-07-14 09:39:37] Epoch 010 step 150/268 loss=0.2183 elapsed=12.2s
+[2026-07-14 09:39:39] Epoch 010 step 175/268 loss=0.2226 elapsed=14.3s
+[2026-07-14 09:39:41] Epoch 010 step 200/268 loss=0.2227 elapsed=16.3s
+[2026-07-14 09:39:43] Epoch 010 step 225/268 loss=0.2251 elapsed=18.3s
+[2026-07-14 09:39:45] Epoch 010 step 250/268 loss=0.2271 elapsed=20.3s
+[2026-07-14 09:39:47] Epoch 010 step 268/268 loss=0.2300 elapsed=21.7s
+[2026-07-14 09:39:47] Epoch 010 training done. Start validation.
+[2026-07-14 09:39:50] Epoch 010 | loss=0.2300 | val_UAR=0.7122 | val_CCC=0.6083 (V=0.6195, A=0.6703, D=0.5351) | vad_pred_std=0.2663/true_std=0.2231 | score=0.6498
+[2026-07-14 09:39:50] Epoch 011 started. Train batches=268
+[2026-07-14 09:39:50] Epoch 011 step 1/268 loss=0.2812 elapsed=0.1s
+[2026-07-14 09:39:52] Epoch 011 step 25/268 loss=0.1943 elapsed=2.0s
+[2026-07-14 09:39:54] Epoch 011 step 50/268 loss=0.2144 elapsed=4.0s
+[2026-07-14 09:39:56] Epoch 011 step 75/268 loss=0.2106 elapsed=6.0s
+[2026-07-14 09:39:58] Epoch 011 step 100/268 loss=0.2082 elapsed=8.1s
+[2026-07-14 09:40:00] Epoch 011 step 125/268 loss=0.2069 elapsed=10.1s
+[2026-07-14 09:40:02] Epoch 011 step 150/268 loss=0.2102 elapsed=12.1s
+[2026-07-14 09:40:04] Epoch 011 step 175/268 loss=0.2111 elapsed=14.1s
+[2026-07-14 09:40:06] Epoch 011 step 200/268 loss=0.2156 elapsed=16.1s
+[2026-07-14 09:40:09] Epoch 011 step 225/268 loss=0.2181 elapsed=18.1s
+[2026-07-14 09:40:11] Epoch 011 step 250/268 loss=0.2182 elapsed=20.2s
+[2026-07-14 09:40:12] Epoch 011 step 268/268 loss=0.2191 elapsed=21.6s
+[2026-07-14 09:40:12] Epoch 011 training done. Start validation.
+[2026-07-14 09:40:16] Epoch 011 | loss=0.2191 | val_UAR=0.7356 | val_CCC=0.6523 (V=0.7203, A=0.7036, D=0.5330) | vad_pred_std=0.2595/true_std=0.2231 | score=0.6856
+[2026-07-14 09:40:16] RMM epoch 12: mask text
+[2026-07-14 09:40:16] Epoch 012 started. Train batches=268
+[2026-07-14 09:40:16] Epoch 012 step 1/268 loss=0.2998 elapsed=0.1s
+[2026-07-14 09:40:18] Epoch 012 step 25/268 loss=0.2889 elapsed=2.0s
+[2026-07-14 09:40:20] Epoch 012 step 50/268 loss=0.2888 elapsed=4.0s
+[2026-07-14 09:40:22] Epoch 012 step 75/268 loss=0.2843 elapsed=6.0s
+[2026-07-14 09:40:24] Epoch 012 step 100/268 loss=0.2807 elapsed=8.0s
+[2026-07-14 09:40:26] Epoch 012 step 125/268 loss=0.2828 elapsed=10.0s
+[2026-07-14 09:40:28] Epoch 012 step 150/268 loss=0.2776 elapsed=12.0s
+[2026-07-14 09:40:30] Epoch 012 step 175/268 loss=0.2744 elapsed=14.0s
+[2026-07-14 09:40:32] Epoch 012 step 200/268 loss=0.2741 elapsed=16.0s
+[2026-07-14 09:40:34] Epoch 012 step 225/268 loss=0.2744 elapsed=18.0s
+[2026-07-14 09:40:36] Epoch 012 step 250/268 loss=0.2714 elapsed=20.1s
+[2026-07-14 09:40:37] Epoch 012 step 268/268 loss=0.2723 elapsed=21.5s
+[2026-07-14 09:40:37] Epoch 012 training done. Start validation.
+[2026-07-14 09:40:41] Epoch 012 | loss=0.2723 | val_UAR=0.7104 | val_CCC=0.6388 (V=0.6782, A=0.6908, D=0.5474) | vad_pred_std=0.2614/true_std=0.2231 | score=0.6674
+[2026-07-14 09:40:41] RMM epoch 13: mask text
+[2026-07-14 09:40:41] Epoch 013 started. Train batches=268
+[2026-07-14 09:40:41] Epoch 013 step 1/268 loss=0.1929 elapsed=0.1s
+[2026-07-14 09:40:43] Epoch 013 step 25/268 loss=0.2108 elapsed=2.1s
+[2026-07-14 09:40:45] Epoch 013 step 50/268 loss=0.2042 elapsed=4.1s
+[2026-07-14 09:40:47] Epoch 013 step 75/268 loss=0.2062 elapsed=6.1s
+[2026-07-14 09:40:49] Epoch 013 step 100/268 loss=0.2145 elapsed=8.1s
+[2026-07-14 09:40:51] Epoch 013 step 125/268 loss=0.2155 elapsed=10.1s
+[2026-07-14 09:40:53] Epoch 013 step 150/268 loss=0.2171 elapsed=12.1s
+[2026-07-14 09:40:55] Epoch 013 step 175/268 loss=0.2239 elapsed=14.1s
+[2026-07-14 09:40:57] Epoch 013 step 200/268 loss=0.2254 elapsed=16.2s
+[2026-07-14 09:40:59] Epoch 013 step 225/268 loss=0.2283 elapsed=18.2s
+[2026-07-14 09:41:01] Epoch 013 step 250/268 loss=0.2298 elapsed=20.2s
+[2026-07-14 09:41:03] Epoch 013 step 268/268 loss=0.2328 elapsed=21.6s
+[2026-07-14 09:41:03] Epoch 013 training done. Start validation.
+[2026-07-14 09:41:06] Epoch 013 | loss=0.2328 | val_UAR=0.7377 | val_CCC=0.6323 (V=0.7079, A=0.7001, D=0.4890) | vad_pred_std=0.2246/true_std=0.2231 | score=0.6745
+[2026-07-14 09:41:06] Epoch 014 started. Train batches=268
+[2026-07-14 09:41:06] Epoch 014 step 1/268 loss=0.1991 elapsed=0.1s
+[2026-07-14 09:41:08] Epoch 014 step 25/268 loss=0.1760 elapsed=2.0s
+[2026-07-14 09:41:10] Epoch 014 step 50/268 loss=0.1750 elapsed=4.0s
+[2026-07-14 09:41:12] Epoch 014 step 75/268 loss=0.1849 elapsed=6.1s
+[2026-07-14 09:41:14] Epoch 014 step 100/268 loss=0.1834 elapsed=8.1s
+[2026-07-14 09:41:16] Epoch 014 step 125/268 loss=0.1849 elapsed=10.1s
+[2026-07-14 09:41:18] Epoch 014 step 150/268 loss=0.1838 elapsed=12.2s
+[2026-07-14 09:41:21] Epoch 014 step 175/268 loss=0.1854 elapsed=14.2s
+[2026-07-14 09:41:23] Epoch 014 step 200/268 loss=0.1835 elapsed=16.2s
+[2026-07-14 09:41:25] Epoch 014 step 225/268 loss=0.1851 elapsed=18.2s
+[2026-07-14 09:41:27] Epoch 014 step 250/268 loss=0.1859 elapsed=20.2s
+[2026-07-14 09:41:28] Epoch 014 step 268/268 loss=0.1872 elapsed=21.6s
+[2026-07-14 09:41:28] Epoch 014 training done. Start validation.
+[2026-07-14 09:41:32] Epoch 014 | loss=0.1872 | val_UAR=0.7308 | val_CCC=0.6654 (V=0.7211, A=0.7326, D=0.5425) | vad_pred_std=0.2409/true_std=0.2231 | score=0.6916
+[2026-07-14 09:41:32] Saved new best checkpoint: epoch=14, score=0.6916, path=/kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_5_test_Ses05_val_Ses01_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:41:32] Epoch 015 started. Train batches=268
+[2026-07-14 09:41:32] Epoch 015 step 1/268 loss=0.1824 elapsed=0.1s
+[2026-07-14 09:41:34] Epoch 015 step 25/268 loss=0.1647 elapsed=2.0s
+[2026-07-14 09:41:36] Epoch 015 step 50/268 loss=0.1605 elapsed=4.0s
+[2026-07-14 09:41:38] Epoch 015 step 75/268 loss=0.1652 elapsed=6.1s
+[2026-07-14 09:41:40] Epoch 015 step 100/268 loss=0.1646 elapsed=8.1s
+[2026-07-14 09:41:43] Epoch 015 step 125/268 loss=0.1619 elapsed=10.1s
+[2026-07-14 09:41:45] Epoch 015 step 150/268 loss=0.1645 elapsed=12.1s
+[2026-07-14 09:41:47] Epoch 015 step 175/268 loss=0.1643 elapsed=14.1s
+[2026-07-14 09:41:49] Epoch 015 step 200/268 loss=0.1662 elapsed=16.2s
+[2026-07-14 09:41:51] Epoch 015 step 225/268 loss=0.1669 elapsed=18.2s
+[2026-07-14 09:41:53] Epoch 015 step 250/268 loss=0.1675 elapsed=20.2s
+[2026-07-14 09:41:54] Epoch 015 step 268/268 loss=0.1691 elapsed=21.6s
+[2026-07-14 09:41:54] Epoch 015 training done. Start validation.
+[2026-07-14 09:41:58] Epoch 015 | loss=0.1691 | val_UAR=0.7214 | val_CCC=0.6470 (V=0.6926, A=0.7087, D=0.5396) | vad_pred_std=0.2371/true_std=0.2231 | score=0.6768
+[2026-07-14 09:41:58] Epoch 016 started. Train batches=268
+[2026-07-14 09:41:58] Epoch 016 step 1/268 loss=0.1939 elapsed=0.1s
+[2026-07-14 09:42:00] Epoch 016 step 25/268 loss=0.1704 elapsed=2.0s
+[2026-07-14 09:42:02] Epoch 016 step 50/268 loss=0.1768 elapsed=4.0s
+[2026-07-14 09:42:04] Epoch 016 step 75/268 loss=0.1735 elapsed=6.0s
+[2026-07-14 09:42:06] Epoch 016 step 100/268 loss=0.1701 elapsed=8.1s
+[2026-07-14 09:42:08] Epoch 016 step 125/268 loss=0.1657 elapsed=10.1s
+[2026-07-14 09:42:10] Epoch 016 step 150/268 loss=0.1644 elapsed=12.2s
+[2026-07-14 09:42:12] Epoch 016 step 175/268 loss=0.1617 elapsed=14.2s
+[2026-07-14 09:42:14] Epoch 016 step 200/268 loss=0.1630 elapsed=16.2s
+[2026-07-14 09:42:16] Epoch 016 step 225/268 loss=0.1616 elapsed=18.2s
+[2026-07-14 09:42:18] Epoch 016 step 250/268 loss=0.1617 elapsed=20.3s
+[2026-07-14 09:42:19] Epoch 016 step 268/268 loss=0.1624 elapsed=21.7s
+[2026-07-14 09:42:19] Epoch 016 training done. Start validation.
+[2026-07-14 09:42:23] Epoch 016 | loss=0.1624 | val_UAR=0.7377 | val_CCC=0.6509 (V=0.7196, A=0.7300, D=0.5030) | vad_pred_std=0.2339/true_std=0.2231 | score=0.6856
+[2026-07-14 09:42:23] Epoch 017 started. Train batches=268
+[2026-07-14 09:42:23] Epoch 017 step 1/268 loss=0.1036 elapsed=0.1s
+[2026-07-14 09:42:25] Epoch 017 step 25/268 loss=0.1495 elapsed=2.0s
+[2026-07-14 09:42:27] Epoch 017 step 50/268 loss=0.1472 elapsed=4.0s
+[2026-07-14 09:42:29] Epoch 017 step 75/268 loss=0.1474 elapsed=6.0s
+[2026-07-14 09:42:31] Epoch 017 step 100/268 loss=0.1496 elapsed=8.0s
+[2026-07-14 09:42:33] Epoch 017 step 125/268 loss=0.1479 elapsed=10.1s
+[2026-07-14 09:42:35] Epoch 017 step 150/268 loss=0.1488 elapsed=12.1s
+[2026-07-14 09:42:37] Epoch 017 step 175/268 loss=0.1505 elapsed=14.1s
+[2026-07-14 09:42:39] Epoch 017 step 200/268 loss=0.1510 elapsed=16.1s
+[2026-07-14 09:42:41] Epoch 017 step 225/268 loss=0.1503 elapsed=18.1s
+[2026-07-14 09:42:43] Epoch 017 step 250/268 loss=0.1520 elapsed=20.1s
+[2026-07-14 09:42:45] Epoch 017 step 268/268 loss=0.1545 elapsed=21.6s
+[2026-07-14 09:42:45] Epoch 017 training done. Start validation.
+[2026-07-14 09:42:48] Epoch 017 | loss=0.1545 | val_UAR=0.7344 | val_CCC=0.6523 (V=0.6871, A=0.7220, D=0.5478) | vad_pred_std=0.2433/true_std=0.2231 | score=0.6852
+[2026-07-14 09:42:48] Epoch 018 started. Train batches=268
+[2026-07-14 09:42:49] Epoch 018 step 1/268 loss=0.1258 elapsed=0.1s
+[2026-07-14 09:42:50] Epoch 018 step 25/268 loss=0.1503 elapsed=2.0s
+[2026-07-14 09:42:52] Epoch 018 step 50/268 loss=0.1515 elapsed=4.0s
+[2026-07-14 09:42:54] Epoch 018 step 75/268 loss=0.1470 elapsed=6.0s
+[2026-07-14 09:42:56] Epoch 018 step 100/268 loss=0.1446 elapsed=8.0s
+[2026-07-14 09:42:59] Epoch 018 step 125/268 loss=0.1446 elapsed=10.1s
+[2026-07-14 09:43:01] Epoch 018 step 150/268 loss=0.1466 elapsed=12.1s
+[2026-07-14 09:43:03] Epoch 018 step 175/268 loss=0.1467 elapsed=14.1s
+[2026-07-14 09:43:05] Epoch 018 step 200/268 loss=0.1474 elapsed=16.1s
+[2026-07-14 09:43:07] Epoch 018 step 225/268 loss=0.1471 elapsed=18.1s
+[2026-07-14 09:43:09] Epoch 018 step 250/268 loss=0.1470 elapsed=20.1s
+[2026-07-14 09:43:10] Epoch 018 step 268/268 loss=0.1498 elapsed=21.5s
+[2026-07-14 09:43:10] Epoch 018 training done. Start validation.
+[2026-07-14 09:43:14] Epoch 018 | loss=0.1498 | val_UAR=0.7278 | val_CCC=0.6683 (V=0.7030, A=0.7378, D=0.5643) | vad_pred_std=0.2390/true_std=0.2231 | score=0.6921
+[2026-07-14 09:43:14] Epoch 019 started. Train batches=268
+[2026-07-14 09:43:14] Epoch 019 step 1/268 loss=0.1293 elapsed=0.1s
+[2026-07-14 09:43:16] Epoch 019 step 25/268 loss=0.1444 elapsed=2.0s
+[2026-07-14 09:43:18] Epoch 019 step 50/268 loss=0.1447 elapsed=4.1s
+[2026-07-14 09:43:20] Epoch 019 step 75/268 loss=0.1446 elapsed=6.1s
+[2026-07-14 09:43:22] Epoch 019 step 100/268 loss=0.1422 elapsed=8.1s
+[2026-07-14 09:43:24] Epoch 019 step 125/268 loss=0.1409 elapsed=10.1s
+[2026-07-14 09:43:26] Epoch 019 step 150/268 loss=0.1423 elapsed=12.1s
+[2026-07-14 09:43:28] Epoch 019 step 175/268 loss=0.1435 elapsed=14.1s
+[2026-07-14 09:43:30] Epoch 019 step 200/268 loss=0.1431 elapsed=16.0s
+[2026-07-14 09:43:32] Epoch 019 step 225/268 loss=0.1429 elapsed=18.0s
+[2026-07-14 09:43:34] Epoch 019 step 250/268 loss=0.1428 elapsed=20.0s
+[2026-07-14 09:43:35] Epoch 019 step 268/268 loss=0.1446 elapsed=21.4s
+[2026-07-14 09:43:35] Epoch 019 training done. Start validation.
+[2026-07-14 09:43:39] Epoch 019 | loss=0.1446 | val_UAR=0.7327 | val_CCC=0.6520 (V=0.7220, A=0.7285, D=0.5054) | vad_pred_std=0.2396/true_std=0.2231 | score=0.6843
+[2026-07-14 09:43:39] Epoch 020 started. Train batches=268
+[2026-07-14 09:43:39] Epoch 020 step 1/268 loss=0.1111 elapsed=0.1s
+[2026-07-14 09:43:41] Epoch 020 step 25/268 loss=0.1321 elapsed=2.0s
+[2026-07-14 09:43:43] Epoch 020 step 50/268 loss=0.1327 elapsed=4.1s
+[2026-07-14 09:43:45] Epoch 020 step 75/268 loss=0.1340 elapsed=6.1s
+[2026-07-14 09:43:47] Epoch 020 step 100/268 loss=0.1354 elapsed=8.1s
+[2026-07-14 09:43:49] Epoch 020 step 125/268 loss=0.1356 elapsed=10.2s
+[2026-07-14 09:43:51] Epoch 020 step 150/268 loss=0.1362 elapsed=12.2s
+[2026-07-14 09:43:53] Epoch 020 step 175/268 loss=0.1383 elapsed=14.2s
+[2026-07-14 09:43:55] Epoch 020 step 200/268 loss=0.1389 elapsed=16.2s
+[2026-07-14 09:43:57] Epoch 020 step 225/268 loss=0.1395 elapsed=18.3s
+[2026-07-14 09:43:59] Epoch 020 step 250/268 loss=0.1391 elapsed=20.3s
+[2026-07-14 09:44:01] Epoch 020 step 268/268 loss=0.1396 elapsed=21.7s
+[2026-07-14 09:44:01] Epoch 020 training done. Start validation.
+[2026-07-14 09:44:04] Epoch 020 | loss=0.1396 | val_UAR=0.7328 | val_CCC=0.6570 (V=0.7025, A=0.7216, D=0.5470) | vad_pred_std=0.2268/true_std=0.2231 | score=0.6874
+[2026-07-14 09:44:04] Epoch 021 started. Train batches=268
+[2026-07-14 09:44:05] Epoch 021 step 1/268 loss=0.1785 elapsed=0.1s
+[2026-07-14 09:44:06] Epoch 021 step 25/268 loss=0.1414 elapsed=2.0s
+[2026-07-14 09:44:09] Epoch 021 step 50/268 loss=0.1344 elapsed=4.1s
+[2026-07-14 09:44:11] Epoch 021 step 75/268 loss=0.1359 elapsed=6.1s
+[2026-07-14 09:44:13] Epoch 021 step 100/268 loss=0.1368 elapsed=8.1s
+[2026-07-14 09:44:15] Epoch 021 step 125/268 loss=0.1378 elapsed=10.1s
+[2026-07-14 09:44:17] Epoch 021 step 150/268 loss=0.1380 elapsed=12.1s
+[2026-07-14 09:44:19] Epoch 021 step 175/268 loss=0.1381 elapsed=14.1s
+[2026-07-14 09:44:21] Epoch 021 step 200/268 loss=0.1387 elapsed=16.1s
+[2026-07-14 09:44:23] Epoch 021 step 225/268 loss=0.1380 elapsed=18.1s
+[2026-07-14 09:44:25] Epoch 021 step 250/268 loss=0.1378 elapsed=20.2s
+[2026-07-14 09:44:26] Epoch 021 step 268/268 loss=0.1393 elapsed=21.6s
+[2026-07-14 09:44:26] Epoch 021 training done. Start validation.
+[2026-07-14 09:44:30] Epoch 021 | loss=0.1393 | val_UAR=0.7238 | val_CCC=0.6383 (V=0.6932, A=0.7102, D=0.5114) | vad_pred_std=0.2409/true_std=0.2231 | score=0.6725
+[2026-07-14 09:44:30] Epoch 022 started. Train batches=268
+[2026-07-14 09:44:30] Epoch 022 step 1/268 loss=0.1105 elapsed=0.1s
+[2026-07-14 09:44:32] Epoch 022 step 25/268 loss=0.1314 elapsed=2.0s
+[2026-07-14 09:44:34] Epoch 022 step 50/268 loss=0.1320 elapsed=4.0s
+[2026-07-14 09:44:36] Epoch 022 step 75/268 loss=0.1294 elapsed=6.0s
+[2026-07-14 09:44:38] Epoch 022 step 100/268 loss=0.1283 elapsed=8.1s
+[2026-07-14 09:44:40] Epoch 022 step 125/268 loss=0.1300 elapsed=10.0s
+[2026-07-14 09:44:42] Epoch 022 step 150/268 loss=0.1320 elapsed=12.1s
+[2026-07-14 09:44:44] Epoch 022 step 175/268 loss=0.1316 elapsed=14.1s
+[2026-07-14 09:44:46] Epoch 022 step 200/268 loss=0.1310 elapsed=16.1s
+[2026-07-14 09:44:48] Epoch 022 step 225/268 loss=0.1308 elapsed=18.1s
+[2026-07-14 09:44:50] Epoch 022 step 250/268 loss=0.1305 elapsed=20.1s
+[2026-07-14 09:44:51] Epoch 022 step 268/268 loss=0.1323 elapsed=21.5s
+[2026-07-14 09:44:51] Epoch 022 training done. Start validation.
+[2026-07-14 09:44:55] Epoch 022 | loss=0.1323 | val_UAR=0.7353 | val_CCC=0.6551 (V=0.7169, A=0.7199, D=0.5284) | vad_pred_std=0.2325/true_std=0.2231 | score=0.6872
+[2026-07-14 09:44:55] Epoch 023 started. Train batches=268
+[2026-07-14 09:44:55] Epoch 023 step 1/268 loss=0.1174 elapsed=0.1s
+[2026-07-14 09:44:57] Epoch 023 step 25/268 loss=0.1280 elapsed=2.0s
+[2026-07-14 09:44:59] Epoch 023 step 50/268 loss=0.1253 elapsed=4.1s
+[2026-07-14 09:45:01] Epoch 023 step 75/268 loss=0.1253 elapsed=6.1s
+[2026-07-14 09:45:03] Epoch 023 step 100/268 loss=0.1248 elapsed=8.1s
+[2026-07-14 09:45:05] Epoch 023 step 125/268 loss=0.1236 elapsed=10.1s
+[2026-07-14 09:45:07] Epoch 023 step 150/268 loss=0.1237 elapsed=12.2s
+[2026-07-14 09:45:09] Epoch 023 step 175/268 loss=0.1244 elapsed=14.2s
+[2026-07-14 09:45:11] Epoch 023 step 200/268 loss=0.1240 elapsed=16.2s
+[2026-07-14 09:45:13] Epoch 023 step 225/268 loss=0.1249 elapsed=18.3s
+[2026-07-14 09:45:15] Epoch 023 step 250/268 loss=0.1254 elapsed=20.3s
+[2026-07-14 09:45:17] Epoch 023 step 268/268 loss=0.1280 elapsed=21.7s
+[2026-07-14 09:45:17] Epoch 023 training done. Start validation.
+[2026-07-14 09:45:21] Epoch 023 | loss=0.1280 | val_UAR=0.7286 | val_CCC=0.6397 (V=0.7044, A=0.7071, D=0.5075) | vad_pred_std=0.2276/true_std=0.2231 | score=0.6752
+[2026-07-14 09:45:21] Epoch 024 started. Train batches=268
+[2026-07-14 09:45:21] Epoch 024 step 1/268 loss=0.1001 elapsed=0.1s
+[2026-07-14 09:45:23] Epoch 024 step 25/268 loss=0.1187 elapsed=2.0s
+[2026-07-14 09:45:25] Epoch 024 step 50/268 loss=0.1226 elapsed=4.1s
+[2026-07-14 09:45:27] Epoch 024 step 75/268 loss=0.1248 elapsed=6.1s
+[2026-07-14 09:45:29] Epoch 024 step 100/268 loss=0.1264 elapsed=8.2s
+[2026-07-14 09:45:31] Epoch 024 step 125/268 loss=0.1258 elapsed=10.2s
+[2026-07-14 09:45:33] Epoch 024 step 150/268 loss=0.1260 elapsed=12.2s
+[2026-07-14 09:45:35] Epoch 024 step 175/268 loss=0.1260 elapsed=14.2s
+[2026-07-14 09:45:37] Epoch 024 step 200/268 loss=0.1255 elapsed=16.3s
+[2026-07-14 09:45:39] Epoch 024 step 225/268 loss=0.1249 elapsed=18.3s
+[2026-07-14 09:45:41] Epoch 024 step 250/268 loss=0.1247 elapsed=20.3s
+[2026-07-14 09:45:42] Epoch 024 step 268/268 loss=0.1262 elapsed=21.7s
+[2026-07-14 09:45:42] Epoch 024 training done. Start validation.
+[2026-07-14 09:45:46] Epoch 024 | loss=0.1262 | val_UAR=0.7304 | val_CCC=0.6532 (V=0.7135, A=0.7166, D=0.5295) | vad_pred_std=0.2262/true_std=0.2231 | score=0.6841
+[2026-07-14 09:45:46] Early stopping
+[2026-07-14 09:45:46] Load best checkpoint from /kaggle/working/output_03b_acoustic_text_bridge_fusion/models/5fold_session/fold_5_test_Ses05_val_Ses01_acoustic_text_bridge_rmm_best.pt
+[2026-07-14 09:45:46] Evaluate/export split=train
+[2026-07-14 09:45:58] Evaluate/export split=val
+[2026-07-14 09:46:02] Evaluate/export split=test
+[2026-07-14 09:46:07] Test: {'WA': 0.7188, 'UAR': 0.7204, 'Macro_F1': 0.7185, 'CCC_mean': 0.6471, 'CCC_valence': 0.6749, 'CCC_arousal': 0.7039, 'CCC_dominance': 0.5624, 'VAD_pred_std_mean': 0.1894, 'VAD_true_std_mean': 0.2085, 'MAE_mean': 0.5154}

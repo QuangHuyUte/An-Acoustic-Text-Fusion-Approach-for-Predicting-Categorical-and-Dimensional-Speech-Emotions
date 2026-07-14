@@ -1,0 +1,26 @@
+{
+  "dataset_id": "AbstractTTS/IEMOCAP",
+  "n_rows": 10039,
+  "n_4class": 6877,
+  "audio_dir": "D:\\UTE\\Speech Programming\\Speech Project\\06_w2v_based_models\\datasets\\AbstractTTS_IEMOCAP\\audio_wav",
+  "full_csv": "D:\\UTE\\Speech Programming\\Speech Project\\06_w2v_based_models\\datasets\\AbstractTTS_IEMOCAP\\abstracttts_iemocap_metadata_full.csv",
+  "train_csv": "D:\\UTE\\Speech Programming\\Speech Project\\06_w2v_based_models\\datasets\\AbstractTTS_IEMOCAP\\abstracttts_iemocap_4class_avd_metadata.csv",
+  "major_emotion_counts": {
+    "frustrated": 2917,
+    "excited": 1976,
+    "neutral": 1726,
+    "angry": 1269,
+    "sad": 1250,
+    "happy": 656,
+    "surprise": 110,
+    "fear": 107,
+    "other": 26,
+    "disgust": 2
+  },
+  "emotion_4class_counts": {
+    "happy": 2632,
+    "neutral": 1726,
+    "angry": 1269,
+    "sad": 1250
+  }
+}

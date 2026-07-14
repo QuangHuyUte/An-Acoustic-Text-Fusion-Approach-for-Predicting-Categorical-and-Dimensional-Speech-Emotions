@@ -1,0 +1,24 @@
+{
+  "notebook": "06E_Emotion2Vec_MultiLevel_CoAttention_Augmented_SER_v2_resume_cache",
+  "objective": "SER model with richer stats, train-only waveform augmentation, frozen emotion2vec, multi-level acoustic co-attention and stacking.",
+  "output_dir": "/kaggle/working/06E_Emotion2Vec_MultiLevel_CoAttention_Augmented_outputs",
+  "metrics_csv": "/kaggle/working/06E_Emotion2Vec_MultiLevel_CoAttention_Augmented_outputs/reports/06E_emotion2vec_multilevel_augmented_metrics.csv",
+  "history_csv": "/kaggle/working/06E_Emotion2Vec_MultiLevel_CoAttention_Augmented_outputs/reports/06E_emotion2vec_multilevel_augmented_history.csv",
+  "per_dataset_csv": "/kaggle/working/06E_Emotion2Vec_MultiLevel_CoAttention_Augmented_outputs/reports/06E_emotion2vec_multilevel_augmented_per_dataset.csv",
+  "protocols": [
+    "combined_random",
+    "combined_strict_no_tess"
+  ],
+  "labels": [
+    "neutral",
+    "happy",
+    "sad",
+    "angry",
+    "fear",
+    "disgust"
+  ],
+  "emotion2vec_model": "iic/emotion2vec_base",
+  "use_waveform_train_augmentation": true,
+  "augment_copies": 1,
+  "notes": "Cache is excluded from the light zip because feature/cache .npz files were downloaded separately."
+}

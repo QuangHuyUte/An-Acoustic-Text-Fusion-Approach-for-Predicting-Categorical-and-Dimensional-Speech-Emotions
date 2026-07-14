@@ -1,0 +1,958 @@
+Predicting TED Talk Ratings from Language and Prosody
+Md Iftekhar Tanveer1, Md Kamrul Hassan2, Daniel Gildea3, M. Ehsan Hoque4
+University of Rochester
+{1itanveer,2mhasan8,3gildea,4mehoque}@cs.rochester.edu
+Abstract
+We use the largest open repository of pub-
+lic speaking—TED Talks—to predict the rat-
+ings of the online viewers. Our dataset con-
+tains over 2200 TED Talk transcripts (includes
+over 200 thousand sentences), audio features
+and the associated meta information including
+about 5.5 Million ratings from spontaneous
+visitors of the website. We propose three neu-
+ral network architectures and compare with
+statistical machine learning. Our experiments
+reveal that it is possible to predict all the 14
+different ratings with an average AUC of 0.83
+using the transcripts and prosody features only.
+The dataset and the complete source code is
+available for further analysis.
+1 Introduction
+Imagine you are a teacher, or a corporate em-
+ployee, or an entrepreneur. Which soft skill do
+you think would be the most valuable in your daily
+life? According to an article in Forbes (Gallo,
+2014), 70% of employed Americans agree that
+public speaking skills are critical to their suc-
+cess at work. Yet, it is one of the most dreaded
+acts. Many people rate the fear of public speak-
+ing even higher than the fear of death (Wallechin-
+sky et al., 2005). As a result, several commercial
+products are being available nowadays to come up
+with automated tutoring systems for training pub-
+lic speaking. Predicting the viewer ratings is an
+essential component for the systems capable of tu-
+toring oral presentations.
+We propose a framework to predict the viewer
+ratings of TED talks from the transcript and
+prosody component of the speech. We use a
+dataset of 2233 public speaking videos accom-
+panying over 5 million viewer ratings. The
+viewers rate each talk on 14 different categories.
+These are— Beautiful, Confusing, Courageous,
+Fascinating, Funny, Informative, Ingenious, In-
+spiring, Jaw-Dropping, Long-winded, Obnoxious,
+OK, Persuasive, and Unconvincing. Besides, the
+complete manual transcriptions of the talks are
+available. As a result, this dataset provides high-
+quality multimedia contents with rich ground truth
+annotations from a signiﬁcantly large number of
+spontaneous viewers. We release the data and the
+complete source code for future scientiﬁc explo-
+ration 1.
+TED talks are edited production videos. They
+contain numerous changes in the camera angles,
+clips from the presentation slides, reactions from
+the audience, etc. To avoid these extraneous fea-
+tures and to focus only on the speech, we remove
+the visual elements from the data. We use only the
+transcripts and the processed audio features (pitch,
+loudness etc.) in our experiments. However, the
+links to the original TED talks are preserved in the
+dataset. Therefore, it is possible to retrieve the vi-
+sual elements if necessary.
+We utilize three neural network architectures in
+our experiments. Our results show that the pro-
+posed solutions always outperform (AUC 0.83)
+the baseline approaches (AUC0.78) for predicting
+the TED talk ratings.
+2 Background Research
+An example of behavioral prediction research is
+to automatically grade essays , which has a long
+history (Valenti et al., 2003). Recently, the use
+of deep neural network based solutions (Alikani-
+otis et al., 2016; Taghipour and Ng, 2016) are be-
+coming popular in this ﬁeld. Farag et al. (2018)
+proposed an adversarial approach for their task.
+Jin et al. (2018) proposed a two-stage deep neu-
+ral network based solution. Predicting helpful-
+ness (Martin and Pu, 2014; Yang et al., 2015;
+1Link to source code blinded for author anonymity
+arXiv:1906.03940v1  [cs.MM]  21 May 2019
+beautifulconfusing
+courageousfascinating
+funny
+informative
+ingeniousinspiring
+jaw-droppinglongwindedobnoxious
+ok
+persuasive
+unconvincing
+Ratings
+0
+10000
+20000
+30000
+40000
+Count of the ratings
+in all the talks
+Figure 1: Counts of all the 14 different rating categories
+(labels) in the dataset
+Liu et al., 2017a; Chen et al., 2018) in the on-
+line reviews is another example of predicting hu-
+man behavior. In general, behavioral prediction
+encompasses numerous areas such as predicting
+outcomes in job interviews (Naim et al., 2016),
+hirability (Nguyen and Gatica-Perez, 2016), pre-
+sentation performance (Tanveer et al., 2015; Chen
+et al., 2017; Tanveer et al., 2018) etc.
+Research has been conducted on predicting var-
+ious aspects of the TED talks. Chen and Lee
+(2017) analyzed the TED Talks for humor detec-
+tion. Liu et al. (2017b) analyzed the transcripts
+of the TED talks to predict audience engagement
+in the form of applause. Haider et al. (2017) pre-
+dicted user interest (engaging vs. non-engaging)
+from high-level visual features (e.g., camera an-
+gles) and audience applause. Pappas and Popescu-
+Belis (2013) proposed a sentiment-aware nearest
+neighbor model for a multimedia recommenda-
+tion over the TED talks. Bertero and Fung (2016)
+proposed a combination of Convolutional Neural
+Network (CNN) and Long-short Term Memory
+(LSTM) based framework to predict humor in the
+dialogues. Jaech et al. (2016) analyzed the de-
+tection performance of phonological puns using
+various natural language processing techniques.
+Weninger et al. (2013) predicted the TED talk rat-
+ings from the linguistic features of the transcripts.
+This work is similar to ours. However, they did
+not use neural networks and thus obtained similar
+performance to our baseline methods.
+3 Dataset
+The data for this study was gathered from the
+ted.com website on November 15, 2017. We
+removed the talks published six months before the
+crawling date to make sure each talk has enough
+ratings for a robust analysis. More speciﬁcally, we
+ﬁltered any talk that— 1. was published less than 6
+months prior to the crawling date, 2. contained any
+Property Quantity
+Number of talks 2,231
+Total length of all talks 513.49 Hours
+Total number of ratings 5,574,444
+Minimum number of ratings 88
+Average ratings per talk 2498.6
+Total word count 5,489,628
+Total sentence count 295,338
+Table 1: Dataset Properties
+of the following keywords: live music, dance, mu-
+sic, performance, entertainment, or, 3. contained
+less than 450 words in the transcript. This left a
+total of 2231 talks in the dataset.
+We collect the manual transcriptions and the to-
+tal view counts for each video. We also collect
+the “ratings” which is the counts of the viewer-
+annotated labels. The viewers can annotate a talk
+from a selection of 14 different labels provided in
+the website. The labels are not mutually exclusive.
+Viewers can choose at most 3 labels for each talk.
+If only one label is chosen, it is counted 3 times.
+We count the total number of annotations under
+each label as shown in Figure 1. The ratings are
+treated as the ground truth about the audience per-
+ception. A summary of the dataset characteristics
+is shown in Table 1.
+The longer a TED talk remains in the web, the
+more views it gets. Large number of views also
+result in a large number of annotations. As a re-
+sult, older TED talks contain more annotations per
+rating category. However, an old speech does not
+necessarily imply better quality. We normalize the
+rating counts of each individual talk as in the fol-
+lowing equation:
+ri,scaled = ri∑
+iri
+(1)
+Where ri represents the count of the ith label in
+a talk. Let us assume that in a talk, fi fractions
+of the total viewers annotate for the rating cate-
+gory i. Then the scaled rating, ri,scaled becomes
+fiV∑
+i fiV = Vfi
+V ∑
+i fi
+. This process removes the effect
+of Total Views, V as evident in Table 2. Scaling the
+rating counts removes the effects of Total Views
+by reducing the average correlation from 0.56 to
+−0.03. This also removes the effect of the Age of
+the Talks by reducing the average correlation from
+0.15 to 0.06. Therefore, removing V reduces the
+effect of the Age of the Talks in the ratings.
+Total Views Age of Talks
+noscale scale noscale scale
+Beaut. 0.52 0.01 0.03 -0.14
+Conf. 0.39 -0.12 0.27 0.20
+Cour. 0.52 -0.003 0.01 0.15
+Fasc. 0.78 0.05 0.15 0.06
+Funny 0.57 0.14 0.10 0.10
+Info. 0.76 -0.08 0.07 -0.19
+Ingen. 0.59 -0.06 0.18 0.10
+Insp. 0.79 0.1 0.05 -0.15
+Jaw-Dr. 0.51 0.1 0.18 0.23
+Long. 0.44 -0.17 0.36 0.31
+Obnox. 0.27 -0.11 0.19 0.17
+OK 0.72 -0.16 0.21 0.14
+Pers. 0.72 -0.01 0.12 0.02
+Unconv. 0.29 -0.14 0.18 0.15
+Avg. 0.56 -0.03 0.15 0.06
+Table 2: Correlation coefﬁcients of each category of
+the ratings with the Total Viewsand the “Age” of Talks
+In our experiments, we scale and binarize the
+rating counts by thresholding over the median
+value which results in a 0 and 1 class for each cat-
+egory of the ratings. The dataset contains the com-
+plete original information as well as the scaled and
+binarized versions of the ratings.
+4 Network Architectures
+We implemented three neural networks for com-
+parison of their performance with the statisti-
+cal machine learning techniques in predicting the
+viewer ratings. The architectures of these mod-
+els are described in the following subsections. All
+these models are multi-label binary classiﬁers de-
+signed to capture sentence-wise patterns in the
+TED talks that contribute to the prediction of the
+rating labels.
+4.1 Word Sequence Model
+A pictorial illustration of this model is shown
+in Figure 2. Each sentence, sj in the transcript
+is represented by a sequence of words-vectors 2,
+w1,w2,w3,..., wnj . Here, each w represents
+the pre-trained, 300-dimensional GLOVE word
+vectors (Pennington et al., 2014) corresponding to
+2In this paper, we represent the column vectors as lower-
+case boldface letters; matrices or higher dimensional tensors
+as uppercase boldface letters and scalars as lowercase regular
+letters. We use a prime symbol ( ′) to represent the transpose
+operation.
+!"Sentence 1LSTMLSTMLSTM
+!# !$
+LSTM
+!%"
+Sentence 2….
+Sentence N
++"'
+(%"
+….
+….
+….
+….
+….
+……
+……
+UnconvincingFunnyJawdropping
+Confusingh
+LSTMLSTMLSTMLSTM
+(%#
+LSTMLSTMLSTMLSTM
+(%'….
+!" !# !$ !%#….
+!" !# !$ !%'
+….
+Figure 2: An illustration of the Word Sequence Model
+the words in the sentence. We use a Long-Short-
+Term-Memory (LSTM) (Hochreiter and Schmid-
+huber, 1997) neural network to obtain an embed-
+ding vector, hsj , for the jth sentence in the talk
+transcript. These vectors ( hsj ) are averaged and
+passed through a feed-forward network to produce
+a 14-dimensional output vector corresponding to
+each category of the ratings. An element-wise sig-
+moid (σ(x) = 1
+1+e−x ) activation function is ap-
+plied to the output vector. The mathematical de-
+scription of the model can be given using the fol-
+lowing equations:
+hsj = LSTM(w1,w2,w3,..., wnj ) (2)
+h = 1
+N
+N∑
+j=1
+hsj (3)
+r = σ(Wh + br) (4)
+Here, hsj represents the the last recurrent state for
+the sentence j. N represents the total number of
+the sentences in the transcript. We use zero vectors
+to initialize the memory cell ( c0) and the hidden
+state (h0).
+4.2 Dependency Tree-based Model
+We are interested to represent the sentences as hi-
+erarchical trees of dependent words. We use a
+freely available dependency parser named Syn-
+taxNet3 (Andor et al., 2016) to extract the depen-
+dency tree corresponding to each sentence. The
+child-sum TreeLSTM (Tai et al., 2015) is used to
+process the dependency trees. As shown in Fig-
+ure 3, the parts-of-speech and dependency types
+of the words are used in addition to the GLOVE
+word vectors. We concatenate a parts-of-speech
+embedding ( pi) and a dependency type embed-
+ding ( di) with the word vectors. These embed-
+dings are learned through back-propagation along
+with other free parameters of the network. The
+3https://opensource.google.com/projects/syntaxnet
+iobj dobj
+det
+VB
+PRPNN
+DT
+tryaux advmodVB
+MDRBR
+Sentence N: Give me a break   
+Sentence 1: Must try harder   ……
+!"#$
+!%&'"!()#*+#
+!,-.+
+!%+!/#+)0 ……
+!)
+1%&'"2345)&6
+78
+79
++89
+Child-Sum Tree LSTM
+harder
+give
+mebreak
+a
+must
+…
+……
+……
+UnconvincingFunnyJawdropping
+Confusingh
+Figure 3: An illustration of the Dependency Tree-based
+Model
+complete mathematical description of this model
+is as follows:
+x′t = [w′
+t,p′
+t,d′
+t] (5)
+˜ht =
+∑
+k∈C(t)
+hk (6)
+it = σ(Uixt + Vi˜ht + bi) (7)
+ftk = σ(Ufxt + Vfhk + bf) (8)
+ut = tanh(Uuxt + Vu˜ht + bu) (9)
+ot = σ(Uoxt + Vo˜ht + bo) (10)
+ct = ftk ⊙ck + it ⊙ut (11)
+ht = ot ⊙tanh(ct) (12)
+hsj = hROOT (13)
+h = 1
+N
+N∑
+j=1
+hsj (14)
+r = σ(Wh + br) (15)
+Here, equation (5) refers to the fact that the input
+to the treeLSTM nodes are constructed by con-
+catenating the pre-trained GLOVE word-vectors
+with the embeddings of the parts of speech and
+the dependency type of a speciﬁc word. C(t) rep-
+resents the set of all the children of node t. The
+parent-child relation of the treeLSTM nodes come
+from the dependency tree. Notably, the memory
+cell and hidden states ﬂow hierarchically from the
+children to the parent. Each node contains a for-
+get gate (f) for each child. Zero vectors are used
+as the children of the leaf nodes and the sentence
+embedding vector is obtained from the root node.
+4.3 Capturing the Patterns in Prosody
+We align the TED talk audio with its correspond-
+ing transcripts using forced alignment method 4.
+4https://github.com/JoFrhwld/FA VE/wiki/FA VE-align
+PRAAT5 is used to extract the pitch, loudness, and
+ﬁrst three formants (frequency and bandwidth)
+sampled at a rate of 10Hz. We normalize these sig-
+nals by subtracting the mean and dividing by the
+standard deviation over the whole video. These
+signals are then sentence-wise cropped based on
+the alignment data. We pad all the sentence-wise
+signal-clips to a length equal to the longest sen-
+tence in the transcript. This process constructs a
+signal of length M; where M is the number of
+samples in the signal corresponding to the longest
+sentence. Each sample in the signal is an 8 dimen-
+sional vector.
+We use one dimensional Convolutional Neural
+Network (CNN) (LeCun et al., 2015) to extract the
+patterns within the pitch, loudness and formant as
+follows:
+Sout[fo,m] =
+Fin∑
+fi=1
+K∑
+k=1
+WF[fo,fi,k]Sin[fi,m −k]
++ b[fo]
+∀fo ∈1,2,...,F out
+∀m∈1,2,...,M
+Here Sin is the input signal, Sout is the output sig-
+nal, WF is the ﬁlter weights, K is the receptive
+ﬁelds of the ﬁlters, Fin is the dimension of the in-
+put signal, Fout is the number of ﬁlters and M is
+the signal length. b is a bias term. Both WF
+and b are learned in training time through back-
+propagation.
+We use one dimensional Convolutional Neural
+Network (CNN) (LeCun et al., 2015) to extract
+the patterns within the prosody signal—i.e. pitch,
+loudness, and the ﬁrst three formants computed
+over small segments of the audio. The network
+consists of four 1D convolutional layers, each hav-
+ing a receptive ﬁeld of 3. We use element-wise
+RELU (R(x) = max(0,x)) activation function to
+the output of each convolution layer. The lowest
+(closest to the input signal) two layers consist of
+16 ﬁlters, and the upper two layers have 32 and
+64 ﬁlters respectively. The second and third con-
+volution layers are followed by max-pool layers
+of window size 2. The ﬁnal convolution layer is
+followed by a max-pool layer having the window
+size equal to the length of the signal. Thus, the
+CNN outputs a 64-dimensional vector. This vec-
+tor is concatenated with the sentence embedding
+vector obtained from the dependency tree-based
+5http://www.fon.hum.uva.nl/praat/
+model discussed in section 4.2. The concatenated
+vector is passed through two layers of fully con-
+nected networks to produce the probabilities of the
+ratings.
+5 Training the Networks
+We implemented the networks in pyTorch 6. De-
+tails of the training procedure are described in the
+following subsections.
+5.1 Optimization
+We use multi-label Binary Cross-Entropy loss as
+deﬁned below for the backpropagation of the gra-
+dients:
+ℓ(r,y) =−1
+n
+n∑
+i=1
+(yilog(ri)+(1−yi) log(1−ri))
+(16)
+Here r is the model output and y is the ground
+truth label obtained from data. ri and yi represent
+the ith element of r and y. n = 14represents the
+number of the rating categories.
+We randomly split the training dataset into 9:1
+ratio and name them training and development
+subsets respectively. The networks are trained
+over the training subset. We use the loss in the de-
+velopment subset to tune the hyper-parameters, to
+adjust the learning rate and regularization strength,
+and to select the best model for ﬁnal evaluation,
+etc. The training loop is terminated when the loss
+over the development subset saturates. The model
+parameters are saved only when the loss over the
+development subset is lower than any previous it-
+eration.
+We experiment with two optimization algo-
+rithms: Adam (Kingma and Ba, 2014) and Ada-
+grad (Duchi et al., 2011). The learning rate is var-
+ied in an exponential range from 0.0001 to 1. The
+optimization algorithms are evaluated with mini-
+batches of size 10, 30, and 50. We obtain the best
+results using Adagrad with learning rate 0.01 and
+in Adam with a learning rate of 0.00066. The
+training loop ran for 50 iterations which mostly
+saturates the development set loss. We conducted
+around 100 experiments with various parameters.
+Experiments usually take about 48 hours to make
+50 iterations over the dataset when running in an
+Nvidia K20 GPU.
+6pytorch.org
+0
+ 10
+ 20
+ 30
+ 40
+ 50
+Iterations
+0.40
+0.45
+0.50
+0.55
+0.60
+0.65
+0.70Average loss (in an iteration over dataset)
+Training subset Loss without Regularization
+Dev subset Loss without Regularization
+Training subset Loss with Regularization
+Dev subset Loss with Regularization
+Figure 4: Effect of Weight-Drop regularization on the
+training and development subset loss
+5.2 Regularization
+Neural networks are often regularized us-
+ing Dropout (Hinton et al., 2012) to prevent
+overﬁtting—where the elements of a layer’s
+output are set to zero with a probability pduring
+the training time. A naive application of dropout
+to LSTM’s hidden state disrupts its ability to
+retain long-term memory. We resolve this issue
+using the weight-dropping technique proposed by
+Merity et al. (2017). In this technique, instead
+of applying the dropout operation between time-
+steps, it is applied to the hidden-to-hidden weight
+matrices (Wan et al., 2013). The dropout proba-
+bility, pis set to 0.2. Effect of the regularization
+is shown in Figure 4.
+6 Baseline Methods
+We compare the performance of the neural net-
+work models against several popular statistical
+classiﬁers.
+6.1 Feature Extraction
+We use language, prosody, and narrative trajectory
+features that are used in similar tasks in the rele-
+vant literature.
+6.1.1 Language Features
+We use a psycholinguistic lexicon named “Lin-
+guist Inquiry Word Count” (LIWC) (Pennebaker
+et al., 2001) for extracting language features. We
+count the total number of words under the 64 word
+categories provided in the LIWC lexicon and nor-
+malize these counts by the total number of words
+in the transcript. The LIWC categories include
+words describing function word categories (e.g.,
+articles, quantiﬁers, pronouns), various content
+categories (e.g., anxiety, insight), positive emo-
+tions (e.g., happy, kind), negative emotions (e.g.,
+sad, angry), etc. These features have been used
+in several related works (Ranganath et al., 2009;
+Zechner et al., 2009; Naim et al., 2016; Liu et al.,
+2017b).
+6.1.2 Prosodic Features
+We extract several summary statistics from the
+pitch, loudness, and the ﬁrst three formants ex-
+tracted from the audio. These statistics are min,
+max, mean, 25th percentile, median, 75th per-
+centile, standard deviation, kurtosis, and skew-
+ness. Additionally, we collect pause duration,
+the percentage of unvoiced frames, jitter (irreg-
+ularities in pitch), shimmer (irregularities in vo-
+cal intensity), and percentage of breaks in speech.
+These features are used in several related works as
+well (Soman and Madan, 2009; Naim et al., 2016).
+6.1.3 Narrative Trajectory
+Tanveer et al. (2018) proposed a set of features
+that can capture the “narrative trajectory” of the
+TED Talks. These features are constructed by
+extracting sentence-wise emotion (anger, disgust,
+fear, joy, or sadness), language (analytical, con-
+ﬁdence, and tentative) and personality (openness,
+conscientiousness, extraversion, emotional range,
+and agreeableness) scores from a standard ma-
+chine learning toolbox and then interpolating the
+sentence-wise scores to a signal of ﬁxed size (e.g.,
+100 samples). These signals form several inter-
+esting clusters that can capture patterns of story-
+telling. The summary statistics of these signals
+are found to be good predictors of the TED talk
+ratings as well. We use the min, max, mean, stan-
+dard deviation, kurtosis, and skewness of these
+signals. We use IBM Tone Analyzer 7 to extract
+the sentence-wise scores.
+6.2 Baseline Classiﬁers
+We use the Linear Support Vector Machine
+(SVM) (Vapnik and Chervonenkis, 1964) and
+LASSO (Tibshirani, 1996) as the baseline classi-
+ﬁers. In SVM, the following objective function is
+minimized:
+minimize
+w,ξi,b
+1
+2∥w∥+ C
+N∑
+i=1
+ξi
+subject to yi
+(
+w′xi −b
+)
+≥1 −ξi, ∀i
+ξi,≥0, ∀i
+(17)
+7https://www.ibm.com/watson/services/tone-analyzer/
+Model Avg.
+AUC
+Avg.
+F-sc.
+Avg.
+Prec.
+Avg.
+Recall
+Word Seq 0.83 0.76 0.76 0.76
+D.Tree 0.83 0.77 0.77 0.77
+D.Tree+Pr. 0.83 0.72 0.75 0.73
+Dep. Tree
+(Unscaled) 0.76 0.70 0.68 0.68
+LinearSVM 0.78 0.71 0.71 0.71
+Ridge 0.78 0.71 0.71 0.71
+LASSO 0.77 0.70 0.70 0.70
+Weninger – 0.71 – –
+Table 3: Average of several prediction performance
+metrics over 14 different ratings of TED talks
+Where w is the weight vector and bthe bias term.
+∥w∥refers to the ℓ2 norm of the vector w. In
+these equations, we assume that the “higher than
+median” and “lower than median” classes are rep-
+resented by 1 and −1 values respectively.
+We adapt the original Lasso (Tibshirani, 1996)
+regression model for classiﬁcation purposes. It is
+equivalent to Logistic regression withℓ1 norm reg-
+ularization. It works by solving the following op-
+timization problem:
+minimize
+w,b
+∥w∥1 + k
+k= C
+N∑
+i=1
+log
+(
+exp
+(
+−yi
+(
+w′xi + b
+))
++ 1
+)
+(18)
+where C >0 is the inverse of the regularization
+strength, and ∥w∥1 = ∑d
+j=1 |wj|is the ℓ1 norm of
+w. The ℓ1 norm regularization is known to push
+the coefﬁcients of the irrelevant features down to
+zero, thus reducing the predictor variance.
+Finally, the Ridge regression is essentially same
+as logistic regression with ℓ2 regularization. The
+objective function is as below:
+minimize
+w,b
+1
+2∥w∥+ k
+k= C
+N∑
+i=1
+log
+(
+exp
+(
+−yi
+(
+w′xi + b
+))
++ 1
+)
+(19)
+7 Experimental Results
+We allocated 150 randomly sampled TED talks
+from the dataset as a reserved test subset. All the
+results shown in this section are computed over
+this test subset. We evaluate the models by com-
+puting the values of four performance metrics—
+Area Under the ROC Curve (AUC), Precision, Re-
+call, and F-score for all the 14 categories of the rat-
+ings. We compute averages of these metrics over
+all the rating categories that are shown in Table 3.
+The ﬁrst three rows represent the average per-
+formances of the Word Sequence model, the De-
+pendency Tree based model, and the Dependency
+Tree model combined with CNN respectively. It
+is evident from the table that the neural networks
+outperform the baseline models in all the four met-
+rics. These models were trained and tested on
+the scaled rating counts ( Rscaled). We also trained
+and tested the dependency tree model with the un-
+scaled rating counts (4rd row in Table 3). Notably,
+the networks perform worse for predicting the un-
+scaled ratings. We believe this is due to the fact
+that unscaled ratings are biased with the amount
+of time the TED talks remain online. This mixture
+of additional information makes it difﬁcult for the
+neural networks to predict the ratings from tran-
+script and prosody only.
+We are surprised that adding the prosody does
+not improve the prediction performance. We think
+it is because TED Talks are highly rehearsed pub-
+lic speeches. It is likely that the change of prosody
+in most of the talks are acted, and therefore, it does
+not carry much information in addition to the talk
+transcripts. We believe it is a global artifact of the
+TED talk dataset.
+Table 4 provides a clearer picture how the de-
+pendency tree based neural network performs bet-
+ter than the word sequence neural network. The
+former achieves a higher recall for most of the rat-
+ing categories ( 9 out of 14). Only in three cases
+(Funny, Longwinded, and OK) the word sequence
+model achieved higher performance than the de-
+pendency tree model. Both these models per-
+formed equally well for the Obnoxious and Un-
+convincing rating category. It is important to re-
+alize that the dependency trees we extracted were
+not manually annotated. They were extracted us-
+ing SyntaxNet which itself introduces some error.
+Andor et al. (2016) described their model accuracy
+to be approximately 0.95. We expected to notice
+an impact of this error in the results. However, the
+results show that the additional information (Parts
+of Speech tags and the dependency structure) ben-
+eﬁted the prediction performance despite the error
+Ratings Word
+Seq.
+Dep.
+Tree
+Weninger
+et al. (SVM)
+Beautiful 0.88 0.91 0.80
+Confusing 0.70 0.74 0.56
+Courageous 0.84 0.89 0.79
+Fascinating 0.75 0.76 0.80
+Funny 0.78 0.77 0.76
+Informative 0.81 0.83 0.78
+Ingenious 0.80 0.81 0.74
+Inspiring 0.72 0.77 0.72
+Jaw-dropping 0.68 0.72 0.72
+Longwinded 0.73 0.70 0.63
+Obnoxious 0.64 0.64 0.61
+OK 0.73 0.70 0.61
+Persuasive 0.83 0.84 0.78
+Unconvincing 0.70 0.70 0.61
+Average 0.76 0.77 0.71
+Table 4: Recalls for various rating categories. The rea-
+son we choose recall is for making comparison with the
+results reported by Weninger et al. (2013).
+in annotating the dependency trees. We think the
+hierarchical tree structure resolves many ambigu-
+ities in the sentence semantics which is not avail-
+able to the word sequence model.
+We also compare our results with Weninger
+et al. (2013). However, this comparison is just an
+approximation because the number of TED talks
+are different in our experiment than in Weninger
+et al. (2013). The results show that the neural net-
+work models perform better for almost every rat-
+ing category except Fascinating and Obnoxious.
+A neural network is a universal function ap-
+proximator (Cybenko, 1989; Hornik, 1991) and
+thus expected to perform better. Yet we think an-
+other reason for its excel is its ability to process
+a faithful representation of the transcripts. In the
+baseline methods, the transcripts are provided as
+words without any order. In the neural counter-
+parts, however, it is possible to maintain a more
+natural representation of the words—either the se-
+quence, or the syntactic relationship among them
+through a dependency tree. In addition, neural net-
+works intrinsically capture the correlations among
+the rating categories. The baseline methods, on
+the other hand, considers each category as a sep-
+arate classiﬁcation problem. These are a few rea-
+sons why neural networks are a better choice for
+the TED talk prediction task.
+8 Conclusion
+In summary, we presented neural network ar-
+chitectures to predict the TED talk ratings from
+the speech transcripts and prosody. We pro-
+vide domain speciﬁc information such as psycho-
+linguistic language features, prosody and narrative
+trajectory features to the baseline classiﬁers. The
+neural networks, on the other hand, were designed
+to consume mostly the raw data with a few high-
+level assumptions on human cognition. The neu-
+ral network architectures provide state of the art
+prediction performance, outperforming the com-
+petitive baseline method in the literature. The av-
+erage AUC of the networks are 0.83 compared to
+the baseline method’s AUC of 0.78. The results
+also show that dependency tree based networks
+perform better in predicting the TED talk ratings.
+Furthermore, inclusion of prosody does not help as
+much as we expect it to be. The exact reason why
+this happens, however, remains to be explored in
+the future.
+The dataset and the complete source code of this
+work will be freely available to the scientiﬁc com-
+munity for further evaluation.8
+References
+Dimitrios Alikaniotis, Helen Yannakoudakis, and
+Marek Rei. 2016. Automatic text scoring using neu-
+ral networks. arXiv preprint arXiv:1606.04289.
+Daniel Andor, Chris Alberti, David Weiss, Aliaksei
+Severyn, Alessandro Presta, Kuzman Ganchev, Slav
+Petrov, and Michael Collins. 2016. Globally nor-
+malized transition-based neural networks. In ACL.
+Dario Bertero and Pascale Fung. 2016. A long short-
+term memory framework for predicting humor in di-
+alogues. In NAACL-HLT, pages 130–135.
+Cen Chen, Yinfei Yang, Jun Zhou, Xiaolong Li, and
+Forrest Sheng Bao. 2018. Cross-domain review
+helpfulness prediction based on convolutional neu-
+ral networks with auxiliary domain discriminators.
+In Proceedings of the 2018 Conference of the North
+American Chapter of the Association for Computa-
+tional Linguistics: Human Language Technologies,
+Volume 2 (Short Papers), volume 2, pages 602–607.
+Lei Chen and Chong MIn Lee. 2017. Convolu-
+tional neural network for humor recognition. arXiv
+preprint arXiv:1702.02584.
+Lei Chen, Ru Zhao, Chee Wee Leong, Blair Lehman,
+Gary Feng, and Mohammed Ehsan Hoque. 2017.
+8link blinded due to author anonymity
+Automated video interview judgment on a large-
+sized corpus collected online. In ACII, pages 504–
+509.
+George Cybenko. 1989. Approximation by superposi-
+tions of a sigmoidal function. Mathematics of con-
+trol, signals and systems, 2(4):303–314.
+John Duchi, Elad Hazan, and Yoram Singer. 2011.
+Adaptive subgradient methods for online learning
+and stochastic optimization. Journal of Machine
+Learning Research, 12(Jul).
+Youmna Farag, Helen Yannakoudakis, and Ted
+Briscoe. 2018. Neural automated essay scoring and
+coherence modeling for adversarially crafted input.
+arXiv preprint arXiv:1804.06898.
+Carmine Gallo. 2014. New survey: 70% say presenta-
+tion skills are critical for career success. Forbes.
+Fasih Haider, Fahim A Salim, Saturnino Luz, Carl V o-
+gel, Owen Conlan, and Nick Campbell. 2017. Vi-
+sual, laughter, applause and spoken expression fea-
+tures for predicting engagement within ted talks.
+Feedback, 10:20.
+Geoffrey E Hinton, Nitish Srivastava, Alex Krizhevsky,
+Ilya Sutskever, and Ruslan R Salakhutdinov. 2012.
+Improving neural networks by preventing co-
+adaptation of feature detectors. arXiv preprint
+arXiv:1207.0580.
+Sepp Hochreiter and Jrgen Schmidhuber. 1997.
+Long short-term memory. Neural Computation ,
+9(8):1735–1780.
+Kurt Hornik. 1991. Approximation capabilities of
+multilayer feedforward networks. Neural networks,
+4(2):251–257.
+Aaron Jaech, Rik Koncel-Kedziorski, and Mari Os-
+tendorf. 2016. Phonological pun-derstanding. In
+NAACL-HLT, pages 654–663.
+Cancan Jin, Ben He, Kai Hui, and Le Sun. 2018.
+Tdnn: a two-stage deep neural network for prompt-
+independent automated essay scoring. In Proceed-
+ings of the 56th Annual Meeting of the Association
+for Computational Linguistics (Volume 1: Long Pa-
+pers), volume 1, pages 1088–1097.
+Diederik P Kingma and Jimmy Ba. 2014. Adam: A
+method for stochastic optimization. arXiv preprint
+arXiv:1412.6980.
+Yann LeCun, Yoshua Bengio, and Geoffrey Hinton.
+2015. Deep learning. nature, 521(7553):436.
+Haijing Liu, Yang Gao, Pin Lv, Mengxue Li, Shiqiang
+Geng, Minglan Li, and Hao Wang. 2017a. Using
+argument-based features to predict and analyse re-
+view helpfulness. arXiv preprint arXiv:1707.07279.
+Zhe Liu, Anbang Xu, Mengdi Zhang, Jalal Mah-
+mud, and Vibha Sinha. 2017b. Fostering user en-
+gagement: Rhetorical devices for applause gen-
+eration learnt from ted talks. arXiv preprint
+arXiv:1704.02362.
+Lionel Martin and Pearl Pu. 2014. Prediction of help-
+ful reviews using emotions extraction. In Proceed-
+ings of the 28th AAAI Conference on Artiﬁcial Intel-
+ligence (AAAI-14), EPFL-CONF-210749.
+Stephen Merity, Nitish Shirish Keskar, and Richard
+Socher. 2017. Regularizing and optimizing lstm lan-
+guage models. arXiv preprint arXiv:1708.02182.
+Iftekhar Naim, Md Iftekhar Tanveer, Daniel Gildea,
+and Ehsan Hoque. 2016. Automated analysis and
+prediction of job interview performance. IEEE
+Transactions on Affective Computing.
+Laurent Son Nguyen and Daniel Gatica-Perez. 2016.
+Hirability in the wild: Analysis of online conversa-
+tional video resumes. IEEE Transactions on Multi-
+media, 18(7):1422–1437.
+Nikolaos Pappas and Andrei Popescu-Belis. 2013.
+Sentiment analysis of user comments for one-class
+collaborative ﬁltering over ted talks. In SIGIR, SI-
+GIR ’13, pages 773–776. ACM.
+James W Pennebaker, Martha E Francis, and Roger J
+Booth. 2001. Linguistic Inquiry and Word Count:
+LIWC 2001. Mahwah: Lawrence Erlbaum Asso-
+ciates, 71.
+Jeffrey Pennington, Richard Socher, and Christo-
+pher D. Manning. 2014. Glove: Global vectors for
+word representation. In EMNLP.
+Rajesh Ranganath, Dan Jurafsky, and Dan McFarland.
+2009. It’s not you, it’s me: detecting ﬂirting and
+its misperception in speed-dates. In EMNLP, pages
+334–342.
+Vikrant Soman and Anmol Madan. 2009. Social sig-
+naling: Predicting the outcome of job interviews
+from vocal tone and prosody. In ICASSP.
+Kaveh Taghipour and Hwee Tou Ng. 2016. A neural
+approach to automated essay scoring. In Proceed-
+ings of the 2016 Conference on Empirical Methods
+in Natural Language Processing, pages 1882–1891.
+Kai Sheng Tai, Richard Socher, and Christopher D
+Manning. 2015. Improved semantic representations
+from tree-structured long short-term memory net-
+works. In ACL, page 15561566.
+M Iftekhar Tanveer, Ji Liu, and M Ehsan Hoque. 2015.
+Unsupervised extraction of human-interpretable
+nonverbal behavioral cues in a public speaking sce-
+nario. In 23rd Annual ACM Conference on Multi-
+media, pages 863–866. ACM.
+M. Iftekhar Tanveer et al. 2018. Awe the audience:
+How the narrative trajectories affect audience per-
+ception in public speaking. In CHI ’18, pages 24:1–
+24:12, New York, NY , USA. ACM.
+Robert Tibshirani. 1996. Regression shrinkage and se-
+lection via the lasso. Journal of the Royal Statistical
+Society, pages 267–288.
+Salvatore Valenti, Francesca Neri, and Alessandro
+Cucchiarelli. 2003. An overview of current research
+on automated essay grading. Journal of Information
+Technology Education: Research, 2:319–330.
+Vladimir Vapnik and Alexey Chervonenkis. 1964. A
+note on one class of perceptrons. Automation and
+remote control, 25(1).
+David Wallechinsky, Amy Wallace, Jane Farrow, and
+Ira Basen. 2005. The Book of Lists: The Origi-
+nal Compendium of Curious Information . Knopf
+Canada.
+Li Wan, Matthew Zeiler, Sixin Zhang, Yann Le Cun,
+and Rob Fergus. 2013. Regularization of neural net-
+works using dropconnect. In ICML, pages 1058–
+1066.
+Felix Weninger, Pascal Staudt, and Bj ¨orn Schuller.
+2013. Words that fascinate the listener: Predict-
+ing affective ratings of on-line lectures. Interna-
+tional Journal of Distance Education Technologies
+(IJDET), 11(2):110–123.
+Yinfei Yang, Yaowei Yan, Minghui Qiu, and Forrest
+Bao. 2015. Semantic analysis and helpfulness pre-
+diction of text for online product reviews. In Pro-
+ceedings of the 53rd Annual Meeting of the Associ-
+ation for Computational Linguistics and the 7th In-
+ternational Joint Conference on Natural Language
+Processing (Volume 2: Short Papers) , volume 2,
+pages 38–44.
+Klaus Zechner, Derrick Higgins, Xiaoming Xi, and
+David M Williamson. 2009. Automatic scoring of
+non-native spontaneous speech in tests of spoken en-
+glish. Speech Communication, 51(10):883–895.

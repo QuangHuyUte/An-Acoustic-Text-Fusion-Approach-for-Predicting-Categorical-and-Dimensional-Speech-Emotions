@@ -1,0 +1,2 @@
+﻿cache_path,n_samples,X_temporal_shape,X_spectral_shape,X_stats_shape,X_e2v_shape,X_text_stats_shape,emotion2vec_ok_count,emotion2vec_zero_or_error_count
+/kaggle/working/06_w2v_based_models/02_IEMOCAP Feature Extraction Emotion2Vec Acoustic/output/features/iemocap_full_06d_multibranch_cache.npz,5531,"(5531, 135, 601)","(5531, 3, 96, 601)","(5531, 1224)","(5531, 768)","(5531, 6)",5531,0

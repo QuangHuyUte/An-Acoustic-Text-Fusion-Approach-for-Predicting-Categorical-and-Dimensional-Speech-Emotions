@@ -1,0 +1,638 @@
+A Multi-Task, Multi-Modal Approach for Predicting Categorical
+and Dimensional Emotions
+Alex-Răzvan Ispas∗
+LISN-CNRS, Paris-Saclay University
+Saclay, France
+alex-razvan.ispas@universite-paris-
+saclay.fr
+Théo Deschamps-Berger
+LISN-CNRS, Paris-Saclay University
+Saclay, France
+theo.deschamps-
+berger@lisn.upsaclay.fr
+Laurence Devillers
+LISN-CNRS, Sorbonne University
+Paris, France
+devil@lisn.upsaclay.fr
+Figure 1: Overview of the proposed multi-task, cross-attention speech emotion recognition architecture. The acoustic and
+linguistic features are extracted with the help of HuBERT [ 13] and DeBERTaV3 [12]. Afterwards the features are refined by two
+self-attention modules. Then, inspired by [ 8] and [ 21], we slightly modify the original modality interaction and introduce two
+multihead cross-attention layers which integrate the learnable bridge tokens that create the connection between the features
+of the two modalities. The model predicts the categorical emotion label, the valence, and the arousal score for each segment.
+Besides the cosine decaying procedure, the random modality masking is performed according to the original implementation.
+ABSTRACT
+Speech emotion recognition (SER) has received a great deal of at-
+tention in recent years in the context of spontaneous conversations.
+While there have been notable results on datasets like the well-
+known corpus of naturalistic dyadic conversations, IEMOCAP, for
+both the case of categorical and dimensional emotions, there are few
+papers which try to predict both paradigms at the same time. There-
+fore, in this work, we aim to highlight the performance contribution
+of multi-task learning by proposing a multi-task, multi-modal sys-
+tem that predicts categorical and dimensional emotions. The results
+emphasise the importance of cross-regularisation between the two
+∗Upon reviewing the fully released version of [20], it came to our attention that the
+proceedings version of this work did not include the speaker-independent results
+for [22]. Therefore, we include in brackets the speaker-independent results for a fair
+comparison with our model. Additionally, we were unable to ascertain any details
+regarding speaker-independence in [ 5], and therefore advise that these results be
+interpreted with caution.
+types of emotions. Our approach consists of a multi-task, multi-
+modal architecture that uses parallel feature refinement through
+self-attention for the feature of each modality. In order to fuse the
+features, our model introduces a set of learnable bridge tokens that
+merge the acoustic and linguistic features with the help of cross-
+attention. Our experiments for categorical emotions on 10-fold
+validation yield results comparable to the current state-of-the-art.
+In our configuration, our multi-task approach provides better re-
+sults compared to learning each paradigm separately. On top of
+that, our best performing model achieves a high result for valence
+compared to the previous multi-task experiments.
+CCS CONCEPTS
+•Computing methodologies → Speech recognition; Speech
+recognition.
+arXiv:2401.00536v1  [cs.CL]  31 Dec 2023
+
+Ispas et al.
+1 INTRODUCTION
+The capacity to automatically estimate human users’ emotions
+during conversations is crucial for adaptive intelligent technology.
+Speech is one of the most important means of communication
+among human beings. The paralinguistic information conveyed
+through speech is used to identify people’s emotional states. There
+are two major paradigms of emotion which are referenced in the
+current work for affective computing. The first is the categorical
+representation paradigm promoted by figures like Plutchick or Eck-
+man [9] who classify the emotions into groups of primary emotions
+(e.g surprise, anger, happiness, sadness, fear and disgust). The second
+is a continuous dimension paradigm proposed by Russel [15] which
+tries to quantify emotions based on three continuous dimensions:
+valence, arousal and dominance.
+The IEMOCAP [4] dataset presents a compelling multi-modal
+approach to emotion analysis, combining audio and video record-
+ings of naturalistic dyadic conversations. With diverse emotion
+labels representing categorical and dimensional paradigms, it offers
+a rich landscape for exploring and understanding human emotional
+expressions. Speech corpora like IEMOCAP are valuable resources
+which open possibilities for exploring the complex relationship
+between behavioral signals and emotional understanding in natural
+language processing and affective computing.
+While there have been successful papers which provided re-
+markable results for categorical emotions [1, 5, 8, 21], as well as for
+dimensional emotions [16, 18], there are few works that have tried
+to use both paradigms at the same time. For example, [ 16] tried
+to predict the categorical emotions by mapping the dimensional
+dimensions, meanwhile in a recent work [17], the categorical and
+dimensional emotions are unified through a hierarchical multi-task
+model obtaining notable results for the arousal dimension. However,
+there are examples where multi-task learning proved to slightly
+improve the performance of other speech tasks [11].
+Multi-task learning holds promise for speech emotion recogni-
+tion due to its capacity to leverage shared information between
+related tasks. By simultaneously optimising the model for both cate-
+gorical emotion labels and continuous dimensional representations,
+multi-task learning enables the extraction of a more holistic and nu-
+anced understanding of emotions. Therefore, in this paper, our aim
+is to demonstrate the performance contribution of multi-task learn-
+ing by predicting the categorical and dimensional emotions through
+both acoustic and linguistic information. Considering the recent suc-
+cess of cross-attention between the features of the self-supervised
+pre-trained models of the textual and audio representations [8, 21],
+we utilise a similar approach and obtain better performance on
+dimensional representations. We propose a multi-task architecture
+that predicts the categorical and the dimensional emotions at the
+same time, but independently. As we want to give equal importance
+to the acoustic and linguistic features, we adopt a similar strategy
+emphasised by [21] which introduces a set of learnable query to-
+kens which are meant to collect the emotional information from the
+concatenated features of the audio and textual modality. Unlike the
+original approach, the tokens will play the role of a bridge that will
+fuse the acoustic and linguistic features together. At the same time,
+we experiment with the Random Modality Masking (RMM) which
+masks either the audio or the text embeddings during the training
+in order to constrain the model to learn in depth the features of
+each modality.
+Our experiments demonstrate the efficiency of cross-regularisation
+through categorical and dimensional multi-task learning by compar-
+ing our results with the experiments where we optimize for a single
+task. In addition, our best performing model achieves remarkable
+results for the valence dimension.
+2 RELATED WORK
+In the case of IEMOCAP [4], there has been a lack of agreement
+regarding the number of folds as well as the number of emotional
+segments, making the reproducibility of the results a challenging
+task. Therefore, [2] made a review of the current IEMOCAP papers,
+that provided open-source implementations, in order to check their
+reproducibility. They also provided a set of recommendations and
+evaluation guidelines in which they state that a minimally compa-
+rable baseline should use the neutral, sad, angry and happy+excited
+classes, resulting into a total number of 5531 samples. They also
+recommend the use of 10-fold cross-validation where 8 speakers are
+used for training, 1 speaker for validation and 1 for test. Once these
+results are reported, the researches can modify the experiments as
+desired.
+In the context of categorical emotions, the current state-of-the-
+art is dominated by transformer based architectures. In the case
+of IEMOCAP [4], fine-tuning approaches on HuBERT-large [13]
+and wav2vec2-large [3] prove to be the most efficient uni-modal
+methods for categorical emotions [22]. Other approaches try to use
+complementary tasks, such as speech recognition in order to cross-
+regularize the models [5]. In multi-modal systems, cross-attention
+mechanisms can provide an increase of performance of 4% [8] for
+other categorical emotion corpora such as CEMO, an emercency call
+center corpus [7]. In [21], they introduce random modality masking
+to mitigate the issue of bias modality by maximazing the emotional
+information provided by both the audio and text transformer. They
+also introduce a group of learnable tokens in the cross-attention
+layer such that they can fuse the emotional features which come
+from the acoustic and linguistic modalities.
+In the case of dimensional emotions, pre-trained transformer-
+based architectures show better performance for valence on speech
+corpora, making them more robust for small perturbations and
+group fairness for the two genders [ 20].[18] proposed a Teacher-
+Student training approach on multi-modal audio and text represen-
+tations in which they achieved state-of-the-art results for dimen-
+sional values.
+Although there have been successful experiments that used
+speech-to-text in a multi-task set up to enhance the performance of
+categorical emotions [5, 22], there are few papers which considered
+to combine the categorical and dimensional emotions. In a recent
+paper, both the categorical and dimensional emotions were used
+in a hierarchical multi-task approach [17]. Although the result for
+valence was higher, it had a slightly lower score for arousal com-
+pared to [18]. [6] explored the prediction of multiple emotions by
+using multi-task learning together with every available modality
+(acoustic, visual and textual) in a temporal LSTM-RNN model. In
+
+A Multi-Task, Multi-Modal Approach for Predicting Categorical and Dimensional Emotions
+another study, the arousal and valence were leveraged to assign sup-
+plementary information within a Deep Belief Network framework
+for the categorical task [23].
+In the context of our current work, we are going to respect the
+guidelines provided by [2] and compare against the other models
+that use the same setup. At the same time, we will follow [20] and
+use the weighted average recall (WAR) as the categorical metric
+since IEMOCAP is an imbalanced dataset. In the case of dimen-
+sional emotions, the metric will be the Concordance Correlation
+Coefficient (CCC). Our work tries to explore the possibility of per-
+formance enhancement in SER multi-modal frameworks by using
+both the categorical and dimensional emotions in a multi-task man-
+ner. Regarding the transformers, this work will use HuBERT-large
+and DeBERTaV3-large [12]. We experimented with different com-
+binations of the dual cross-attention emphasised in [8], the random
+modality masking (RMM) and the learnable query tokens from [21].
+Our best performing model achieves a CCC score of .748 for valence.
+3 METHODOLOGY
+Given the audio segment and the textual transcript of someone’s
+speech, our model is predicting the categorical emotion label, the
+valence and the arousal. The two transformers used to extract
+the acoustic and linguistic features are HuBERT-large [ 13] and
+DeBERTaV3-large [12]. HuBERT-large training implies self-supervised
+learning in which the targets are created based on predicting clus-
+ters in which each feature vector is assigned, meanwhile DeBERTaV3-
+large relies on disentangled attention in order to capture depen-
+dencies between the words in the sentence. Figure 1 presents the
+overview of the proposed architecture. Section 3.1 introduces the
+multi-task loss as well as its sub-components. In Section 3.2 we
+present the feature refinement as well as how we handled the se-
+quence length issue between the audio and text embeddings. Then
+Section 3.3 presents how the emotional features of the acoustic and
+linguistic embeddings are learned by implementing a set of learn-
+able bridge tokens. Section 3.4 presents the way the complementary
+features are fused with the help of multi-head attention and the
+learnable bridge tokens. Finally, Section 3.5 presents the Random
+Modality Masking (RMM) and the masking chance decaying proce-
+dure chosen alongside the training.
+3.1 Multi-task Learning
+Our multi-task problem can be formalised as a prediction of a set
+consisting of valence, arousal, and the categorical emotions which
+can take values from the set D = {𝑛𝑒𝑢𝑡𝑟𝑎𝑙, ℎ𝑎𝑝𝑝𝑦, 𝑠𝑎𝑑, 𝑎𝑛𝑔𝑟𝑦 }.
+Given a set of features {𝑢𝑖, 𝑡𝑖 }𝐼
+𝑖=1, where 𝑖 ∈ { 1, . . . , 𝐼} represents
+the i-th utterance of the speech 𝑢𝑖 and the i-th transcript 𝑡𝑖, predict
+the target 𝑦𝑖 = [𝑦𝑖
+𝐷𝑖𝑠𝑐 , 𝑦𝑖
+𝑉 , 𝑦𝑖
+𝐴], where 𝑦𝑖 represents the ground
+truth.
+The categorical labels will be optimised using the categorical
+cross-entropy (CE), which for a given dataset 𝐼 is computed as:
+𝐶𝐸 =
+𝐼∑︁
+𝑖=1
+𝐷∑︁
+𝑐=1
+𝑦𝑖,𝑑 log( ˆ𝑦𝑖,𝑑 )
+In the case of dimensional emotions, the standard loss function is
+the inverse of the Concordance Correlation Coefficient (CCC). That
+is because the CCC score needs to be maximised, meanwhile the
+loss needs to be minimised. Given the vector of predictions ˆ𝑦 ∈ R 𝐼 ,
+and the ground truth 𝑦 ∈ R 𝐼 , the CCC loss for one dimensional
+value can be calculated as:
+L𝐶𝐶𝐶 = 1 − 2𝐶𝑜𝑣 ( ˆ𝑦, 𝑦)
+𝜎2
+ˆ𝑦 + 𝜎2𝑦 + ( 𝜇 ˆ𝑦 − 𝜇𝑦)
+Following the example of [11, 17], we define our multi-task loss
+as the weighted sum of the categorical cross-entropy, the CCC loss
+for valence and the CCC loss for arousal, as shown in Equation 3:
+(
+L𝑡𝑜𝑡𝑎𝑙 = ℎ1 ∗ 𝐶𝐸 + ℎ2 ∗ L𝑉
+𝐶𝐶𝐶 + ℎ3 ∗ L𝐴
+𝐶𝐶𝐶Í3
+𝑖=1 ℎ𝑖 = 1
+where ℎ1, ℎ2, ℎ3 represent the hyperparameters that control the
+contribution of each criterion in the learning process.
+3.2 Uni-modal Refinement
+Before performing cross-attention, we refine the encoded features
+with the help of the self-attention modules in order to emphasise
+the emotional frames for each modality. In our architecture, each
+self-attention module consists of 32 attention heads, which is the
+same amount of heads utilised for the large models in [ 8]. Both
+HuBERT-large and DeBERTaV3-large have the same hidden dimen-
+sion of 1024. In order to have the same representation regarding
+the sequence length, the shorter sequence is padded to the dimen-
+sion of the longer one. The final representation of the audio and
+text features are 𝑎1:𝑁 ∈ R𝑁 𝑥𝑑𝑒 and 𝑡1:𝑁 ∈ R𝑁 𝑥𝑑𝑒 where 𝑁 is the
+maximum sequence length and 𝑑𝑒 is the hidden dimension size.
+3.3 Modality Interaction
+Following the example of [21], we create two groups of trainable
+tokens which aggregate the embedding features of 𝑎
+′
+1:𝑁 and 𝑤
+′
+1:𝑁
+by the attention mechanisms. Unlike the classic cross-attention,
+where the key and the value come from the same modality and the
+query comes from a different modality, our approach uses different
+modalities for the key and value and it tries to merge them together
+by implying a set of learnable bridge tokens. The trainable tokens
+𝑄𝑎 ∈ R𝐿𝑥𝑑𝑒 and 𝑄𝑡 ∈ R𝐿𝑥𝑑𝑒 play the role of the query. Tensor
+𝑄𝑎 represents the learnable query tokens (Q) of the multihead at-
+tention layer that uses the audio embeddings as key (K) and the
+text embeddings as value (V), meanwhile 𝑄𝑡 is the query for the
+layer where the text embeddings are the key and the audio embed-
+dings are the value. The learnable bridge tokens can be perceived as
+the intermediary that provides a mean of interaction between the
+acoustic and linguistic features. Dimenson 𝐿 represents the number
+of learnable tokens. We perform cross-attention in both scenarios
+because it is possible that the attention weights computed with the
+help of either the audio or the text embeddings can offer more or
+less insight regarding the optimal weights for fusing the features
+together.
+Once the cross-attention is performed, each tensor will contain
+L tokens that are average pooled over the tokens dimension. Af-
+terwards, the two vectors will be stacked and average pooled once
+again in order to get the mean emotional features from the two
+
+Ispas et al.
+multi-heads. Finally, the mean vector will be fed into both the clas-
+sifier and the regressor in order to predict the categorical emotion
+label,the valence and the arousal. The architecture of the classifier
+and the regressor can be seen in Figure 2.
+Figure 2: The head consists of a classifier and a regressor. The
+regressor has two sigmoid neurons which predict the valence
+and the arousal.
+3.4 Fusing the results of the multi-head
+cross-attention layers
+As explained by [8], the main intuition behind attention is to weight
+each matrix input with respect to its importance given by the con-
+text. Cross-attention implies combining embeddings of the same
+dimension which come from different modalities. In the context of
+our architecture, instead of using a query (Q) and a key (K) from
+two different modalities, the queries will be learnable tensors and
+the key and value will come from the two modalities.
+𝐴𝑡𝑡𝑒𝑛𝑡𝑖𝑜𝑛 (𝑆 = (𝑄, 𝐾, 𝑉 )) = 𝑠𝑜 𝑓 𝑡𝑚𝑎𝑥 ( 𝑄𝐾 𝑇
+√︁
+𝑑𝑘
+)𝑉
+where 𝑆 ∈ {( 𝑄𝑎, 𝐾𝑎, 𝑉𝑡 ), (𝑄𝑡 , 𝐾𝑡 , 𝑉𝑎)}
+In the case when we perform cross-attention without the learn-
+able bridge tokens, we follow the norm and we choose the key
+and the value to come from one modality and the query from the
+opposite modality.
+As shown in Figure 1, we followed [8] and [19] and we imple-
+mented two multi-head attention layers such that we could apply
+attention mechanisms on multiple subspaces.
+𝑀𝑢𝑙𝑡𝑖ℎ𝑒𝑎𝑑 (𝑄, 𝐾, 𝑉 ) = 𝐶𝑜𝑛𝑐𝑎𝑡 (ℎ1, . . . , ℎ𝑛)𝑊 𝑂
+where ℎ𝑖 = 𝐴𝑡𝑡𝑒𝑛𝑡𝑖𝑜𝑛 (𝑄𝑊 𝑄
+𝑖 , 𝐾𝑊 𝐾
+𝑖 , 𝑉𝑊 𝑉
+𝑖 )
+Once the emotional features 𝑒𝑎 and 𝑒𝑡 are obtained from the
+multi-head cross-attention layers, the stacked mean feature embed-
+dings 𝑒𝑠 are computed as following:
+𝑒𝑠 = 𝑀𝑒𝑎𝑛 (𝑆𝑡𝑎𝑐𝑘 (𝑀𝑒𝑎𝑛 (𝑒𝑎), 𝑀𝑒𝑎𝑛 (𝑒𝑡 )))
+3.5 Random Modality Masking
+As stated in [21], the main purpose of random modality masking
+(RMM) is to mitigate the situations where only the features of a
+single transformer are used to detect the emotions. The strategy of
+RMM is to encourage the model to focus on the uni-modal features,
+in the early stages, by randomly masking either the text or the
+audio embeddings. In the later stages, the model will focus more on
+the complementary features of the multi-modal system. In order
+to not alter the weights of the masked modality, when the model
+applies RMM we freeze the layers of the respective modality.
+Like in the original work, we set a hyperparameter p which
+dictates if the respective epoch has one modality masked or not.
+The training starts with p set to 0.8 and it decays in a cosine manner
+alongside the training, as shown in Figure 3. If the probability goes
+below the threshold of 0.1, it is set automatically to 0. The original
+paper emphasised that the model is inclined to detect the emotions
+by relying on the features of the text transformer. Therefore, we
+set the RMM to be more prone to mask the textual modality. The
+probability of masking the text embeddings is 0.6, meanwhile the
+one for audio is 0.4.
+Figure 3: Masking chance cosine decay alongside the training
+of a fold. When the masking chance gets below 0.1, it is set
+by default to 0
+4 EXPERIMENT DESIGN
+4.1 Dataset
+The IEMOCAP dataset contains 12 hours of recorded audiovisual
+data, featuring five spontaneous conversational sessions between
+a unique male and female speaker. There are 10 speakers in total
+alongside 5 different sessions. Three annotators labeled each seg-
+ment with categorical emotions (e.g., happy, angry, sad etc.) and
+provided dimensional values for the valence, arousal, and domi-
+nance dimensions. The conversations are divided into scripted and
+improvised sections.
+
+A Multi-Task, Multi-Modal Approach for Predicting Categorical and Dimensional Emotions
+4.2 Experimental Set Up
+The experiments were performed based on the guidelines empha-
+sised by [ 2]: we used only the neutral, sad, angry and happy +
+surprised labels, resulting into a total of 5531 utterances. The num-
+ber of utterances for each emotion are: 1708 for neutral, 1139 for
+angry, 1084 for sad and 1646 for happy. In the case of dimensional
+emotions, we rescaled the scores from 0 to 5, into 0 to 1. At the same
+time, all experiments were conducted using the 10-fold validation.
+Our experimental results are displayed in Table 2. While train-
+ing, we use the multi-task loss presented in Section 3.1 with all
+hyperparameters set to 0.33 for an equal contribution. During the
+initial phases of our experimentation, adjustments to hyperparam-
+eters were explored, such as assigning values of 0.5 to categorical
+emotions and 0.25 to each dimensional variable. However, this led
+to a slight reduction in the performance of all tasks. Consequently,
+we decided to maintain the balanced weight configuration. We used
+the Adam [14] optimiser, with a learning rate of 3−5 and a batch
+size of 16. To prevent gradient explosion in the two larger models,
+we implemented gradient norm clipping, setting the threshold to 1.
+In the experiments with learnable bridge tokens, we set the number
+of tokens to 30 as it was the optimal number of tokens reported
+in [21]. Each multi-head attention layer had a total of 32 heads.
+The embedding layers, as well as the feature extractor layers, were
+frozen in both modalities. Each fold was trained for 20 epochs.
+Table 1: Comparing Results for categorical Emotions. All
+experiments were conducted on 10-fold. M-T means that
+the respective experiment used multi-task, W AR stands for
+Weighted A verage Recall
+Publication Acoustic Features M-T WAR
+Feng et al. [10] MFCCs 68.63%
+Aftab et al. [1] MFCCs 70.23%
+Zou et al. [24] MFCCs, Spec, wav2vec2 71.64%
+Wang et.al [22] HuBERT-large 79.6% (73.0)
+Wang et.al [22] wav2vec2-large 77.5% (71.0)
+Cai et. al [5] wav2vec2-large ✓ 78.15%
+5 RESULTS
+5.1 Comparing Results
+We compare our results against the other reported experiments
+that used 10-fold. The previous categorical results can be seen in
+Table 1. We gathered the same results reported by [20] and [2]. All
+experiments that were conducted with multi-task learning utilised
+speech-to-text as a secondary task. We chose the WAR metric as
+the primary one for categorical emotions because the dataset is
+imbalanced as shown in Section 4.2. Therefore, we want to take
+into account the class frequencies and assign higher importance to
+the recall of the minority classes. Like that, we prevent the model
+from being biased towards the majority label and ensure that the
+performance on all four labels are considered.
+In Table 1, the last results are obtained by using multi-task. The
+multi-task loss of [5] implies the categorical cross-entropy (CE) and
+the Connectionist Temporal Classification (CTC) loss. In the case
+of the best performing model [22], they perform partial fine-tuning
+on a HuBERT-large model whose output is average time pooled and
+fed into a linear classifier. The average time pooling is compressing
+the variance of the time lengths by aggregating the hidden states
+of the model over time.
+To the best of our knowledge and considering the fact that the
+guidelines suggested by [2] are recent, we could not find dimen-
+sional experiments that used 10-fold on IEMOCAP. Therefore, Table
+3 contains the best performing results for dimensional emotions
+on 5-fold. [17] combined the CE together with the CCC loss of the
+valence, arousal and dominance.
+5.2 Our Results
+Table 2 displays the results of our experiments. We chose to also
+display the Unweighted Average Recall (UAR) in order to empha-
+sise the difference in performance when we do not take the sample
+frequency into account. If we compare the single-task and multi-
+task experiments from Table 2, every experiment that uses both
+the categorical and dimensional emotions improves the CCC score
+of the valence. In this configuration, this result suggests that the
+prediction of the categorical emotions can cross-regularize the pre-
+diction of valence. This statement is also supported by the fact that
+the model underperforms when it is trained only for the dimen-
+sional task. Overall, in the best performing models, the multi-task
+improves the score of valence by 2-3%. In the case of arousal, it
+was noticed that in the early epochs it was performing much better
+than the valence. However, in the middle stages of the training, the
+arousal is surpassed by the valence in almost every experiment.
+This behaviour could be caused by the fact that the weights of
+the regressor cannot be used to predict both values at the same
+time. The performance of the categorical emotions also benefits
+from multi-task learning, increasing the performance of the WAR
+by 1-2% compared to the single task configuration. However, the
+best performing model for WAR (74.6%) has a slightly lower perfor-
+mance compared to the other categorical experiments such as [22]
+and [5]. This result could imply that the CTC loss used by [5] is a
+more optimal complementary task in contrast with the regression
+of the dimensional emotions. In the case of [22], unlike the standard
+average pooling, the average time pooling layer is considering the
+entire temporal dimension and it computes the average across all
+time steps, which seems like a more consistent method for infer-
+ring the information of the acoustic features. Overall, the multi-task
+learning increased the performance of every experiment, no matter
+the complexity of the architecture.
+By looking to the components of the architecture, it could be
+noticed that the self-attention layers play a major role in the per-
+formance, in spite of the number of optimised tasks. Our multi-task
+model which uses only self-attention increases the WAR of our
+HuBERT-large + DeBERTaV3-large baseline by almost 6% and the
+CCC score of the valence by 10%. The improvement is caused by the
+effectiveness of the emotional frames emphasised from each modal-
+ity. Together with cross-attention, the model can reach a valence
+score of .738. When the learnable bridge tokens are included, the
+model reaches the highest score for the CCC of the valence (.748)
+and the second best score for the WAR (74.6%), which suggests that
+
+Ispas et al.
+Table 2: Experimental results on the proposed architecture. The experiments where multi-task learning was performed have
+both the Disc and Con columns check-marked. The table specifies the components that were used in each experiment. S/A
+signifies that the model used self-attention, meanwhile CR/A means that the model used cross-attention layers. Q specifies
+if the architecture learned bridge tokens and the RMM marks that the model is applying random modality masking during
+training. The metrics for categorical emotions are the Unweighted A verage Recall(UAR) and the Weighted A verage Recall(W AR).
+V and A represent the Concordance Correlation Coefficient (CCC) of the Valence and Arousal. Every experiment which implied
+multi-task learning was conducted on three different seeds and it displays the mean and the standard deviation.
+Model S/A CR/A Q RMM Disc Con UAR WAR V A
+HuBERT-large + RoBERTa-large ✓ ✓ 68.3 ± 0.20% 66.31 ± 0.34% .638 ± .01 .673 ± .03
+HuBERT-large + RoBERTa-large ✓ 66.18% 65% - -
+HuBERT-large + RoBERTa-large ✓ - - .620 .674
+HuBERT-large + DeBERTav3-large ✓ ✓ 69.43 ± 0.64% 67.22 ± 0.74% .637 ± .43 .674 ± .12
+HuBERT-large + DeBERTav3-large ✓ 67.12% 65.5% - -
+HuBERT-large + DeBERTav3-large ✓ - - .617 .675
+HuBERT-large + DeBERTav3-large ✓ ✓ ✓ 73.92 ± 0.17% 73.01 ± 0.25% .737 ± .04 .676 ± .07
+HuBERT-large + DeBERTav3-large ✓ ✓ 74.17% 72.9% - -
+HuBERT-large + DeBERTav3-large ✓ ✓ - - .711 .687
+HuBERT-large + DeBERTav3-large ✓ ✓ ✓ ✓ 74.68 ± 0.16% 74.69 ± 0.18% .738 ± .03 .685 ± .03
+HuBERT-large + DeBERTav3-large ✓ ✓ ✓ 74.29% 73.6% - -
+HuBERT-large + DeBERTav3-large ✓ ✓ ✓ - - .718 .686
+HuBERT-large + DeBERTav3-large ✓ ✓ ✓ ✓ ✓ 75.71 ± 0.17% 74.6 ± 0.21% .748 ± .05 .677 ± .04
+HuBERT-large + DeBERTav3-large ✓ ✓ ✓ ✓ 74.02% 73.05% - -
+HuBERT-large + DeBERTav3-large ✓ ✓ ✓ ✓ - - .714 .698
+HuBERT-large + DeBERTav3-large ✓ ✓ ✓ ✓ ✓ ✓ 75.79 ± 0.37% 74.38 ± 0.33% .744 ± .02 .679 ± .04
+Table 3: Comparing Results for dimensional Emotions. All
+experiments were conducted on 5-fold. M-T means that
+the respective experiment used multi-task. W AR stands for
+Weighted Average Recall
+Publication Acoustic Features M-T V A
+Srinivasan et al. [18] wav2vec2-base .363 .728
+Srinivasan et al. [18] wav2vec2-large .472 .735
+Srinivasan et al. [18] HuBERT-large .485 .733
+Srinivasan et al. [18] HuBERT-large .547 .752
+Roshan et al. [17] ✓ .660 .717
+the learnable bridge tokens can offer insight regarding the way of
+how the acoustic and linguistic features can be fused together.
+Unfortunately, the RMM could not improve the average perfor-
+mance of our best model. However, the variance in performance
+is slightly lower across the three seeds. The underperformance of
+the RMM approach could be the lack of uni-modal training during
+the first epochs. When the RMM is applied, only the transformer
+whose modality features are masked gets its weights frozen. How-
+ever, both multi-head attention layers are trained together. The
+features learned while training the two multi-head attention layers
+might not be beneficial for both of them. Therefore, the model could
+benefit more from the RMM if the multi-head attention layers are
+trained separately in the early stages. The classifier and regressor
+are also trained at the same time during all epochs. A fine-tuning
+epoch for both the classifier and the regressor could slightly im-
+prove the results at the end of the training. Last but not least, it has
+been noticed that the arousal performance downgrades in favour
+of the valence, which makes us consider the implementation of
+different regressors for each dimensional value.
+6 CONCLUSION
+To conclude, we proposed a multi-task multi-modal system for pre-
+dicting the categorical and dimensional emotions in spontaneous
+conversations. In our configuration, we compare our multi-task
+results with the single-task ones and emphasize that the cross-
+regularisation of the two tasks is beneficial for the performance of
+the categorical emotions and for the valence. In our setup, our ap-
+proach achieves the best results by applying two groups of learnable
+bridge tokens that fuse the features of the two modalities through
+the help of the multi-head attention layers. Our best performing
+multi-task, multi-modal framework achieves a CCC score of .748
+for valence.
+Unlike the previous approaches, the performance of the valence
+surpasses that of the arousal when the model complexity is in-
+creased. For future work, we plan to investigate the reason why
+the pattern gets inverted. Additionally, we intend to increase our
+performance by implementing the suggested improvements men-
+tioned in the results section. We will also dive deeper into the
+learnable bridge tokens and find the optimal number of tokens for
+our configuration.
+7 REPRODUCIBILITY
+The experiments were performed in PyTorch on two types of GPU:
+RTX A6000 and Tesla V100. The training of a 10-fold lasted be-
+tween 16 and 24 hours depending on the number of epochs and
+
+A Multi-Task, Multi-Modal Approach for Predicting Categorical and Dimensional Emotions
+the chosen GPU. In order to ensure reproducibility, all experiments
+were conducted on the same seed and were prevented from using
+non-deterministic algorithms. The multi-task experiments were
+validated by calculating the average of three distinct seeds. In order
+to reproduce our experiments, use the seeds 1,2 and 3 for both the
+CUDA and CPU versions of PyTorch. At the same time, set the
+PyTorch CuDNN to deterministic.
+ACKNOWLEDGMENTS
+We would like to thank Emmet Strickland for their assistance in
+proofreading this paper. His careful review and feedback were
+invaluable in improving the clarity and correctness of our work.
+REFERENCES
+[1] Arya Aftab, Alireza Morsali, Shahrokh Ghaemmaghami, and Benoit Champagne.
+2022. LIGHT-SERNET: A lightweight fully convolutional neural network for
+speech emotion recognition. In ICASSP 2022-2022 IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 6912–6916.
+[2] Nikolaos Antoniou, Athanasios Katsamanis, Theodoros Giannakopoulos, and
+Shrikanth Narayanan. 2023. Designing and Evaluating Speech Emotion Recogni-
+tion Systems: A reality check case study with IEMOCAP. In ICASSP 2023-2023
+IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) .
+IEEE, 1–5.
+[3] Alexei Baevski, Yuhao Zhou, Abdelrahman Mohamed, and Michael Auli. 2020.
+wav2vec 2.0: A framework for self-supervised learning of speech representations.
+Advances in neural information processing systems 33 (2020), 12449–12460.
+[4] Carlos Busso, Murtaza Bulut, Chi-Chun Lee, Abe Kazemzadeh, Emily Mower,
+Samuel Kim, Jeannette N Chang, Sungbok Lee, and Shrikanth S Narayanan. 2008.
+IEMOCAP: Interactive emotional dyadic motion capture database. Language
+resources and evaluation 42 (2008), 335–359.
+[5] Xingyu Cai, Jiahong Yuan, Renjie Zheng, Liang Huang, and Kenneth Church.
+2021. Speech emotion recognition with multi-task learning.. In Interspeech,
+Vol. 2021. 4508–4512.
+[6] Shizhe Chen, Qin Jin, Jinming Zhao, and Shuai Wang. 2017. Multimodal multi-
+task learning for dimensional and continuous emotion recognition. InProceedings
+of the 7th Annual Workshop on Audio/Visual Emotion Challenge . 19–26.
+[7] Théo Deschamps-Berger, Lori Lamel, and Laurence Devillers. 2021. End-to-
+end speech emotion recognition: challenges of real-life emergency call centers
+data recordings. In 2021 9th International Conference on Affective Computing and
+Intelligent Interaction (ACII). IEEE, 1–8.
+[8] Théo Deschamps-Berger, Lori Lamel, and Laurence Devillers. 2023. Exploring At-
+tention Mechanisms for Multimodal Emotion Recognition in an Emergency Call
+Center Corpus. In ICASSP 2023-2023 IEEE International Conference on Acoustics,
+Speech and Signal Processing (ICASSP) . IEEE, 1–5.
+[9] Paul Ekman. 1992. An argument for basic emotions. Cognition & emotion 6, 3-4
+(1992), 169–200.
+[10] Han Feng, Sei Ueno, and Tatsuya Kawahara. 2020. End-to-End Speech Emotion
+Recognition Combined with Acoustic-to-Word ASR Model.. In Interspeech. 501–
+505.
+[11] Yajing Feng and Laurence Devillers. 2023. End-to-End Continuous Speech
+Emotion Recognition in Real-life Customer Service Call Center Conversations.
+Workshop on addressing social context in affective computing (ASOCA) at ACII2023
+(accepted paper) (2023).
+[12] Pengcheng He, Jianfeng Gao, and Weizhu Chen. 2021. Debertav3: Improving
+deberta using electra-style pre-training with gradient-disentangled embedding
+sharing. arXiv preprint arXiv:2111.09543 (2021).
+[13] Wei-Ning Hsu, Benjamin Bolte, Yao-Hung Hubert Tsai, Kushal Lakhotia, Ruslan
+Salakhutdinov, and Abdelrahman Mohamed. 2021. Hubert: Self-supervised
+speech representation learning by masked prediction of hidden units. IEEE/ACM
+Transactions on Audio, Speech, and Language Processing 29 (2021), 3451–3460.
+[14] Diederik P Kingma and Jimmy Ba. 2015. Adam: A method for stochastic opti-
+mization. ICLR (2015).
+[15] James A Russell and Albert Mehrabian. 1977. Evidence for a three-factor theory
+of emotions. Journal of research in Personality 11, 3 (1977), 273–294.
+[16] Meysam Shamsi and Marie Tahon. 2022. Training speech emotion classifier
+without categorical annotations. arXiv preprint arXiv:2210.07642 (2022).
+[17] Roshan Sharma, Hira Dhamyal, Bhiksha Raj, and Rita Singh. 2022. Unifying the
+Discrete and Continuous Emotion labels for Speech Emotion Recognition. arXiv
+preprint arXiv:2210.16642 (2022).
+[18] Sundararajan Srinivasan, Zhaocheng Huang, and Katrin Kirchhoff. 2022. Repre-
+sentation learning through cross-modal conditional teacher-student training for
+speech emotion recognition. In ICASSP 2022-2022 IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 6442–6446.
+[19] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. 2017. Attention is all
+you need. Advances in neural information processing systems 30 (2017).
+[20] Johannes Wagner, Andreas Triantafyllopoulos, Hagen Wierstorf, Maximilian
+Schmitt, Felix Burkhardt, Florian Eyben, and Björn W Schuller. 2023. Dawn of
+the transformer era in speech emotion recognition: closing the valence gap.IEEE
+Transactions on Pattern Analysis and Machine Intelligence (2023).
+[21] Suzhen Wang, Yifeng Ma, and Yu Ding. 2023. Exploring Complementary Features
+in Multi-Modal Speech Emotion Recognition. In ICASSP 2023-2023 IEEE Inter-
+national Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE,
+1–5.
+[22] Yingzhi Wang, Abdelmoumene Boumadane, and Abdelwahab Heba. 2021. A fine-
+tuned wav2vec 2.0/hubert benchmark for speech emotion recognition, speaker
+verification and spoken language understanding. arXiv preprint arXiv:2111.02735
+(2021).
+[23] Rui Xia and Yang Liu. 2015. A multi-task learning framework for emotion
+recognition using 2D continuous space. IEEE Transactions on affective computing
+8, 1 (2015), 3–14.
+[24] Heqing Zou, Yuke Si, Chen Chen, Deepu Rajan, and Eng Siong Chng. 2022. Speech
+emotion recognition with co-attention based multi-level acoustic information. In
+ICASSP 2022-2022 IEEE International Conference on Acoustics, Speech and Signal
+Processing (ICASSP). IEEE, 7367–7371.

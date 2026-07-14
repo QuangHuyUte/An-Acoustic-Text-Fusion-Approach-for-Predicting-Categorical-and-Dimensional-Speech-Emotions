@@ -1,0 +1,6 @@
+﻿protocol,fold,train_val_utterance_overlap,train_test_utterance_overlap,val_test_utterance_overlap,train_val_session_overlap,train_test_session_overlap,val_test_session_overlap,train_val_speaker_overlap,train_test_speaker_overlap,val_test_speaker_overlap
+5fold_session,fold_1_test_Ses01_val_Ses02,[],[],[],[],[],[],[],[],[]
+5fold_session,fold_2_test_Ses02_val_Ses03,[],[],[],[],[],[],[],[],[]
+5fold_session,fold_3_test_Ses03_val_Ses04,[],[],[],[],[],[],[],[],[]
+5fold_session,fold_4_test_Ses04_val_Ses05,[],[],[],[],[],[],[],[],[]
+5fold_session,fold_5_test_Ses05_val_Ses01,[],[],[],[],[],[],[],[],[]

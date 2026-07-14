@@ -1,21 +1,46 @@
-# IEMOCAP training data inputs
+# IEMOCAP full multi-task data folder
 
-Folder này gom các file đầu vào cần thiết để chạy notebook model `03` và `04`.
+Upload this `data` folder to Kaggle for the full pipeline.
 
-## Dùng ngay cho notebook 03/04
+## Folder structure
 
-- `metadata/iemocap_metadata_full.csv`: metadata đầy đủ sau notebook 01, gồm emotion label, AVD score, speaker/session, audio path và các acoustic metadata cơ bản.
-- `metadata/iemocap_4class_avd_metadata.csv`: subset 4 emotion chính kèm AVD.
-- `splits/iemocap_5fold_session_long.csv`: split 5-fold theo session, dùng cho notebook `03_MultiTask_Emotion2Vec_CoAttention_5Fold.ipynb`.
-- `splits/iemocap_10fold_speaker_long.csv`: split 10-fold theo speaker, dùng cho notebook `04_MultiTask_Emotion2Vec_CoAttention_10Fold.ipynb`.
-- `splits/iemocap_5fold_session.json` và `splits/iemocap_10fold_speaker.json`: bản JSON của fold definition để kiểm tra/chia lại dữ liệu nếu cần.
+- `metadata/iemocap_metadata_full.csv`
+- `metadata/iemocap_4class_avd_metadata.csv`
+- `splits/iemocap_5fold_session_long.csv`
+- `splits/iemocap_10fold_speaker_long.csv`
+- `splits/iemocap_5fold_session.json`
+- `splits/iemocap_10fold_speaker.json`
+- `audio_wav/*.wav`
+- `features/`
 
-## Dữ liệu vẫn cần cho bản Emotion2Vec đầy đủ
+## How the full pipeline works
 
-Notebook 03/04 hiện chạy được pipeline multi-task bằng metadata/acoustic baseline để kiểm tra split, metric, loss, prediction và report. Khi chuyển sang model Emotion2Vec-guided acoustic cross-attention thật, cần thêm:
+1. Run notebook `02_IEMOCAP_Feature_Extraction_Emotion2Vec_Acoustic.ipynb`.
+2. Notebook 02 reads `audio_wav/` and creates:
 
-- `../datasets/AbstractTTS_IEMOCAP/audio_wav/`: audio WAV gốc để trích embedding.
-- `features/iemocap_emotion2vec_tokens.npz`: cache token/utterance embedding từ Emotion2Vec, sinh bởi notebook 02.
-- `features/iemocap_acoustic_features.npz`: cache handcrafted acoustic features nếu dùng nhánh acoustic ngoài metadata.
+   `features/iemocap_full_emotion2vec_acoustic_cache.npz`
 
-Không copy toàn bộ WAV vào folder này để tránh nhân đôi dung lượng. WAV vẫn nằm trong `06_w2v_based_models/datasets/AbstractTTS_IEMOCAP/audio_wav/`.
+3. Run notebook `03_MultiTask_Emotion2Vec_CoAttention_5Fold.ipynb`.
+4. Run notebook `04_MultiTask_Emotion2Vec_CoAttention_10Fold.ipynb`.
+
+Notebook 03/04 now require the full cache. They no longer train the metadata-only sanity baseline by default.
+
+## Full model input
+
+The final model uses two real branches:
+
+- Branch A: frozen Emotion2Vec utterance embedding.
+- Branch B: handcrafted acoustic vector extracted from waveform.
+
+The two branches are fused by bidirectional cross-attention and gated fusion, then split into:
+
+- emotion classification head: neutral / angry / sad / happy
+- AVD regression head: valence / arousal / dominance
+
+## Kaggle note
+
+If `funasr` and `modelscope` are not installed on Kaggle, turn Internet on and set:
+
+`INSTALL_EMOTION2VEC_DEPS=1`
+
+Notebook 02 will then install the required packages before loading `iic/emotion2vec_base`.

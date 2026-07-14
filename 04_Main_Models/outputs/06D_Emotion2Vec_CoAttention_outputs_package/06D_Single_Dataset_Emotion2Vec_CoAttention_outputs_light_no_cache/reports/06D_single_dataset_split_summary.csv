@@ -1,0 +1,13 @@
+protocol,split,n_samples,datasets,label_counts,speaker_count,split_mode
+single_CREMA-D,train,4761,CREMA-D,"{""angry"": 814, ""disgust"": 813, ""fear"": 813, ""happy"": 813, ""neutral"": 695, ""sad"": 813}",91,paper_80_20_val_from_train
+single_CREMA-D,validation,1191,CREMA-D,"{""angry"": 203, ""disgust"": 204, ""fear"": 203, ""happy"": 204, ""neutral"": 174, ""sad"": 203}",91,paper_80_20_val_from_train
+single_CREMA-D,test,1489,CREMA-D,"{""angry"": 254, ""disgust"": 254, ""fear"": 255, ""happy"": 254, ""neutral"": 218, ""sad"": 254}",91,paper_80_20_val_from_train
+single_RAVDESS,train,675,RAVDESS,"{""angry"": 122, ""disgust"": 123, ""fear"": 122, ""happy"": 123, ""neutral"": 62, ""sad"": 123}",24,paper_80_20_val_from_train
+single_RAVDESS,validation,169,RAVDESS,"{""angry"": 31, ""disgust"": 31, ""fear"": 31, ""happy"": 30, ""neutral"": 15, ""sad"": 31}",24,paper_80_20_val_from_train
+single_RAVDESS,test,212,RAVDESS,"{""angry"": 39, ""disgust"": 38, ""fear"": 39, ""happy"": 39, ""neutral"": 19, ""sad"": 38}",24,paper_80_20_val_from_train
+single_SAVEE,train,268,SAVEE,"{""angry"": 38, ""disgust"": 38, ""fear"": 38, ""happy"": 38, ""neutral"": 77, ""sad"": 39}",4,paper_80_20_val_from_train
+single_SAVEE,validation,68,SAVEE,"{""angry"": 10, ""disgust"": 10, ""fear"": 10, ""happy"": 10, ""neutral"": 19, ""sad"": 9}",4,paper_80_20_val_from_train
+single_SAVEE,test,84,SAVEE,"{""angry"": 12, ""disgust"": 12, ""fear"": 12, ""happy"": 12, ""neutral"": 24, ""sad"": 12}",4,paper_80_20_val_from_train
+single_TESS,train,1536,TESS,"{""angry"": 256, ""disgust"": 256, ""fear"": 256, ""happy"": 256, ""neutral"": 256, ""sad"": 256}",2,paper_80_20_val_from_train
+single_TESS,validation,384,TESS,"{""angry"": 64, ""disgust"": 64, ""fear"": 64, ""happy"": 64, ""neutral"": 64, ""sad"": 64}",2,paper_80_20_val_from_train
+single_TESS,test,480,TESS,"{""angry"": 80, ""disgust"": 80, ""fear"": 80, ""happy"": 80, ""neutral"": 80, ""sad"": 80}",2,paper_80_20_val_from_train

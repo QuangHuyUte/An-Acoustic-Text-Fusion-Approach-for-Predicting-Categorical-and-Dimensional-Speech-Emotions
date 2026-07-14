@@ -1,0 +1,10 @@
+﻿metric,value
+total_utterances,10039.0
+sessions,5.0
+speakers,10.0
+conversations,151.0
+wav_found_rate,1.0
+transcript_found_rate,1.0
+mean_duration_sec,4.460078101653551
+median_duration_sec,3.5199375
+mean_word_count,11.56649068632334

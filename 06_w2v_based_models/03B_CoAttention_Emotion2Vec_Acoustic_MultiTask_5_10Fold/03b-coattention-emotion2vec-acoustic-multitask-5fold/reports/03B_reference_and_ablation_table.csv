@@ -1,0 +1,4 @@
+﻿Model,Input,Purpose,How to run
+03B acoustic-only old logic,06D acoustic + emotion2vec,Ablation baseline,FUSION_MODE=acoustic_only
+03B proposed bridge + RMM,06D acoustic + emotion2vec + transcript,Main proposed lightweight multimodal model,FUSION_MODE=acoustic_text_bridge_rmm
+Paper 2024 multimodal,HuBERT-large + DeBERTaV3-large / RoBERTa-large,"Reference architecture, heavier full reproduction in 03D",Use 03D

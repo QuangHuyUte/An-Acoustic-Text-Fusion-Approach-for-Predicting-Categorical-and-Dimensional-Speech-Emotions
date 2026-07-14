@@ -1,0 +1,7 @@
+﻿,valence,valence,valence,valence,arousal,arousal,arousal,arousal,dominance,dominance,dominance,dominance
+,mean,std,min,max,mean,std,min,max,mean,std,min,max
+emotion_4class,,,,,,,,,,,,
+neutral,2.971,0.51,1.5,5.0,2.726,0.547,1.0,5.0,2.831,0.607,0.5,4.5
+angry,1.906,0.524,1.0,4.0,3.636,0.671,1.5,5.0,3.95,0.641,1.0,5.0
+sad,2.253,0.581,1.0,4.0,2.563,0.623,1.0,4.5,2.828,0.811,1.0,5.0
+happy,3.947,0.572,1.5,5.5,3.411,0.648,1.5,5.0,3.228,0.763,1.0,5.0

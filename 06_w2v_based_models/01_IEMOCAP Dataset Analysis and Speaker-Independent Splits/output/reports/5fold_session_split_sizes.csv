@@ -1,0 +1,6 @@
+﻿fold,test,train,val,total_fold_rows
+fold_1_test_Ses01_val_Ses02,1085,3423,1023,5531
+fold_2_test_Ses02_val_Ses03,1023,3357,1151,5531
+fold_3_test_Ses03_val_Ses04,1151,3349,1031,5531
+fold_4_test_Ses04_val_Ses05,1031,3259,1241,5531
+fold_5_test_Ses05_val_Ses01,1241,3205,1085,5531

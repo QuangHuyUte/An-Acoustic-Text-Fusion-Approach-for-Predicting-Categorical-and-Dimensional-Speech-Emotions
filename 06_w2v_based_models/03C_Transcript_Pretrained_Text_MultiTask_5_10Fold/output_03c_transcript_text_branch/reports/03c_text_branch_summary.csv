@@ -1,0 +1,5 @@
+﻿,WA,WA,UAR,UAR,Macro_F1,Macro_F1,Weighted_F1,Weighted_F1,CCC_valence,CCC_valence,CCC_arousal,CCC_arousal,CCC_dominance,CCC_dominance,CCC_mean,CCC_mean,MAE_mean,MAE_mean,RMSE_mean,RMSE_mean
+,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std
+protocol,,,,,,,,,,,,,,,,,,,,
+10fold_speaker,0.6745,0.052,0.6947,0.0551,0.6713,0.0532,0.6757,0.0544,0.6757,0.0557,0.5288,0.0558,0.4979,0.0467,0.5675,0.0382,0.5978,0.0241,0.7627,0.04
+5fold_session,0.6628,0.0255,0.6781,0.0313,0.6637,0.0275,0.6632,0.0269,0.6627,0.0272,0.5269,0.0206,0.4936,0.0371,0.5611,0.0155,0.6113,0.0208,0.7765,0.0285

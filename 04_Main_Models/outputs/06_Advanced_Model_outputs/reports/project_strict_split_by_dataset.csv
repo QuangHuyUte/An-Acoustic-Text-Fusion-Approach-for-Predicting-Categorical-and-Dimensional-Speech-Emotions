@@ -1,0 +1,11 @@
+dataset,split_strict_project,count
+CREMA-D,test,1716
+CREMA-D,train,5152
+CREMA-D,validation,573
+RAVDESS,test,132
+RAVDESS,train,748
+RAVDESS,validation,176
+SAVEE,test,105
+SAVEE,train,210
+SAVEE,validation,105
+TESS,excluded,2400

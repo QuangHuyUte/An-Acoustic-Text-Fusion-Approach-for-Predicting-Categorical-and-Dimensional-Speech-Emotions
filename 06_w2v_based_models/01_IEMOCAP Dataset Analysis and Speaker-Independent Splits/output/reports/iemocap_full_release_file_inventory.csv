@@ -1,0 +1,6 @@
+﻿session,emo_evaluation_txt,dialog_transcription_txt,dialog_wav,sentence_wav,sentence_forced_alignment,dialog_mocap_hand,dialog_mocap_head
+Session1,28,28,28,1819,7304,28,28
+Session2,30,30,30,1811,7274,30,30
+Session3,32,32,32,2136,8568,32,32
+Session4,30,30,30,2103,8442,30,30
+Session5,31,31,31,2170,8711,30,30

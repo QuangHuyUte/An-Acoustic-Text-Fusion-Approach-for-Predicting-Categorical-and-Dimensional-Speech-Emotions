@@ -1,0 +1,26 @@
+{
+  "notebook": "06D_Emotion2Vec_CoAttention_Full_SER_single_dataset",
+  "objective": "Single-dataset 06D SER evaluation with temporal, spectrogram, frozen emotion2vec, statistical branch, co-attention fusion and stacking.",
+  "output_dir": "/kaggle/working/06D_Single_Dataset_Emotion2Vec_CoAttention_outputs",
+  "metrics_csv": "/kaggle/working/06D_Single_Dataset_Emotion2Vec_CoAttention_outputs/reports/06D_emotion2vec_coattention_metrics.csv",
+  "history_csv": "/kaggle/working/06D_Single_Dataset_Emotion2Vec_CoAttention_outputs/reports/06D_emotion2vec_coattention_history.csv",
+  "per_dataset_csv": "/kaggle/working/06D_Single_Dataset_Emotion2Vec_CoAttention_outputs/reports/06D_emotion2vec_coattention_per_dataset.csv",
+  "protocols": [
+    "single_CREMA-D",
+    "single_RAVDESS",
+    "single_SAVEE",
+    "single_TESS"
+  ],
+  "labels": [
+    "neutral",
+    "happy",
+    "sad",
+    "angry",
+    "fear",
+    "disgust"
+  ],
+  "emotion2vec_model": "iic/emotion2vec_base",
+  "single_dataset_split_mode": "paper_80_20_val_from_train",
+  "split_summary_csv": "/kaggle/working/06D_Single_Dataset_Emotion2Vec_CoAttention_outputs/reports/06D_single_dataset_split_summary.csv",
+  "notes": "Single-dataset runs use validation split for model selection/stacking. Test split is only used for final reporting."
+}

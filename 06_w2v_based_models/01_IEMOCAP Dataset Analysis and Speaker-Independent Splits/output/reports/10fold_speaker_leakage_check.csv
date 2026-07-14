@@ -1,0 +1,11 @@
+﻿protocol,fold,train_val_utterance_overlap,train_test_utterance_overlap,val_test_utterance_overlap,train_val_session_overlap,train_test_session_overlap,val_test_session_overlap,train_val_speaker_overlap,train_test_speaker_overlap,val_test_speaker_overlap
+10fold_speaker,fold_10_test_Ses05M_val_Ses01F,[],[],[],['Ses01'],['Ses05'],[],[],[],[]
+10fold_speaker,fold_1_test_Ses01F_val_Ses01M,[],[],[],[],[],['Ses01'],[],[],[]
+10fold_speaker,fold_2_test_Ses01M_val_Ses02F,[],[],[],['Ses02'],['Ses01'],[],[],[],[]
+10fold_speaker,fold_3_test_Ses02F_val_Ses02M,[],[],[],[],[],['Ses02'],[],[],[]
+10fold_speaker,fold_4_test_Ses02M_val_Ses03F,[],[],[],['Ses03'],['Ses02'],[],[],[],[]
+10fold_speaker,fold_5_test_Ses03F_val_Ses03M,[],[],[],[],[],['Ses03'],[],[],[]
+10fold_speaker,fold_6_test_Ses03M_val_Ses04F,[],[],[],['Ses04'],['Ses03'],[],[],[],[]
+10fold_speaker,fold_7_test_Ses04F_val_Ses04M,[],[],[],[],[],['Ses04'],[],[],[]
+10fold_speaker,fold_8_test_Ses04M_val_Ses05F,[],[],[],['Ses05'],['Ses04'],[],[],[],[]
+10fold_speaker,fold_9_test_Ses05F_val_Ses05M,[],[],[],[],[],['Ses05'],[],[],[]

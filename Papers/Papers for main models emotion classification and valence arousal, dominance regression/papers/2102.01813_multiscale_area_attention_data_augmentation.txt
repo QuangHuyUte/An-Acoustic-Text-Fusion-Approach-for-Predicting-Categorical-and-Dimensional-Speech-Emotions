@@ -1,0 +1,429 @@
+SPEECH EMOTION RECOGNITION WITH MULTISCALE AREA ATTENTION AND DATA
+AUGMENTATION
+Mingke Xu1, Fan Zhang2, Xiaodong Cui3, Wei Zhang3
+1Nanjing Tech University, China 2IBM Data and AI, USA 3IBM Research AI, USA
+ABSTRACT
+In Speech Emotion Recognition (SER), emotional char-
+acteristics often appear in diverse forms of energy patterns in
+spectrograms. Typical attention neural network classiﬁers of
+SER are usually optimized on a ﬁxed attention granularity. In
+this paper, we apply multiscale area attention in a deep con-
+volutional neural network to attend emotional characteristics
+with varied granularities and therefore the classiﬁer can ben-
+eﬁt from an ensemble of attentions with different scales. To
+deal with data sparsity, we conduct data augmentation with
+vocal tract length perturbation (VTLP) to improve the gen-
+eralization capability of the classiﬁer. Experiments are car-
+ried out on the Interactive Emotional Dyadic Motion Capture
+(IEMOCAP) dataset. We achieved 79.34% weighted accu-
+racy (W A) and 77.54% unweighted accuracy (UA), which, to
+the best of our knowledge, is the state of the art on this dataset.
+Index Terms: speech emotion recognition, convolutional
+neural network, attention mechanism, data augmentation
+1. INTRODUCTION
+Speech is an important carrier of emotions in human commu-
+nication. Speech Emotion Recognition (SER) has wide appli-
+cation perspectives on psychological assessment [1], robots
+[2], mobile services [3], etc. For example, a psychologist
+can design a treatment plan according to the emotions hid-
+den/expressed in the patient’s speech. Deep learning has ac-
+celerated the progress of recognizing human emotions from
+speech [4–9], but there are still deﬁciencies in the research of
+SER, such as data shortage and insufﬁcient model accuracy.
+Recently, we proposed Head Fusion Net [10] 1 which
+achieved the state-of-the-art performance on the IEMOCAP
+dataset. However, it does not fully address the above prob-
+lems. In SER, emotion may display distinct energy patterns in
+spectrograms with varied granularity of areas. However, typ-
+ical attention models in SER are usually optimized on a ﬁxed
+scale, which may limit the model’s capability to deal with
+diverse areas and granularities. Therefore, in this paper, we
+introduce multiscale area attention to a deep convolutional
+neural network model based on Head Fusion to improve
+1The code is released at github.com/lessonxmk/head fusion
+model accuracy. Furthermore, data augmentation is used to
+address the data scarcity issue.
+Our main contributions are as follows:
+• To the best of our knowledge, this is the ﬁrst attempt
+for applying multiscale area attention to SER.
+• We performed data augmentation on the IEMOCAP
+dataset with vocal tract length perturbation (VTLP)
+and achieved an accuracy improvement of about 0.5%
+absolute.
+• With area attention and VTLP-based data augmenta-
+tion, we achieved the state-of-the-art on the IEMOCAP
+dataset with an W A of 79.34% and UA of 77.54%.2
+2. RELATED WORK
+In 2014, the ﬁrst SER model based on deep learning was pro-
+posed by Han et al. [4]. Recently, for the same purpose,
+M. Chen et al. [5] combined convolutional neural networks
+(CNN) and Long Short-Term Memory (LSTM); X. Wu et al.
+[6] replaced CNN with capsule networks (CapsNet); Y . Xuet
+al. [7] used Gate Recurrent Unit (GRU) to calculate features
+from frame and utterance level, and S. Parthasarathy [11] used
+ladder networks to combine the unsupervised auxiliary task
+and the primary task of predicting emotional attributes.
+There is a recent resurgence of interest on attention-based
+SER models [8, 9, 12]. However, those attention mechanisms
+can only be calculated with a preset granularity which may
+not adapt dynamically to different areas of interest in spectro-
+gram. Y . Liet al. [13] proposed area attention that allows the
+model to calculate attention with multiple granularities con-
+currently, an idea that is not yet explored in SER.
+Insufﬁcient data hinders progress in SER. Data augmen-
+tation has become a popular method to increase training data
+[14–17] in the related ﬁeld of Automatic Speech Recognition
+(ASR). Yet, it has not enjoyed broad attention for SER.
+In this paper, we extend the multiscale area attention to
+SER with data augmentation. We introduce our method in
+section 3 and experiment results in section 4 followed by the
+conclusion with section 5.
+2The code is released at github.com/lessonxmk/Optimizedattention for SER
+arXiv:2102.01813v1  [cs.SD]  3 Feb 2021
+
+Fig. 1. The architecture of the CNN with attention used as a
+classiﬁer in this work.
+3. METHODOLOGY
+We ﬁrst introduce our base convolutional neural networks that
+shares similarity to our Head Fusion Net [10], then our newly
+introduced multiscale area attention that enhances Head Fu-
+sion Net, and ﬁnally the data augmentation technique.
+3.1. Convolutional Neural Networks
+We designed an attention-based convolutional neural network
+with 5 convolutional layers, an attention layer, and a fully
+connected layer. Fig. 1 shows the detailed model structure.
+First, the Librosa audio processing library [18] is used to ex-
+tract the logMel spectrogram as features, which are fed into
+two parallel convolutional layers to extract textures from the
+time axis and frequency axis, respectively. The result is fed
+into four consecutive convolutional layers and generates an
+80-channel representation. Then the attention layer attends
+on the representation and sends the outputs to the fully con-
+nected layer for classiﬁcation. Batch normalization is applied
+after each convolutional layer.
+3.2. Multiscale Area Attention
+In this section, We extend the area attention in Y . Liet al. [13]
+to SER. The attention mechanism can be regarded as a soft
+addressing operation, which uses key-value pairs to represent
+the content stored in the memory, and the elements are com-
+posed of the address ( key) and the value ( value). Query can
+match to a key which correspondent value is retrieved from
+the memory according to the degree of correlation between
+the query and the key. The query, key, and value are usually
+ﬁrst multiplied by a parameter matrix W to obtain Q, K and
+V. Eq.1 shows the calculation of attention score, where dk is
+the dimension of K [19] to prevent the result from being too
+large.
+Q= Wq ∗query,K = Wk ∗key,V = Wv ∗value
+Attention(Q,K,V ) =softmax
+(QKT
+√dk
+)
+V
+(1)
+In self-attention, the query, key and value come from a
+same input X. By calculating self-attention, the model can
+focus on the connection between different parts of the in-
+put. In SER, the distribution of emotion characteristics of-
+ten crosses a larger scale, and using self-attention in speech
+emotion recognition improves the accuracy.
+However, under the conventional attention, the model
+only uses a preset granularity as the basic unit for calculation,
+e.g., a word for a word-level translation model, a grid cell
+for an image-based model, etc. Yet, it is hard to know which
+granularity is most suitable for a complex task.
+Area attention allows the model to attend at multiple
+scales and granularities and to learn the most appropriate
+granularities. As shown in Fig. 2, for a continuous memory
+block, multiple areas can be created to accommodate for dif-
+ferent granularities, e.g., 1x2, 2x1, 2x2 and etc.. In order to
+calculate attention in units of areas, we need to deﬁne the key
+and value for the area. For example, we can deﬁne the mean
+of an area as the key and the sum of an area as the value, so
+that the attention can be evaluated in a way similar to ordinary
+attention. (Eq.1)
+Exhaustive evaluation of attention on a large memory
+block may be computationally prohibitive. A maximum
+length and width is set to an area under investigation.
+Fig. 2. Generating AreaMultiple areas can be generated by
+combining adjacent items in a continuous memory block. For
+a 3x3 memory block, if we set the max area size to 2x2, the
+memory block can be divided into 1x1,1x2,2x1 and 2x2.
+3.3. Data Augmentation
+Given the limited amount of training data in IEMOCAP, we
+use vocal tract length perturbation (VTLP) [14] as means for
+data augmentation. VTLP increases the number of speakers
+by perturbing the vocal tract length. We generated additional
+7 replicas of the original data with nlpaug library [20]. The
+augmented data is only used for training.
+
+(a) On the original data set
+ (b) On the augmented data set
+ (c) comparison of ACC
+Fig. 3. Result of modifying max area sizeIt can be seen that when trained on the original data set, the model with the max
+area size of 4x4 achieved the highest ACC, followed by 3x3. When trained on the augmented data set, the model with the max
+area size of 3x3 achieved the highest ACC. In most cases, the use of enhanced data brings an accuracy increase of more than
+0.5%. The best model achieved 78.44% ACC, where W A=79.34% and UA=77.54%.
+4. EXPERIMENTS
+4.1. Dataset
+Interactive Emotional Dyadic Motion Capture (IEMOCAP)
+et al. [21] is the most widely used dataset in the SER ﬁeld. It
+contains 12 hours of emotional speech performed by 10 actors
+from the Drama Department of University of Southern Cali-
+fornia. The performance is divided into two parts, improvised
+and scripted, according to whether the actors perform accord-
+ing to a ﬁxed script. The utterances are labeled with 9 types
+of emotion-anger, happiness, excitement, sadness, frustration,
+fear, surprise, other and neutral state.
+Due to the imbalances in the dataset, researchers usually
+choose the most common emotions, such as neutral state, hap-
+piness, sadness, and anger. Because excitement and happiness
+have a certain degree of similarity and there are too few happy
+utterances, researchers sometimes replace happiness with ex-
+citement or combine excitement and happiness to increase the
+amount of data [22–24]. In addition, previous studies have
+shown that the accuracy of using improvised data is higher
+than that of scripted data, [12, 22] which can be due to the
+fact that actors pay more attention to expressing their emo-
+tion rather than the script during improvisation.
+In this paper, following other published work, we use im-
+provised data in the IEMOCAP dataset with four types of
+emotion–neutral state, excitement, sadness, and anger.
+4.2. Evaluation Metrics
+We use weighted accuracy (W A) and unweighted accuracy
+(UA) for evaluation, which have been broadly employed in
+SER literature. Considering that W A and UA may not reach
+the maximum in the same model, we calculate the average
+of W A and UA as the ﬁnal evaluation criterion (indicated by
+ACC below), i.e., we save the model with the largest average
+of W A and UA as the optimal model.
+4.3. Experimental Setup
+We randomly divide the dataset into a training set (80% of
+data) and a test set (20% of data) for 5-fold cross-validation.
+Each utterance is divided into 2-second segments, with 1 sec-
+ond (in training) or 1.6 seconds (in testing) overlap between
+segments. Although divided, the test is still based on the ut-
+terance, and the prediction results from the same utterance are
+averaged as the prediction result of the utterance. Experience
+shows that a large overlap can make the recognition result of
+utterance more stable in testing.
+Fig. 4. Result of modifying the amount of data with VTLP
+The horizontal axis refers to the total amount of data used
+for training. For example, 8 on the horizontal axis represents
+original data plus 7 replicas of augmented data. It can be seen
+that the more augmented data added the higher the accuracy.
+4.4. Experimental Results
+Selection of maximum area sizeOptimal maximum area
+size is investigated on both the original data and the aug-
+mented data with VTLP, respectively. The result is shown in
+Fig 3. It can be seen that when trained on the original data set,
+the model with the max area size of 4x4 achieved the highest
+ACC, followed by 3x3. When trained on the augmented data
+
+Table 1. Result of area feature selection
+(a) WA
+Key
+Value Max Mean Sum
+Max 0.7869 0.7880 0.7869
+Mean 0.7864 0.7808 0.7846
+Sample 0.7911 0.7808 0.7851
+(b) UA
+Key
+Value Max Mean Sum
+Max 0.7642 0.7627 0.7686
+Mean 0.7639 0.7608 0.7675
+Sample 0.7705 0.7567 0.7657
+(c) ACC
+Key
+Value Max Mean Sum
+Max 0.7755 0.7753 0.7777
+Mean 0.7751 0.7708 0.7760
+Sample 0.7808 0.7687 0.7753
+(a) Original LogMel
+ (b) CNN
+ (c) Area attention
+Fig. 5. Feature representationCNN attends more on areas
+with high-energy or sharp energy changes. This beneﬁts the
+sudden and intense emotions. The area attention model not
+only attends on these areas but also extends that to the time
+domain (horizontal axis), which enables it to distinguish those
+long-term emotions.
+Table 2. Ablation experiment
+Model WA UA ACC
+CNN 0.7467 0.7222 0.7345
+CNN+VTLP 0.7891 0.7683 0.7787
+Attention 0.7807 0.7628 0.7718
+Attention+VTLP 0.7879 0.7734 0.7807
+Area attention 0.7911 0.7705 0.7808
+Area attention+VTLP 0.7934 0.7754 0.7844
+set, the model with the max area size of 3x3 achieved the
+highest ACC. In most cases, the use of enhanced data brings
+an accuracy increase of more than 0.5% absolute. Therefore,
+we suggest using a max area size of 3x3 and using VTLP for
+data augmentation.
+Selection of area featuresExperiments are conducted to in-
+vestigate the performance of using various area features. For
+Key, we selected Max, Mean and Sample; for Value, we se-
+lected Max, Mean and Sum.The Sample refers to adding a
+perturbation proportional to the standard deviation on the ba-
+sis of Mean when training, which is calculated according to
+Eq.2 where xis a sample and µand σare the mean and stan-
+dard variance, respectively. ξ is a random variable assuming
+N(0,1) distribution. We use K-V to represent the model se-
+lected K as Key and V as Value.
+x= µ+ σ∗ξ, where ξ∼N(0,1) (2)
+Table 1 shows the result. It can be observed that the Sample-
+Max achieved the highestACC and the Sample-Mean achieved
+the lowest ACC. There is little difference in ACC in other
+cases. We speculate that it is because perturbed Key in train-
+ing introduces greater randomness.
+Amount of augmented dataExperiments are also carried out
+to study the impact of amount of augmented data under VTLP
+to the SER performance, as demonstrated in Fig 4. It can be
+observed that with more replicas of augmented data added in
+the training, the accuracy increases.
+Ablation study We conducted ablation experiments on the
+model without the attention layer (only CNN) and the model
+with an original attention layer (equivalent to 1x1 max area
+size). Table 2 shows the result. It can be seen that the area
+attention and VTLP enables the model to achieve the highest
+accuracy. As a case study, we visualize the feature representa-
+tions of an input logMel right before the fully connected layer
+of the learned model in Fig 5. It clearly shows that compared
+to the conventional CNN with more localized representation,
+area attention tends to cover a wide context along the time
+axis, which is one of the reasons that area attention can out-
+perform CNN. Also from Table 2 we can see that when the
+model becomes stronger, the improvement brought by VTLP
+marginally decreases. This is because VTLP conducts label-
+preserving perturbation to improve the robustness of the clas-
+siﬁer. When the model gets stronger with attention or mul-
+tiscale area attention, the model itself becomes more robust,
+which may offset to certain degree the impact of VTLP.
+Table 3. Accuracy comparison with existing SER results
+Method WA(%) UA(%) Year
+Attention pooling (P. Li et al.) [22] 71.75 68.06 2018
+CTC + Attention (Z. Zhao et al.) [23] 67.00 69.00 2019
+Self attention (L. Tarantino et al.) [12] 70.17 70.85 2019
+BiGRU (Y . Xuet al.) [7] 66.60 70.50 2020
+Multitask learning + Attention
+(A. Nediyanchath et al.) [9] 76.40 70.10 2020
+Head fusion (Ours) [10] 76.18 76.36 2020
+Area attention (Ours) 79.34 77.54 2020
+Comparison with existing resultsAs shown in Table 3, we
+compared our accuracy with other published SER results in
+recent years. These results use the same data set and the eval-
+uation metrics as our experiment.
+5. CONCLUSION
+In this paper, we have applyed multiscale area attention to
+SER and designed an attention-based convolutional neural
+network, conducted experiments on the IEMOCAP data set
+with VTLP augmentation, and obtained 79.34% W A and
+77.54% UA. The result is state-of-the-art.
+
+In future research, we will continue to work along the
+lines by improving the application of attention on SER and
+apply more data augmentation methods to SER.
+6. REFERENCES
+[1] Lu-Shih Alex Low, Namunu C Maddage, Margaret Lech,
+Lisa B Sheeber, and Nicholas B Allen, “Detection of clinical
+depression in adolescents’ speech during family interactions,”
+IEEE Transactions on Biomedical Engineering, vol. 58, no. 3,
+pp. 574–586, 2010.
+[2] Xu Huahu, Gao Jue, and Yuan Jian, “Application of speech
+emotion recognition in intelligent household robot,” in 2010
+International Conference on Artiﬁcial Intelligence and Com-
+putational Intelligence. IEEE, 2010, vol. 1, pp. 537–541.
+[3] Won-Joong Yoon, Youn-Ho Cho, and Kyu-Sik Park, “A study
+of speech emotion recognition and its application to mobile ser-
+vices,” in International Conference on Ubiquitous Intelligence
+and Computing. Springer, 2007, pp. 758–766.
+[4] Kun Han, Dong Yu, and Ivan Tashev, “Speech emotion recog-
+nition using deep neural network and extreme learning ma-
+chine,” in Fifteenth annual conference of the international
+speech communication association, 2014.
+[5] Mingyi Chen, Xuanji He, Jing Yang, and Han Zhang, “3-d con-
+volutional recurrent neural networks with attention model for
+speech emotion recognition,” IEEE Signal Processing Letters,
+vol. 25, no. 10, pp. 1440–1444, 2018.
+[6] Xixin Wu, Songxiang Liu, Yuewen Cao, Xu Li, Jianwei Yu,
+Dongyang Dai, Xi Ma, Shoukang Hu, Zhiyong Wu, Xunying
+Liu, et al., “Speech emotion recognition using capsule net-
+works,” in ICASSP 2019-2019 IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP) . IEEE,
+2019, pp. 6695–6699.
+[7] Yunfeng Xu, Hua Xu, and Jiyun Zou, “Hgfm: A hierarchi-
+cal grained and feature model for acoustic emotion recogni-
+tion,” in ICASSP 2020-2020 IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP) . IEEE,
+2020, pp. 6499–6503.
+[8] Darshana Priyasad, Tharindu Fernando, Simon Denman,
+Sridha Sridharan, and Clinton Fookes, “Attention driven fu-
+sion for multi-modal emotion recognition,” in ICASSP 2020-
+2020 IEEE International Conference on Acoustics, Speech and
+Signal Processing (ICASSP). IEEE, 2020, pp. 3227–3231.
+[9] Anish Nediyanchath, Periyasamy Paramasivam, and Promod
+Yenigalla, “Multi-head attention for speech emotion recog-
+nition with auxiliary learning of gender recognition,” in
+ICASSP 2020-2020 IEEE International Conference on Acous-
+tics, Speech and Signal Processing (ICASSP). IEEE, 2020, pp.
+7179–7183.
+[10] Mingke Xu, Fan Zhang, and Samee U Khan, “Improve accu-
+racy of speech emotion recognition with attention head fusion,”
+in 2020 10th Annual Computing and Communication Work-
+shop and Conference (CCWC). IEEE, 2020, pp. 1058–1064.
+[11] Srinivas Parthasarathy and Carlos Busso, “Semi-supervised
+speech emotion recognition with ladder networks,”IEEE/ACM
+transactions on audio, speech, and language processing, 2020.
+[12] Lorenzo Tarantino, Philip N Garner, and Alexandros Lazaridis,
+“Self-attention for speech emotion recognition,” Proc. Inter-
+speech 2019, pp. 2578–2582, 2019.
+[13] Yang Li, Lukasz Kaiser, Samy Bengio, and Si Si, “Area atten-
+tion,” inInternational Conference on Machine Learning, 2019,
+pp. 3846–3855.
+[14] Navdeep Jaitly and Geoffrey E Hinton, “V ocal tract length per-
+turbation (vtlp) improves speech recognition,” in Proc. ICML
+Workshop on Deep Learning for Audio, Speech and Language,
+2013, vol. 117.
+[15] Xiaodong Cui, Vaibhava Goel, and Brian Kingsbury, “Data
+augmentation for deep convolutional neural network acoustic
+modeling,” in 2015 IEEE International Conference on Acous-
+tics, Speech and Signal Processing (ICASSP). IEEE, 2015, pp.
+4545–4549.
+[16] Xiaodong Cui, Vaibhava Goel, and Brian Kingsbury, “Data
+augmentation for deep neural network acoustic modeling,”
+IEEE/ACM Transactions on Audio, Speech, and Language
+Processing, vol. 23, no. 9, pp. 1469–1477, 2015.
+[17] Daniel S Park, William Chan, Yu Zhang, Chung-Cheng Chiu,
+Barret Zoph, Ekin D Cubuk, and Quoc V Le, “Specaugment: A
+simple data augmentation method for automatic speech recog-
+nition,” arXiv preprint arXiv:1904.08779, 2019.
+[18] Brian Mcfee, Colin Raffel, Dawen Liang, Daniel Ellis, and
+Oriol Nieto, “librosa: Audio and music signal analysis in
+python,” in Python in Science Conference, 2015.
+[19] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszko-
+reit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia
+Polosukhin, “Attention is all you need,” in Advances in neural
+information processing systems, 2017, pp. 5998–6008.
+[20] Edward Ma, “Nlp augmentation,”
+https://github.com/makcedward/nlpaug, 2019.
+[21] Carlos Busso, Murtaza Bulut, Chi-Chun Lee, Abe
+Kazemzadeh, Emily Mower, Samuel Kim, Jeannette N
+Chang, Sungbok Lee, and Shrikanth S Narayanan, “Iemo-
+cap: Interactive emotional dyadic motion capture database,”
+Language resources and evaluation , vol. 42, no. 4, pp. 335,
+2008.
+[22] Pengcheng Li, Yan Song, Ian Vince McLoughlin, Wu Guo, and
+Lirong Dai, “An attention pooling based representation learn-
+ing method for speech emotion recognition.,” in Interspeech,
+2018, pp. 3087–3091.
+[23] Ziping Zhao, Zhongtian Bao, Zixing Zhang, Nicholas Cum-
+mins, Haishuai Wang, and Bj ¨orn Schuller, “Attention-
+enhanced connectionist temporal classiﬁcation for discrete
+speech emotion recognition,”Proc. Interspeech 2019, pp. 206–
+210, 2019.
+[24] Michael Neumann and Ngoc Thang Vu, “Improving speech
+emotion recognition with unsupervised representation learning
+on unlabeled speech,” in ICASSP 2019-2019 IEEE Interna-
+tional Conference on Acoustics, Speech and Signal Processing
+(ICASSP). IEEE, 2019, pp. 7390–7394.

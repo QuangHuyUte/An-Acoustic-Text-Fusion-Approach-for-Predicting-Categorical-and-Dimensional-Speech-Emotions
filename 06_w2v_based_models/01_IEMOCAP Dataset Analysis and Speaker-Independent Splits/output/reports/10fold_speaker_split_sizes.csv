@@ -1,0 +1,11 @@
+﻿fold,test,train,val,total_fold_rows
+fold_10_test_Ses05M_val_Ses01F,651,4352,528,5531
+fold_1_test_Ses01F_val_Ses01M,528,4446,557,5531
+fold_2_test_Ses01M_val_Ses02F,557,4493,481,5531
+fold_3_test_Ses02F_val_Ses02M,481,4508,542,5531
+fold_4_test_Ses02M_val_Ses03F,542,4467,522,5531
+fold_5_test_Ses03F_val_Ses03M,522,4380,629,5531
+fold_6_test_Ses03M_val_Ses04F,629,4374,528,5531
+fold_7_test_Ses04F_val_Ses04M,528,4500,503,5531
+fold_8_test_Ses04M_val_Ses05F,503,4438,590,5531
+fold_9_test_Ses05F_val_Ses05M,590,4290,651,5531

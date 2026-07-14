@@ -1,0 +1,19 @@
+{
+  "name": "speech-emotion-presentation-demo",
+  "version": "1.0.0",
+  "description": "Interactive speech emotion and presentation feedback demo for the Speech Processing project.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "speech",
+    "emotion",
+    "presentation-feedback",
+    "audio-analysis",
+    "demo"
+  ],
+  "author": "Group 11",
+  "license": "MIT"
+}
