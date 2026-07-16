@@ -185,6 +185,41 @@ class ModelServiceHandler(BaseHTTPRequestHandler):
                 json_response(self, 200 if result.get("ok", False) else 500, result)
                 return
 
+            if parsed.path == "/transcribe":
+                payload = read_json(self)
+                audio_b64 = payload.get("audioWavBase64") or payload.get("audio") or ""
+                if not audio_b64:
+                    json_response(self, 400, {"ok": False, "error": "Missing audioWavBase64."})
+                    return
+
+                tmp_dir = Path(tempfile.gettempdir()) / "speech-demo-03b-service"
+                tmp_dir.mkdir(parents=True, exist_ok=True)
+                stem = str(payload.get("sessionId") or f"speech-asr-{int(time.time() * 1000)}")
+                stem = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in stem)[:80]
+                audio_path = tmp_dir / f"{stem}.wav"
+                audio_path.write_bytes(base64.b64decode(audio_b64))
+
+                t0 = time.time()
+                try:
+                    transcript = infer03b.transcribe_audio_file(audio_path)
+                finally:
+                    try:
+                        audio_path.unlink(missing_ok=True)
+                    except Exception:
+                        pass
+
+                json_response(self, 200, {
+                    "ok": True,
+                    "source": "local ASR",
+                    "transcript": transcript,
+                    "service": {
+                        "mode": "persistent-python-service",
+                        "seconds": round(time.time() - t0, 3),
+                        "prewarm": dict(prewarm_state),
+                    },
+                })
+                return
+
             json_response(self, 404, {"ok": False, "error": "Not found"})
         except Exception as exc:
             json_response(self, 500, {"ok": False, "error": f"{type(exc).__name__}: {exc}"})

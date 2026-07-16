@@ -1167,17 +1167,26 @@ async function handleRecordingStop() {
       sttSegments: state.sttSegments.map((segment) => ({ ...segment })),
       createdAt: new Date()
     };
-    $("#recordStatus").textContent = "Ready to queue";
-    $("#globalStatus").textContent = "Audio recorded";
+    $("#recordStatus").textContent = "ASR running";
+    $("#globalStatus").textContent = "Recognizing recorded speech";
     if (!$(".timer").classList.contains("over-limit")) $("#timerNote").textContent = "captured / 00:12.00";
-    $("#recHint").textContent = "Recording saved locally. Add it to queue to process.";
-    $("#addQueueBtn").disabled = false;
+    $("#recHint").textContent = "Recording saved. Local Whisper ASR is extracting the transcript...";
+    $("#addQueueBtn").disabled = true;
     $("#playBtn").disabled = false;
     drawSpeechWaveform($("#liveWaveCanvas"), samples, audioBuffer.sampleRate, audioBuffer.duration, state.currentRecording.sttSegments, audioBuffer.duration, state.currentRecording.task.script);
     $("#waveDurationLabel").textContent = `${audioBuffer.duration.toFixed(1)}s / ${RECORD_SECONDS.toFixed(1)}s`;
     await decodeContext.close();
     await state.audioContext?.close();
-    showToast("Voice recorded. Add it to queue, then open Processing.");
+    await hydrateAudioTranscript(state.currentRecording, {
+      label: "recorded audio",
+      script: state.currentRecording.task.script || "",
+      successHint: "Transcript recognized from recorded audio. Add it to queue when ready.",
+      emptyHint: "ASR finished, but no confident transcript segment was returned. You can still add the audio to queue.",
+    });
+    $("#recordStatus").textContent = "Ready to queue";
+    $("#globalStatus").textContent = "Audio recorded";
+    $("#addQueueBtn").disabled = false;
+    showToast("Voice recorded and transcript updated. Add it to queue, then open Processing.");
     playTone("queueReady");
   } catch (error) {
     console.error(error);
@@ -1239,7 +1248,12 @@ async function handleAudioUpload(event) {
     drawSpeechWaveform($("#liveWaveCanvas"), samples, audioBuffer.sampleRate, audioBuffer.duration, state.currentRecording.sttSegments, audioBuffer.duration, "");
     $("#waveDurationLabel").textContent = `${audioBuffer.duration.toFixed(1)}s uploaded`;
     await decodeContext.close();
-    await hydrateUploadedTranscript(state.currentRecording);
+    await hydrateAudioTranscript(state.currentRecording, {
+      label: "uploaded audio",
+      script: "",
+      successHint: "Transcript recognized from uploaded audio. Add it to queue when ready.",
+      emptyHint: "ASR finished, but no confident transcript segment was returned."
+    });
     showToast("Audio file loaded. Add it to queue, then open Processing.");
     playTone("queueReady");
   } catch (error) {
@@ -1251,18 +1265,17 @@ async function handleAudioUpload(event) {
   }
 }
 
-async function hydrateUploadedTranscript(item) {
+async function hydrateAudioTranscript(item, options = {}) {
   if (!item?.samples?.length) return;
-  const quickReport = analyzeAudio(item.samples, item.sampleRate);
-  quickReport.duration = item.duration;
-  quickReport.targetEmotion = null;
-  quickReport.script = "";
-  quickReport.recognizedTranscript = [];
+  const label = options.label || "audio";
+  const targetScript = options.script || item.task?.script || "";
+  $("#sttStatus").textContent = "ASR running";
+  renderSttTranscript("#sttTranscript", item.sttSegments || [], `Recognizing speech from ${label}...`);
   try {
-    const modelResult = await request03BModelInference(item, quickReport);
-    const transcriptText = modelResult?.transcript?.text || "";
-    const transcriptSegments = Array.isArray(modelResult?.transcript?.segments) && modelResult.transcript.segments.length
-      ? modelResult.transcript.segments.map((segment) => ({
+    const asrResult = await requestBackendTranscript(item);
+    const transcriptText = asrResult?.transcript?.text || "";
+    const transcriptSegments = Array.isArray(asrResult?.transcript?.segments) && asrResult.transcript.segments.length
+      ? asrResult.transcript.segments.map((segment) => ({
           start: Number(segment.start || 0),
           end: Number(segment.end || item.duration || RECORD_SECONDS),
           text: String(segment.text || "").trim()
@@ -1270,22 +1283,40 @@ async function hydrateUploadedTranscript(item) {
       : (transcriptText ? buildUploadedAudioTimeline(item.duration, transcriptText, item.fileName) : []);
     item.sttSegments = transcriptSegments;
     item.transcriptText = transcriptText;
+    state.sttSegments = transcriptSegments.map((segment) => ({ ...segment }));
     $("#sttStatus").textContent = transcriptSegments.length ? "ASR ready" : "ASR done";
     renderSttTranscript(
       "#sttTranscript",
       transcriptSegments,
       transcriptSegments.length ? "" : (transcriptText || "No transcript recognized.")
     );
-    drawSpeechWaveform($("#liveWaveCanvas"), item.samples, item.sampleRate, item.duration, item.sttSegments, item.duration, "");
+    drawSpeechWaveform($("#liveWaveCanvas"), item.samples, item.sampleRate, item.duration, item.sttSegments, item.duration, targetScript);
     $("#recHint").textContent = transcriptSegments.length
-      ? "Transcript recognized from uploaded audio. Add it to queue when ready."
-      : "ASR finished, but no confident transcript segment was returned.";
+      ? (options.successHint || "Transcript recognized. Add it to queue when ready.")
+      : (options.emptyHint || "ASR finished, but no confident transcript segment was returned.");
   } catch (error) {
     console.error(error);
     $("#sttStatus").textContent = "ASR fallback";
     renderSttTranscript("#sttTranscript", [], "ASR is unavailable right now. You can still queue the audio and analyze later.");
-    $("#recHint").textContent = "Audio file decoded. Transcript will be filled again when you analyze the queue.";
+    $("#recHint").textContent = "Audio decoded. Transcript will be filled again when you analyze the queue.";
   }
+}
+
+async function requestBackendTranscript(item) {
+  if (!item?.samples?.length) return null;
+  const payload = {
+    sessionId: item.id,
+    audioWavBase64: encodeWavBase64(item.samples, item.sampleRate || 48000),
+    sampleRate: item.sampleRate || 48000,
+    duration: item.duration || 0
+  };
+  const response = await fetch("/api/transcribe-audio", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) throw new Error(`ASR request failed with HTTP ${response.status}`);
+  return response.json();
 }
 
 function buildUploadedAudioTimeline(duration, script = "", fileName = "uploaded audio") {

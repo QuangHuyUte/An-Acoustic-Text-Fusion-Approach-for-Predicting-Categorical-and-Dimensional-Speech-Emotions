@@ -294,6 +294,75 @@ function run03BInferenceViaCli({ audioPath, transcript, modelProfileId, autoTran
   });
 }
 
+function runAsrViaCli({ audioPath }) {
+  return new Promise((resolve, reject) => {
+    if (!fs.existsSync(BACKEND_SCRIPT)) {
+      reject(new Error(`Missing backend script: ${BACKEND_SCRIPT}`));
+      return;
+    }
+
+    const python = findPythonCommand();
+    const child = spawn(python, [
+      BACKEND_SCRIPT,
+      '--audio',
+      audioPath,
+      '--asr-only'
+    ], {
+      cwd: __dirname,
+      windowsHide: true,
+      env: {
+        ...process.env,
+        PYTHONIOENCODING: 'utf-8'
+      }
+    });
+
+    let stdout = '';
+    let stderr = '';
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      child.kill('SIGKILL');
+      reject(new Error(`ASR timed out after ${Math.round(MODEL_TIMEOUT_MS / 1000)} seconds.`));
+    }, MODEL_TIMEOUT_MS);
+
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString('utf8');
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString('utf8');
+    });
+    child.on('error', (error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(error);
+    });
+    child.on('close', (code) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      try {
+        const result = parseBackendJson(stdout);
+        if (code !== 0 || result.ok === false) {
+          reject(new Error(result.error || stderr || `ASR backend exited with code ${code}.`));
+          return;
+        }
+        resolve({
+          ...result,
+          service: {
+            ...(result.service || {}),
+            mode: 'one-shot-python-cli'
+          },
+          backendLogs: stderr ? stderr.slice(-2000) : undefined
+        });
+      } catch (error) {
+        reject(new Error(`${error.message}${stderr ? ` Backend stderr: ${stderr.slice(-2000)}` : ''}`));
+      }
+    });
+  });
+}
+
 async function run03BInference(payload) {
   if (USE_MODEL_SERVICE) {
     await startModelService();
@@ -322,6 +391,31 @@ async function run03BInference(payload) {
       modelProfileId: payload.modelProfileId || '03b_frozen_text_5fold',
       autoTranscribe: payload.autoTranscribe !== false
     });
+  } finally {
+    fs.unlink(audioPath, () => {});
+  }
+}
+
+async function runAsrInference(payload) {
+  if (USE_MODEL_SERVICE) {
+    await startModelService();
+    return httpJsonRequest({
+      method: 'POST',
+      requestPath: '/transcribe',
+      payload: {
+        audioWavBase64: payload.audioWavBase64,
+        sessionId: payload.sessionId || ''
+      },
+      timeoutMs: MODEL_TIMEOUT_MS
+    });
+  }
+
+  const tmpDir = path.join(os.tmpdir(), 'speech-demo-03b');
+  fs.mkdirSync(tmpDir, { recursive: true });
+  const audioPath = path.join(tmpDir, `${safeFileStem(payload.sessionId || 'asr')}.wav`);
+  fs.writeFileSync(audioPath, Buffer.from(payload.audioWavBase64, 'base64'));
+  try {
+    return await runAsrViaCli({ audioPath });
   } finally {
     fs.unlink(audioPath, () => {});
   }
@@ -422,6 +516,57 @@ const server = http.createServer((req, res) => {
           source: '03B backend unavailable',
           message: error.message,
           fallback: 'Frontend will use browser-side analysis for this demo run.'
+        });
+      });
+    return;
+  }
+
+  if (req.method === 'POST' && req.url === '/api/transcribe-audio') {
+    readJsonBody(req)
+      .then(async (payload) => {
+        const audioWavBase64 = payload.audioWavBase64 || payload.audio || '';
+        if (!audioWavBase64) {
+          sendJson(res, 400, {
+            ok: false,
+            source: 'ASR backend',
+            message: 'Missing audioWavBase64 in request payload.'
+          });
+          return;
+        }
+
+        let result;
+        try {
+          result = await runAsrInference({
+            audioWavBase64,
+            sessionId: payload.sessionId || ''
+          });
+        } catch (serviceError) {
+          const tmpDir = path.join(os.tmpdir(), 'speech-demo-03b');
+          fs.mkdirSync(tmpDir, { recursive: true });
+          const audioPath = path.join(tmpDir, `${safeFileStem(payload.sessionId || 'asr')}.wav`);
+          fs.writeFileSync(audioPath, Buffer.from(audioWavBase64, 'base64'));
+          try {
+            result = await runAsrViaCli({ audioPath });
+            result.serviceFallback = serviceError.message;
+          } finally {
+            fs.unlink(audioPath, () => {});
+          }
+        }
+
+        sendJson(res, 200, {
+          ...result,
+          received: {
+            duration: payload.duration,
+            sampleRate: payload.sampleRate,
+            sessionId: payload.sessionId || ''
+          }
+        });
+      })
+      .catch((error) => {
+        sendJson(res, 503, {
+          ok: false,
+          source: 'ASR backend unavailable',
+          message: error.message
         });
       });
     return;
