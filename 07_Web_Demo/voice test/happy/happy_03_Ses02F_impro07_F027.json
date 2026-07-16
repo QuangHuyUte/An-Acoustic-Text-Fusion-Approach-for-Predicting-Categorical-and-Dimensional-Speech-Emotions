@@ -1,0 +1,19 @@
+{
+  "file": "happy_03_Ses02F_impro07_F027.wav",
+  "utterance_id": "Ses02F_impro07_F027",
+  "sample_id": "iemocap_02099",
+  "emotion": "happy",
+  "original_emotion": "exc",
+  "valence": 4.0,
+  "arousal": 4.0,
+  "dominance": 3.5,
+  "valence_norm": 0.75,
+  "arousal_norm": 0.75,
+  "dominance_norm": 0.625,
+  "duration_seconds": 1.3,
+  "sample_rate": 16000,
+  "speaker_id": "Ses02F",
+  "session": "Ses02",
+  "transcript_reference_only": "And you'll be like...",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

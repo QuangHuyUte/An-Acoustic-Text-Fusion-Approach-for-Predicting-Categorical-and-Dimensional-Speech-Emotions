@@ -1,0 +1,19 @@
+{
+  "file": "happy_02_Ses01F_impro05_M001.wav",
+  "utterance_id": "Ses01F_impro05_M001",
+  "sample_id": "iemocap_00223",
+  "emotion": "happy",
+  "original_emotion": "hap",
+  "valence": 4.0,
+  "arousal": 2.5,
+  "dominance": 2.0,
+  "valence_norm": 0.75,
+  "arousal_norm": 0.375,
+  "dominance_norm": 0.25,
+  "duration_seconds": 1.23,
+  "sample_rate": 16000,
+  "speaker_id": "Ses01M",
+  "session": "Ses01",
+  "transcript_reference_only": "Can I help you?",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

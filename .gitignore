@@ -8,6 +8,13 @@ datasets/
 # Papers / proposal binaries
 Papers/
 Proposal/
+Lasterm_Param/
+Midterm_Param/
+RoadMap/
+tools/
+pretrained_models/
+06_w2v_based_models/03B_CoAttention_Emotion2Vec_Acoustic_MultiTask_5_10Fold/03b-three-mode-*-ablation-runner.ipynb
+06_w2v_based_models/03B_CoAttention_Emotion2Vec_Acoustic_MultiTask_5_10Fold/03b-three-mode-*-ablation-runner/
 *.pdf
 *.docx
 

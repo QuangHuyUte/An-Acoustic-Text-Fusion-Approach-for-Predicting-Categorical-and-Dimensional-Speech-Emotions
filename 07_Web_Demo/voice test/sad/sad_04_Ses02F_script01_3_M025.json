@@ -1,0 +1,19 @@
+{
+  "file": "sad_04_Ses02F_script01_3_M025.wav",
+  "utterance_id": "Ses02F_script01_3_M025",
+  "sample_id": "iemocap_02377",
+  "emotion": "sad",
+  "original_emotion": "sad",
+  "valence": 2.0,
+  "arousal": 2.0,
+  "dominance": 3.0,
+  "valence_norm": 0.25,
+  "arousal_norm": 0.25,
+  "dominance_norm": 0.5,
+  "duration_seconds": 1.5699375,
+  "sample_rate": 16000,
+  "speaker_id": "Ses02M",
+  "session": "Ses02",
+  "transcript_reference_only": "Just about all.",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

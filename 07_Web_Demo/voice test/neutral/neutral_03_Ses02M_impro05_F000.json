@@ -1,0 +1,19 @@
+{
+  "file": "neutral_03_Ses02M_impro05_F000.wav",
+  "utterance_id": "Ses02M_impro05_F000",
+  "sample_id": "iemocap_02892",
+  "emotion": "neutral",
+  "original_emotion": "neu",
+  "valence": 3.5,
+  "arousal": 3.0,
+  "dominance": 2.5,
+  "valence_norm": 0.625,
+  "arousal_norm": 0.5,
+  "dominance_norm": 0.375,
+  "duration_seconds": 1.2328125,
+  "sample_rate": 16000,
+  "speaker_id": "Ses02F",
+  "session": "Ses02",
+  "transcript_reference_only": "Hi, can I help you?",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

@@ -1,0 +1,19 @@
+{
+  "file": "neutral_01_Ses01M_impro05_F031.wav",
+  "utterance_id": "Ses01M_impro05_F031",
+  "sample_id": "iemocap_01110",
+  "emotion": "neutral",
+  "original_emotion": "neu",
+  "valence": 2.5,
+  "arousal": 3.0,
+  "dominance": 2.5,
+  "valence_norm": 0.375,
+  "arousal_norm": 0.5,
+  "dominance_norm": 0.375,
+  "duration_seconds": 1.25,
+  "sample_rate": 16000,
+  "speaker_id": "Ses01F",
+  "session": "Ses01",
+  "transcript_reference_only": "I wish I-",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

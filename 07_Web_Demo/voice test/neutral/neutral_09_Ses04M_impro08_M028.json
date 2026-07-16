@@ -1,0 +1,19 @@
+{
+  "file": "neutral_09_Ses04M_impro08_M028.wav",
+  "utterance_id": "Ses04M_impro08_M028",
+  "sample_id": "iemocap_07360",
+  "emotion": "neutral",
+  "original_emotion": "neu",
+  "valence": 3.5,
+  "arousal": 2.5,
+  "dominance": 3.0,
+  "valence_norm": 0.625,
+  "arousal_norm": 0.375,
+  "dominance_norm": 0.5,
+  "duration_seconds": 1.3199375,
+  "sample_rate": 16000,
+  "speaker_id": "Ses04M",
+  "session": "Ses04",
+  "transcript_reference_only": "Alright. Take Care.",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

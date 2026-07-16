@@ -1,0 +1,19 @@
+{
+  "file": "sad_02_Ses01M_impro02_M012.wav",
+  "utterance_id": "Ses01M_impro02_M012",
+  "sample_id": "iemocap_00960",
+  "emotion": "sad",
+  "original_emotion": "sad",
+  "valence": 3.0,
+  "arousal": 1.5,
+  "dominance": 1.5,
+  "valence_norm": 0.5,
+  "arousal_norm": 0.125,
+  "dominance_norm": 0.125,
+  "duration_seconds": 1.8299375,
+  "sample_rate": 16000,
+  "speaker_id": "Ses01M",
+  "session": "Ses01",
+  "transcript_reference_only": "I don't know.",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

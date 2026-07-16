@@ -1,0 +1,19 @@
+{
+  "file": "sad_03_Ses02M_impro02_F006.wav",
+  "utterance_id": "Ses02M_impro02_F006",
+  "sample_id": "iemocap_02762",
+  "emotion": "sad",
+  "original_emotion": "sad",
+  "valence": 2.5,
+  "arousal": 2.0,
+  "dominance": 3.0,
+  "valence_norm": 0.375,
+  "arousal_norm": 0.25,
+  "dominance_norm": 0.5,
+  "duration_seconds": 1.45375,
+  "sample_rate": 16000,
+  "speaker_id": "Ses02F",
+  "session": "Ses02",
+  "transcript_reference_only": "I hope so.",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

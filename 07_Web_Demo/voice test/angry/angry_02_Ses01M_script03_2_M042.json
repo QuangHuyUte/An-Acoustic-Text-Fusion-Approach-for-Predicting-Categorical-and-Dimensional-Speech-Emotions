@@ -1,0 +1,19 @@
+{
+  "file": "angry_02_Ses01M_script03_2_M042.wav",
+  "utterance_id": "Ses01M_script03_2_M042",
+  "sample_id": "iemocap_01817",
+  "emotion": "angry",
+  "original_emotion": "ang",
+  "valence": 2.0,
+  "arousal": 2.5,
+  "dominance": 3.5,
+  "valence_norm": 0.25,
+  "arousal_norm": 0.375,
+  "dominance_norm": 0.625,
+  "duration_seconds": 1.72,
+  "sample_rate": 16000,
+  "speaker_id": "Ses01M",
+  "session": "Ses01",
+  "transcript_reference_only": "No you're not.",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

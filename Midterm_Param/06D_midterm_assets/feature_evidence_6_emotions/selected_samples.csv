@@ -1,7 +1,0 @@
-emotion,sample_id,dataset,speaker_id,source_filename
-neutral,s011168,SAVEE,savee_JK,jk_n01.wav
-happy,s011153,SAVEE,savee_JK,jk_h01.wav
-sad,s011198,SAVEE,savee_JK,jk_sa01.wav
-angry,s011108,SAVEE,savee_JK,jk_a01.wav
-fear,s011138,SAVEE,savee_JK,jk_f01.wav
-disgust,s011123,SAVEE,savee_JK,jk_d01.wav

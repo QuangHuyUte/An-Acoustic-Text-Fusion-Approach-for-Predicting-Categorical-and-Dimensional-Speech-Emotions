@@ -1,0 +1,19 @@
+{
+  "file": "angry_01_Ses01F_impro05_F026.wav",
+  "utterance_id": "Ses01F_impro05_F026",
+  "sample_id": "iemocap_00217",
+  "emotion": "angry",
+  "original_emotion": "ang",
+  "valence": 2.0,
+  "arousal": 3.5,
+  "dominance": 3.5,
+  "valence_norm": 0.25,
+  "arousal_norm": 0.625,
+  "dominance_norm": 0.625,
+  "duration_seconds": 1.4875,
+  "sample_rate": 16000,
+  "speaker_id": "Ses01F",
+  "session": "Ses01",
+  "transcript_reference_only": "What's your name?",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

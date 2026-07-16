@@ -1,0 +1,19 @@
+{
+  "file": "happy_10_Ses04F_script03_1_M007.wav",
+  "utterance_id": "Ses04F_script03_1_M007",
+  "sample_id": "iemocap_06750",
+  "emotion": "happy",
+  "original_emotion": "exc",
+  "valence": 3.0,
+  "arousal": 3.5,
+  "dominance": 3.5,
+  "valence_norm": 0.5,
+  "arousal_norm": 0.625,
+  "dominance_norm": 0.625,
+  "duration_seconds": 1.74,
+  "sample_rate": 16000,
+  "speaker_id": "Ses04M",
+  "session": "Ses04",
+  "transcript_reference_only": "With the most perfect poise.",
+  "demo_note": "Use the WAV file as audio input. Do not paste this transcript as script; let the live demo ASR recognize text automatically."
+}

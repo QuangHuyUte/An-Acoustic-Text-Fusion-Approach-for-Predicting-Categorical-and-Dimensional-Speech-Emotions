@@ -1,0 +1,41 @@
+﻿relative_wav,relative_label_json,utterance_id,emotion,original_emotion,valence,arousal,dominance,valence_norm,arousal_norm,dominance_norm,duration_seconds,sample_rate,speaker_id,session,transcript_reference_only
+neutral\neutral_01_Ses01M_impro05_F031.wav,neutral\neutral_01_Ses01M_impro05_F031.json,Ses01M_impro05_F031,neutral,neu,2.5,3.0,2.5,0.375,0.5,0.375,1.25,16000,Ses01F,Ses01,I wish I-
+neutral\neutral_02_Ses01F_script03_2_M019.wav,neutral\neutral_02_Ses01F_script03_2_M019.json,Ses01F_script03_2_M019,neutral,neu,3.0,2.5,3.5,0.5,0.375,0.625,1.37,16000,Ses01M,Ses01,Yes it is.
+neutral\neutral_03_Ses02M_impro05_F000.wav,neutral\neutral_03_Ses02M_impro05_F000.json,Ses02M_impro05_F000,neutral,neu,3.5,3.0,2.5,0.625,0.5,0.375,1.2328125,16000,Ses02F,Ses02,"Hi, can I help you?"
+neutral\neutral_04_Ses02F_script02_2_M033.wav,neutral\neutral_04_Ses02F_script02_2_M033.json,Ses02F_script02_2_M033,neutral,neu,3.0,2.5,3.0,0.5,0.375,0.5,1.2599375,16000,Ses02M,Ses02,"Yes, it is."
+neutral\neutral_05_Ses03M_impro05a_F024.wav,neutral\neutral_05_Ses03M_impro05a_F024.json,Ses03M_impro05a_F024,neutral,neu,3.0,3.0,3.0,0.5,0.5,0.5,1.3799375,16000,Ses03F,Ses03,"Yes.  Well, because--"
+neutral\neutral_06_Ses03M_impro07_M009.wav,neutral\neutral_06_Ses03M_impro07_M009.json,Ses03M_impro07_M009,neutral,neu,5.0,4.0,1.5,1.0,0.75,0.125,1.5,16000,Ses03M,Ses03,What does that mean?
+neutral\neutral_07_Ses04M_script03_2_F024.wav,neutral\neutral_07_Ses04M_script03_2_F024.json,Ses04M_script03_2_F024,neutral,neu,2.5,2.0,2.0,0.375,0.25,0.25,1.446625,16000,Ses04F,Ses04,It's a pity you didn't- It's a pity you didn't have more brandy.
+neutral\neutral_08_Ses04M_impro01_M003.wav,neutral\neutral_08_Ses04M_impro01_M003.json,Ses04M_impro01_M003,neutral,neu,3.0,3.0,3.0,0.5,0.5,0.5,1.3199375,16000,Ses04M,Ses04,"Yes, I do."
+neutral\neutral_09_Ses04M_impro08_M028.wav,neutral\neutral_09_Ses04M_impro08_M028.json,Ses04M_impro08_M028,neutral,neu,3.5,2.5,3.0,0.625,0.375,0.5,1.3199375,16000,Ses04M,Ses04,Alright. Take Care.
+neutral\neutral_10_Ses04F_impro07_M020.wav,neutral\neutral_10_Ses04F_impro07_M020.json,Ses04F_impro07_M020,neutral,neu,3.5,2.5,2.5,0.625,0.375,0.375,1.4399375,16000,Ses04M,Ses04,"Hey, that's cool."
+happy\happy_01_Ses01M_impro03_F003.wav,happy\happy_01_Ses01M_impro03_F003.json,Ses01M_impro03_F003,happy,exc,3.5,3.0,3.0,0.625,0.5,0.5,1.5525,16000,Ses01F,Ses01,Is she on the run?
+happy\happy_02_Ses01F_impro05_M001.wav,happy\happy_02_Ses01F_impro05_M001.json,Ses01F_impro05_M001,happy,hap,4.0,2.5,2.0,0.75,0.375,0.25,1.23,16000,Ses01M,Ses01,Can I help you?
+happy\happy_03_Ses02F_impro07_F027.wav,happy\happy_03_Ses02F_impro07_F027.json,Ses02F_impro07_F027,happy,exc,4.0,4.0,3.5,0.75,0.75,0.625,1.3,16000,Ses02F,Ses02,And you'll be like...
+happy\happy_04_Ses02M_impro03_M016.wav,happy\happy_04_Ses02M_impro03_M016.json,Ses02M_impro03_M016,happy,exc,4.0,3.5,3.5,0.75,0.625,0.625,1.3628125,16000,Ses02M,Ses02,"No, yes -- so"
+happy\happy_05_Ses03F_impro03_F016.wav,happy\happy_05_Ses03F_impro03_F016.json,Ses03F_impro03_F016,happy,exc,4.0,3.0,3.0,0.75,0.5,0.5,1.6665,16000,Ses03F,Ses03,Yeah. It was great.
+happy\happy_06_Ses03F_impro03_M010.wav,happy\happy_06_Ses03F_impro03_M010.json,Ses03F_impro03_M010,happy,exc,4.0,2.5,3.5,0.75,0.375,0.625,1.3465625,16000,Ses03M,Ses03,"Oh, my God."
+happy\happy_07_Ses04F_impro07_F062.wav,happy\happy_07_Ses04F_impro07_F062.json,Ses04F_impro07_F062,happy,exc,4.0,3.0,3.0,0.75,0.5,0.5,1.4,16000,Ses04F,Ses04,"No, it's dorky."
+happy\happy_08_Ses04M_impro03_M026.wav,happy\happy_08_Ses04M_impro03_M026.json,Ses04M_impro03_M026,happy,hap,3.5,3.0,2.5,0.625,0.5,0.375,1.46,16000,Ses04M,Ses04,She's okay with it.
+happy\happy_09_Ses04F_impro03_M005.wav,happy\happy_09_Ses04F_impro03_M005.json,Ses04F_impro03_M005,happy,exc,4.0,3.5,4.0,0.75,0.625,0.75,1.74,16000,Ses04M,Ses04,"I'm invited, right."
+happy\happy_10_Ses04F_script03_1_M007.wav,happy\happy_10_Ses04F_script03_1_M007.json,Ses04F_script03_1_M007,happy,exc,3.0,3.5,3.5,0.5,0.625,0.625,1.74,16000,Ses04M,Ses04,With the most perfect poise.
+sad\sad_01_Ses01F_impro06_F013.wav,sad\sad_01_Ses01F_impro06_F013.json,Ses01F_impro06_F013,sad,sad,2.0,2.0,2.0,0.25,0.25,0.25,1.5325,16000,Ses01F,Ses01,I don't know.
+sad\sad_02_Ses01M_impro02_M012.wav,sad\sad_02_Ses01M_impro02_M012.json,Ses01M_impro02_M012,sad,sad,3.0,1.5,1.5,0.5,0.125,0.125,1.8299375,16000,Ses01M,Ses01,I don't know.
+sad\sad_03_Ses02M_impro02_F006.wav,sad\sad_03_Ses02M_impro02_F006.json,Ses02M_impro02_F006,sad,sad,2.5,2.0,3.0,0.375,0.25,0.5,1.45375,16000,Ses02F,Ses02,I hope so.
+sad\sad_04_Ses02F_script01_3_M025.wav,sad\sad_04_Ses02F_script01_3_M025.json,Ses02F_script01_3_M025,sad,sad,2.0,2.0,3.0,0.25,0.25,0.5,1.5699375,16000,Ses02M,Ses02,Just about all.
+sad\sad_05_Ses03F_impro02_F032.wav,sad\sad_05_Ses03F_impro02_F032.json,Ses03F_impro02_F032,sad,sad,2.0,2.5,1.0,0.25,0.375,0.0,1.4399375,16000,Ses03F,Ses03,I will come back.
+sad\sad_06_Ses03M_impro04_M030.wav,sad\sad_06_Ses03M_impro04_M030.json,Ses03M_impro04_M030,sad,sad,2.5,1.5,2.0,0.375,0.125,0.25,1.5375,16000,Ses03M,Ses03,Maybe I'll just kill myself.
+sad\sad_07_Ses04M_script02_2_F032.wav,sad\sad_07_Ses04M_script02_2_F032.json,Ses04M_script02_2_F032,sad,sad,2.0,2.5,4.0,0.25,0.375,0.75,1.753375,16000,Ses04F,Ses04,I didn't say that.
+sad\sad_08_Ses04F_script01_3_M029.wav,sad\sad_08_Ses04F_script01_3_M029.json,Ses04F_script01_3_M029,sad,sad,2.5,3.0,3.5,0.375,0.5,0.625,2.3499375,16000,Ses04M,Ses04,Just about all.
+sad\sad_09_Ses04M_script01_3_M026.wav,sad\sad_09_Ses04M_script01_3_M026.json,Ses04M_script01_3_M026,sad,sad,2.0,3.0,3.0,0.25,0.5,0.5,2.475875,16000,Ses04M,Ses04,Just about all.
+sad\sad_10_Ses04F_script01_1_M026.wav,sad\sad_10_Ses04F_script01_1_M026.json,Ses04F_script01_1_M026,sad,sad,2.5,2.0,3.0,0.375,0.25,0.5,2.932875,16000,Ses04M,Ses04,I wanted to get this settled first.
+angry\angry_01_Ses01F_impro05_F026.wav,angry\angry_01_Ses01F_impro05_F026.json,Ses01F_impro05_F026,angry,ang,2.0,3.5,3.5,0.25,0.625,0.625,1.4875,16000,Ses01F,Ses01,What's your name?
+angry\angry_02_Ses01M_script03_2_M042.wav,angry\angry_02_Ses01M_script03_2_M042.json,Ses01M_script03_2_M042,angry,ang,2.0,2.5,3.5,0.25,0.375,0.625,1.72,16000,Ses01M,Ses01,No you're not.
+angry\angry_03_Ses02F_script01_1_F036.wav,angry\angry_03_Ses02F_script01_1_F036.json,Ses02F_script01_1_F036,angry,ang,1.5,3.5,4.0,0.125,0.625,0.75,1.6899375,16000,Ses02F,Ses02,Are you crazy?
+angry\angry_04_Ses02F_script03_2_M038.wav,angry\angry_04_Ses02F_script03_2_M038.json,Ses02F_script03_2_M038,angry,ang,1.5,3.0,4.0,0.125,0.5,0.75,1.25,16000,Ses02M,Ses02,Turn it off.
+angry\angry_05_Ses03M_impro05a_F028.wav,angry\angry_05_Ses03M_impro05a_F028.json,Ses03M_impro05a_F028,angry,ang,2.5,2.5,3.5,0.375,0.375,0.625,1.2899375,16000,Ses03F,Ses03,What is your name?
+angry\angry_06_Ses03F_script03_2_M020.wav,angry\angry_06_Ses03F_script03_2_M020.json,Ses03F_script03_2_M020,angry,ang,3.0,3.5,3.0,0.5,0.625,0.5,1.3899375,16000,Ses03M,Ses03,"Yes, it is."
+angry\angry_07_Ses04M_script03_2_F048.wav,angry\angry_07_Ses04M_script03_2_F048.json,Ses04M_script03_2_F048,angry,ang,2.0,4.0,3.5,0.25,0.75,0.625,1.37,16000,Ses04F,Ses04,"Oh, yes, I am."
+angry\angry_08_Ses04M_script03_2_M025.wav,angry\angry_08_Ses04M_script03_2_M025.json,Ses04M_script03_2_M025,angry,ang,3.5,3.0,3.0,0.625,0.5,0.5,1.34,16000,Ses04M,Ses04,"Yes, it is."
+angry\angry_09_Ses04F_script03_2_M007.wav,angry\angry_09_Ses04F_script03_2_M007.json,Ses04F_script03_2_M007,angry,ang,1.5,3.5,4.5,0.125,0.625,0.875,1.68,16000,Ses04M,Ses04,What about me?
+angry\angry_10_Ses04F_impro01_M005.wav,angry\angry_10_Ses04F_impro01_M005.json,Ses04F_impro01_M005,angry,ang,2.5,3.0,3.5,0.375,0.5,0.625,1.71,16000,Ses04M,Ses04,I've got a life too ma'am

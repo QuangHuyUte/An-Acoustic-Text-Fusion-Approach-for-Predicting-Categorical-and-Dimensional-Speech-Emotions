@@ -1,0 +1,13 @@
+Label,WA,UAR,Macro_F1,CCC_mean
+"03B bridge+RMM
+5-fold",69.72309593272412,70.35406756854152,69.58417461462082,0.6385901808738709
+"03B acoustic expert
+10-fold",68.41006180534347,69.05758110192825,68.25304513067569,0.6381651223988911
+"03C text tuned
+10fold_speaker",67.45,69.47,67.13,0.57
+"03C text tuned
+5fold_session",66.28,67.81,66.37,0.56
+"03D expert fusion
+10fold_speaker",74.02,74.64,74.05,0.661
+"03D expert fusion
+5fold_session",72.9,73.56,73.09,0.652

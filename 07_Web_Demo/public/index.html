@@ -10,7 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
-  <link rel="stylesheet" href="./css/styles.css?v=20260714-processing-flow-3">
+  <link rel="stylesheet" href="./css/styles.css?v=20260716-process-sidebar-scroll">
 </head>
 <body>
   <canvas id="ambientCanvas" aria-hidden="true"></canvas>
@@ -123,6 +123,8 @@
 
             <div class="action-row">
               <button id="playBtn" class="soft-btn" type="button" disabled><i data-lucide="play"></i> Playback</button>
+              <button id="uploadAudioBtn" class="soft-btn" type="button"><i data-lucide="upload"></i> Upload audio</button>
+              <input id="audioUploadInput" type="file" accept="audio/*,.wav,.mp3,.m4a,.webm,.ogg" hidden>
               <button id="addQueueBtn" class="primary-btn" type="button" disabled><i data-lucide="list-plus"></i> Add to queue</button>
               <button id="resetBtn" class="ghost-btn" type="button"><i data-lucide="rotate-ccw"></i> Reset</button>
             </div>
@@ -155,6 +157,15 @@
             </div>
             <p id="processScript" class="small-copy">Record a voice sample first, then load it here.</p>
             <div id="processMeta" class="meta-grid"></div>
+            <div class="model-profile-card">
+              <label for="processQueueSelect">Queue item</label>
+              <select id="processQueueSelect"></select>
+              <p id="processQueueSummary">Choose a recorded/uploaded audio item before analysis.</p>
+
+              <label for="modelProfileSelect">Inference model</label>
+              <select id="modelProfileSelect"></select>
+              <p id="modelProfileSummary">Loading model profiles...</p>
+            </div>
             <div class="action-row vertical">
               <button id="analyzeBtn" class="primary-btn" type="button" disabled><i data-lucide="cpu"></i> Analyze selected audio</button>
               <button id="backRecordBtn" class="ghost-btn" type="button"><i data-lucide="arrow-left"></i> Back to record</button>
@@ -167,121 +178,175 @@
                 <p class="label">Processing flow</p>
                 <h2>Audio through the model route</h2>
               </div>
-              <span id="processStatus" class="status-pill">Waiting</span>
+              <div class="process-status-cluster">
+                <span id="processTotalTimer" class="runtime-pill">Total 0.0s</span>
+                <span id="processStatus" class="status-pill">Waiting</span>
+              </div>
             </div>
 
-            <div class="model-flowchart advanced-flowchart">
-              <div class="flow-stage input-stage flow-node inspectable" data-step="load" data-inspect="input">
-                <div class="stage-title">
-                  <span class="step-chip">Input package</span>
-                  <strong>Queued audio + script</strong>
-                </div>
-                <div class="input-bundle">
-                  <button class="input-preview audio-preview inspectable" type="button" data-step="wave" data-inspect="wave">
-                    <span class="preview-label">WAV audio</span>
-                    <canvas id="processWaveThumb" width="520" height="150"></canvas>
+            <div class="model-flowchart advanced-flowchart explainer-board">
+              <div class="flow-map-toolbar map-zoom-control" aria-label="Flow map controls">
+                <button id="flowZoomIn" class="icon-btn" type="button" title="Zoom in"><i data-lucide="plus"></i></button>
+                <button id="flowZoomOut" class="icon-btn" type="button" title="Zoom out"><i data-lucide="minus"></i></button>
+                <button id="flowZoomReset" class="icon-btn" type="button" title="Reset view"><i data-lucide="scan"></i></button>
+                <span id="flowZoomLabel">72%</span>
+              </div>
+              <div id="flowMapViewport" class="flow-map-viewport">
+                <div id="flowMapCanvas" class="flow-map-canvas">
+                  <svg class="explainer-links" viewBox="0 0 3600 1800" aria-hidden="true" preserveAspectRatio="none">
+                    <defs>
+                      <marker id="explainerArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                        <path d="M0,0 L8,4 L0,8 Z"></path>
+                      </marker>
+                    </defs>
+                    <path class="flow-edge" data-step="features" data-from="input" data-to="acoustic"></path>
+                    <path class="flow-edge" data-step="text" data-from="input" data-to="text"></path>
+                    <path class="flow-edge" data-step="attention" data-from="acoustic" data-to="encoders"></path>
+                    <path class="flow-edge" data-step="attention" data-from="encoders" data-to="acoustic-attention"></path>
+                    <path class="flow-edge" data-step="text_attention" data-from="text" data-to="bridge"></path>
+                    <path class="flow-edge" data-step="fusion" data-from="acoustic-attention" data-to="bridge"></path>
+                    <path class="flow-edge" data-step="heads" data-from="bridge" data-to="output"></path>
+                  </svg>
+
+              <section class="explainer-node input-package inspectable draggable-node" data-node-id="input" data-step="load" data-inspect="input" style="left:40px; top:230px; width:310px;">
+                <button class="node-drag-handle" type="button" title="Drag block"><i data-lucide="grip"></i></button>
+                <div class="node-kicker">01 Input package</div>
+                <div class="input-dashed-box">
+                  <button class="media-tile wave-mini inspectable" type="button" data-step="wave" data-inspect="wave">
+                    <span class="tile-label">WAV audio</span>
+                    <canvas id="processWaveThumb" width="360" height="116"></canvas>
                     <em id="processAudioCaption">No queue item loaded</em>
                   </button>
-                  <button class="input-preview transcript-preview inspectable" type="button" data-step="text" data-inspect="transcript">
-                    <span class="preview-label">Script + STT timestamp</span>
-                    <p id="processTranscriptPreview">Record a voice sample, add it to queue, then load it into Processing.</p>
-                    <em id="processTranscriptCaption">Speech-to-text lines appear after recording.</em>
+                  <button class="media-tile script-mini inspectable" type="button" data-step="text" data-inspect="transcript">
+                    <span class="tile-label">Script / timestamp</span>
+                    <strong id="processTranscriptPreview">script + timestamp</strong>
+                    <em id="processTranscriptCaption">Speech-to-text lines appear here.</em>
                   </button>
                 </div>
+              </section>
+
+              <section class="explainer-node acoustic-block inspectable draggable-node" data-node-id="acoustic" data-step="features" data-inspect="acoustic" style="left:430px; top:58px; width:520px;">
+                <button class="node-drag-handle" type="button" title="Drag block"><i data-lucide="grip"></i></button>
+                <div class="node-head">
+                  <span>02 Acoustic 4-branch feature block</span>
+                  <strong>Raw waveform -> 06D acoustic features</strong>
+                </div>
+                <div class="compact-feature-tabs" id="acousticFeatureTabs">
+                  <button class="active" type="button" data-feature="temporal">Temporal</button>
+                  <button type="button" data-feature="spectral">Spectral</button>
+                  <button type="button" data-feature="stats">Stats</button>
+                  <button type="button" data-feature="e2v">E2V</button>
+                </div>
+                <div class="feature-branch-grid">
+                  <button class="feature-branch inspectable active-feature" type="button" data-step="temporal" data-feature-panel="temporal" data-inspect="temporal">
+                    <span class="mini-viz mfcc-viz"></span>
+                    <strong>X_temporal</strong>
+                    <em id="temporalShape">MFCC, delta, delta-delta, RMS, ZCR, pitch/F0, spectral LLD</em>
+                  </button>
+                  <button class="feature-branch inspectable" type="button" data-step="spectral" data-feature-panel="spectral" data-inspect="spectral">
+                    <span class="mini-viz logmel-viz"></span>
+                    <strong>X_spectral</strong>
+                    <em id="spectralShape">log-Mel, delta log-Mel, delta-delta log-Mel</em>
+                  </button>
+                  <button class="feature-branch inspectable" type="button" data-step="stats" data-feature-panel="stats" data-inspect="stats">
+                    <span class="mini-viz stats-viz"><i></i><i></i><i></i><i></i><i></i></span>
+                    <strong>X_stats</strong>
+                    <em id="statsShape">mean, std, min, max, median, p10, p90, IQR</em>
+                  </button>
+                  <button class="feature-branch inspectable" type="button" data-step="pretrained" data-feature-panel="e2v" data-inspect="e2v">
+                    <span class="mini-viz token-viz"><i></i><i></i><i></i><i></i></span>
+                    <strong>X_e2v</strong>
+                    <em>frozen emotion2vec utterance embedding</em>
+                  </button>
+                </div>
+                <div id="processNumbers" class="process-metric-strip"></div>
+                <canvas id="processMelCanvas" class="hidden-feature-canvas" width="420" height="220"></canvas>
+              </section>
+
+              <section class="explainer-node acoustic-encoder-block inspectable draggable-node" data-node-id="encoders" data-step="attention" data-inspect="acoustic_attention" style="left:1060px; top:82px; width:390px;">
+                <button class="node-drag-handle" type="button" title="Drag block"><i data-lucide="grip"></i></button>
+                <div class="node-head">
+                  <span>03 Acoustic encoders</span>
+                  <strong>Branch tokens -> acoustic token set</strong>
+                </div>
+                <div class="encoder-ladder">
+                  <button class="encoder-step inspectable active-feature" type="button" data-step="temporal" data-feature-panel="temporal" data-inspect="temporal"><i class="cnn-icon"></i><span>1D-CNN / TCN</span></button>
+                  <button class="encoder-step inspectable" type="button" data-step="spectral" data-feature-panel="spectral" data-inspect="spectral"><i class="cnn2d-icon"></i><span>2D-CNN</span></button>
+                  <button class="encoder-step inspectable" type="button" data-step="stats" data-feature-panel="stats" data-inspect="stats"><i class="mlp-icon"></i><span>Stats MLP</span></button>
+                  <button class="encoder-step inspectable" type="button" data-step="pretrained" data-feature-panel="e2v" data-inspect="e2v"><i class="e2v-icon"></i><span>E2V adapter</span></button>
+                </div>
+              </section>
+
+              <section class="explainer-node acoustic-self-attention-block inspectable draggable-node" data-node-id="acoustic-attention" data-step="attention" data-inspect="acoustic_attention" style="left:1560px; top:165px; width:390px;">
+                <button class="node-drag-handle" type="button" title="Drag block"><i data-lucide="grip"></i></button>
+                <div class="node-head">
+                  <span>04 Acoustic self-attention</span>
+                  <strong>Acoustic tokens exchange evidence</strong>
+                </div>
+                <button class="token-set-card inspectable" type="button" data-step="attention" data-inspect="acoustic_attention">
+                  <span class="token-dots"><i></i><i></i><i></i><i></i></span>
+                  <strong>A = SelfAttn([z_t, z_s, z_stats, z_e2v])</strong>
+                  <em>not inside encoders; it happens after the four branch encoders emit tokens</em>
+                </button>
+              </section>
+
+              <section class="explainer-node text-block inspectable draggable-node" data-node-id="text" data-step="text_attention" data-inspect="text_model" style="left:860px; top:635px; width:700px;">
+                <button class="node-drag-handle" type="button" title="Drag block"><i data-lucide="grip"></i></button>
+                <div class="node-head">
+                  <span>Text branch</span>
+                  <strong>Transcript -> pretrained text tokens</strong>
+                </div>
+                <div class="text-stage-line">
+                  <button class="text-chip inspectable" type="button" data-step="text" data-inspect="transcript">Transcript</button>
+                  <button class="text-chip inspectable" type="button" data-step="text_attention" data-inspect="text_model">Tokenizer</button>
+                  <button class="text-chip inspectable" type="button" data-step="text_attention" data-inspect="text_model">RoBERTa encoder</button>
+                  <button class="text-chip inspectable" type="button" data-step="text_attention" data-inspect="text_model">Projection</button>
+                  <button class="text-chip inspectable" type="button" data-step="text_attention" data-inspect="text_model">Self-attention</button>
+                </div>
+                <p id="textTokenSummary">No transcript token has been loaded yet.</p>
+              </section>
+
+              <section class="explainer-node bridge-block inspectable draggable-node" data-node-id="bridge" data-step="fusion" data-inspect="bridge" style="left:2080px; top:255px; width:400px;">
+                <button class="node-drag-handle" type="button" title="Drag block"><i data-lucide="grip"></i></button>
+                <div class="node-head">
+                  <span>05 Bridge cross-attention</span>
+                  <strong>Controlled meeting point</strong>
+                </div>
+                <button class="bridge-step inspectable" type="button" data-step="fusion" data-inspect="bridge">
+                  <strong>Bridge A -> T</strong>
+                  <em>Q from bridge/acoustic, K/V from text</em>
+                </button>
+                <button class="bridge-step inspectable" type="button" data-step="fusion" data-inspect="bridge">
+                  <strong>Bridge T -> A</strong>
+                  <em>Q from bridge/text, K/V from acoustic</em>
+                </button>
+                <button class="bridge-step balanced inspectable" type="button" data-step="bridge" data-inspect="balanced_fusion">
+                  <strong>Balanced fusion gate</strong>
+                  <em id="flowOutputSummary">waiting</em>
+                </button>
+              </section>
+
+              <section class="explainer-node output-block inspectable draggable-node" data-node-id="output" data-step="report" data-inspect="output" style="left:2600px; top:250px; width:280px;">
+                <button class="node-drag-handle" type="button" title="Drag block"><i data-lucide="grip"></i></button>
+                <div class="node-head">
+                  <span>06 Heads</span>
+                  <strong>Emotion + VAD</strong>
+                </div>
+                <button class="head-card inspectable" type="button" data-step="heads" data-inspect="heads">
+                  <span class="prob-bars"><i></i><i></i><i></i><i></i></span>
+                  <strong>Emotion classifier</strong>
+                  <em>softmax: neutral, happy, sad, angry</em>
+                </button>
+                <button class="head-card inspectable" type="button" data-step="report" data-inspect="output">
+                  <span class="vad-dot"></span>
+                  <strong>VAD regressor</strong>
+                  <em>valence, arousal, dominance score</em>
+                </button>
+              </section>
+
+              <canvas id="processWaveCanvas" class="hidden-feature-canvas" width="1200" height="280"></canvas>
+                </div>
               </div>
-
-              <div class="route-grid">
-                <div class="route-line audio-route" data-step="features"><span>decoded waveform</span></div>
-                <div class="route-line text-route" data-step="text"><span>timestamped transcript</span></div>
-              </div>
-
-              <div class="modal-route">
-                <section class="flow-node model-block acoustic-block inspectable" data-step="features" data-inspect="acoustic">
-                  <div class="stage-title">
-                    <span class="step-chip">Acoustic block</span>
-                    <strong>Four acoustic branches</strong>
-                  </div>
-                  <div class="feature-tabs" id="acousticFeatureTabs">
-                    <button class="active" type="button" data-feature="temporal">Temporal</button>
-                    <button type="button" data-feature="spectral">Spectrogram</button>
-                    <button type="button" data-feature="e2v">emotion2vec</button>
-                    <button type="button" data-feature="stats">Stats</button>
-                  </div>
-                  <div class="branch-stack">
-                    <article class="flow-node branch temporal inspectable active-feature" data-step="temporal" data-feature-panel="temporal" data-inspect="temporal">
-                      <b>A</b>
-                      <div class="branch-art mfcc-art"></div>
-                      <div><strong>Temporal LLD</strong><span>MFCC + delta + delta2 + RMS/ZCR/spectral sequence</span><em id="temporalShape">[B, 132, T] -> 1D-CNN/TCN -> BiLSTM/GRU -> attention</em></div>
-                    </article>
-                    <article class="flow-node branch spectral inspectable" data-step="spectral" data-feature-panel="spectral" data-inspect="spectral">
-                      <b>B</b>
-                      <div class="branch-art mel-art"></div>
-                      <div><strong>Log-Mel image</strong><span>log-Mel + delta log-Mel + delta-delta log-Mel</span><em id="spectralShape">[B, 3, 96, T] -> 2D-CNN + SE/channel attention</em></div>
-                    </article>
-                    <article class="flow-node branch pretrained inspectable" data-step="pretrained" data-feature-panel="e2v" data-inspect="e2v">
-                      <b>C</b>
-                      <div class="branch-art e2v-art"></div>
-                      <div><strong>Emotion pretrained</strong><span>Frozen emotion2vec embedding from waveform</span><em>[B, 768] -> adapter projection token</em></div>
-                    </article>
-                    <article class="flow-node branch stats inspectable" data-step="stats" data-feature-panel="stats" data-inspect="stats">
-                      <b>D</b>
-                      <div class="branch-art stats-art"></div>
-                      <div><strong>Statistical vector</strong><span>mean/std/min/max/percentile/IQR + harmonic/spectral stats</span><em id="statsShape">clip-level vector -> stats MLP / SVM probability</em></div>
-                    </article>
-                  </div>
-                  <div class="encoder-bar">
-                    <span>branch encoders</span><i></i><span>acoustic token set</span><i></i><span>acoustic self-attention</span>
-                  </div>
-                  <div class="flow-node attention inspectable" data-step="attention" data-inspect="acoustic_attention">
-                    <strong>Acoustic self-attention</strong>
-                    <span>tokens exchange evidence before fusion</span>
-                    <div class="attention-dots"><i></i><i></i><i></i><i></i></div>
-                  </div>
-                </section>
-
-                <section class="flow-node model-block text-block inspectable" data-step="text_attention" data-inspect="text_model">
-                  <div class="stage-title">
-                    <span class="step-chip">Text block</span>
-                    <strong>Pretrained transcript encoder</strong>
-                  </div>
-                  <div class="text-pipeline">
-                    <span>Raw transcript</span><i></i><span>Tokenizer</span><i></i><span>Frozen RoBERTa/DeBERTa</span><i></i><span>Text sequence projection</span><i></i><span>Text self-attention</span>
-                  </div>
-                  <div class="text-token-card">
-                    <div class="branch-art text-art"></div>
-                    <p id="textTokenSummary">No transcript token has been loaded yet.</p>
-                  </div>
-                </section>
-
-                <div class="route-line merge-route" data-step="fusion"><span>acoustic + text tokens</span></div>
-
-                <section class="decision-stack">
-                  <div class="flow-node fusion inspectable" data-step="fusion" data-inspect="bridge">
-                    <strong>Bridge cross-attention</strong>
-                    <span>learnable bridge tokens query acoustic/text evidence with Q, K, V attention</span>
-                  </div>
-                  <div class="flow-node fusion inspectable" data-step="bridge" data-inspect="balanced_fusion">
-                    <strong>Balanced fusion</strong>
-                    <span>gate balances acoustic vector and text vector before final heads</span>
-                  </div>
-                  <div class="flow-node head inspectable" data-step="heads" data-inspect="heads">
-                    <strong>Emotion classifier + VAD regressor</strong>
-                    <span>softmax selects emotion; regression estimates valence, arousal and dominance</span>
-                    <div class="prob-mini"><i></i><i></i><i></i><i></i></div>
-                  </div>
-                  <div class="flow-node report inspectable" data-step="report" data-inspect="output">
-                    <strong>Output</strong>
-                    <span id="flowOutputSummary">Waiting for processed audio.</span>
-                    <div class="report-mini"><span></span><span></span><span></span></div>
-                  </div>
-                </section>
-              </div>
-            </div>
-
-            <div class="process-visuals">
-              <div class="canvas-card"><span>Waveform</span><canvas id="processWaveCanvas" width="900" height="150"></canvas></div>
-              <div class="canvas-card dark"><span>Log-Mel</span><canvas id="processMelCanvas" width="900" height="150"></canvas></div>
-              <div class="canvas-card"><span>Feature summary</span><div id="processNumbers" class="number-grid"></div></div>
             </div>
           </section>
         </div>
@@ -306,7 +371,12 @@
                 <p class="label">Final report</p>
                 <h2 id="resultTitle">No analyzed report</h2>
               </div>
-              <button id="exportReportBtn" class="soft-btn" type="button" disabled><i data-lucide="file-json"></i> Export JSON</button>
+              <div class="result-actions">
+                <button id="playResultBtn" class="soft-btn" type="button" disabled><i data-lucide="play"></i> Play WAV</button>
+                <button id="downloadResultBtn" class="soft-btn" type="button" disabled><i data-lucide="download"></i> Save WAV</button>
+                <button id="exportReportBtn" class="soft-btn" type="button" disabled><i data-lucide="file-json"></i> Export JSON</button>
+                <button id="exportReportPackageBtn" class="soft-btn" type="button" disabled><i data-lucide="archive"></i> Export report</button>
+              </div>
             </div>
 
             <div class="result-grid">
@@ -315,21 +385,103 @@
                 <strong id="predictedEmotion">Waiting</strong>
                 <p id="predictionSummary">Analyze a queued recording to view emotion probabilities and VAD dimensions.</p>
               </div>
-              <div class="result-card"><span>Valence</span><strong id="valenceValue">--</strong></div>
-              <div class="result-card"><span>Arousal</span><strong id="arousalValue">--</strong></div>
-              <div class="result-card"><span>Dominance</span><strong id="dominanceValue">--</strong></div>
+              <div class="result-card"><span>Valence score</span><strong id="valenceValue">--</strong><em>prediction, not CCC</em></div>
+              <div class="result-card"><span>Arousal score</span><strong id="arousalValue">--</strong><em>prediction, not CCC</em></div>
+              <div class="result-card"><span>Dominance score</span><strong id="dominanceValue">--</strong><em>prediction, not CCC</em></div>
             </div>
 
             <div class="result-content">
               <div class="result-left">
                 <div id="probabilityBars" class="probability-bars"></div>
-              <div class="transcript-result">
-                <div class="timeline-head">
-                  <div>
-                    <p class="label">Transcript</p>
-                    <h3>Target script + recognized speech</h3>
+                <div id="segmentDiagnostics" class="segment-diagnostics"></div>
+                <div class="feature-evidence">
+                  <div class="timeline-head">
+                    <div>
+                      <p class="label">Feature evidence</p>
+                      <h3>Extracted acoustic/text signals</h3>
+                    </div>
+                  </div>
+                  <div class="result-feature-tabs" role="tablist" aria-label="Feature groups">
+                    <button type="button" class="active" data-result-feature-tab="raw">Waveform</button>
+                    <button type="button" data-result-feature-tab="cnn1d">1D features</button>
+                    <button type="button" data-result-feature-tab="cnn2d">2D log-Mel</button>
+                    <button type="button" data-result-feature-tab="stats">Stats + E2V</button>
+                  </div>
+                  <div id="featureEvidenceGrid" class="feature-evidence-grid"></div>
+                  <div class="result-feature-panels">
+                    <div class="result-feature-panel active" data-result-feature-panel="raw">
+                      <button class="feature-preview-card wide" type="button" data-result-inspect="wave">
+                        <span>Raw waveform / WAV input</span>
+                        <canvas id="resultWaveCanvas" width="1200" height="260"></canvas>
+                      </button>
+                      <div class="feature-mini-table" id="resultRawFeatureTable"></div>
+                    </div>
+                    <div class="result-feature-panel" data-result-feature-panel="cnn1d">
+                      <button class="feature-preview-card" type="button" data-result-inspect="temporal">
+                        <span>MFCC / delta / delta-delta</span>
+                        <canvas id="resultMfccCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <button class="feature-preview-card" type="button" data-result-inspect="feature_trends">
+                        <span>Temporal LLD trends</span>
+                        <canvas id="resultFeatureTrendCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <button class="feature-preview-card" type="button" data-result-inspect="feature_trends">
+                        <span>RMS energy + zero-crossing rate</span>
+                        <canvas id="resultEnergyZcrCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <button class="feature-preview-card" type="button" data-result-inspect="feature_trends">
+                        <span>Pitch/F0 + spectral centroid</span>
+                        <canvas id="resultPitchCentroidCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <div class="feature-mini-table" id="resultTemporalFeatureTable"></div>
+                    </div>
+                    <div class="result-feature-panel" data-result-feature-panel="cnn2d">
+                      <button class="feature-preview-card" type="button" data-result-inspect="spectral">
+                        <span>Log-Mel spectrogram</span>
+                        <canvas id="resultMelCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <button class="feature-preview-card" type="button" data-result-inspect="spectral_delta">
+                        <span>Delta / delta-delta log-Mel</span>
+                        <canvas id="resultDeltaMelCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <button class="feature-preview-card" type="button" data-result-inspect="spectral_delta">
+                        <span>Delta-delta log-Mel</span>
+                        <canvas id="resultDeltaDeltaMelCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <button class="feature-preview-card" type="button" data-result-inspect="temporal">
+                        <span>MFCC heatmap for 2D inspection</span>
+                        <canvas id="resultMfcc2dCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <div class="feature-mini-table" id="resultSpectralFeatureTable"></div>
+                    </div>
+                    <div class="result-feature-panel" data-result-feature-panel="stats">
+                      <button class="feature-preview-card" type="button" data-result-inspect="stats">
+                        <span>Statistical acoustic summary</span>
+                        <canvas id="resultStatsCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <button class="feature-preview-card" type="button" data-result-inspect="e2v">
+                        <span>Emotion2Vec / pretrained speech embedding summary</span>
+                        <canvas id="resultE2vCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <button class="feature-preview-card" type="button" data-result-inspect="output">
+                        <span>Emotion probability distribution</span>
+                        <canvas id="resultProbabilityCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <button class="feature-preview-card" type="button" data-result-inspect="transcript">
+                        <span>Transcript token evidence</span>
+                        <canvas id="resultTranscriptCanvas" width="900" height="220"></canvas>
+                      </button>
+                      <div class="feature-mini-table" id="resultStatsFeatureTable"></div>
+                    </div>
                   </div>
                 </div>
+                <div class="transcript-result">
+                  <div class="timeline-head">
+                    <div>
+                      <p class="label">Transcript</p>
+                      <h3>Target script + recognized speech</h3>
+                    </div>
+                  </div>
                   <div class="transcript-two-col">
                     <div>
                       <p class="label">Target script</p>
@@ -340,7 +492,7 @@
                       <div id="resultSttTranscript" class="stt-transcript compact"></div>
                     </div>
                   </div>
-              </div>
+                </div>
               </div>
               <div class="result-right">
                 <canvas id="vadRadarCanvas" height="210"></canvas>
@@ -373,6 +525,6 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <audio id="playbackAudio" hidden></audio>
-  <script src="./js/app.js?v=20260714-processing-flow-2"></script>
+  <script src="./js/app.js?v=20260716-process-sidebar-scroll"></script>
 </body>
 </html>
