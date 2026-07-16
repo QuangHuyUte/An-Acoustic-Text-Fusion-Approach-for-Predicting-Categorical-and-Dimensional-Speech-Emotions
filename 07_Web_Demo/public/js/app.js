@@ -196,11 +196,9 @@ function bindEvents() {
     else startRecording();
   });
   $("#playBtn").addEventListener("click", () => {
-    const item = getSelectedItem() || state.currentRecording;
+    const item = state.currentRecording || getSelectedItem();
     if (!item?.audioUrl) return;
-    $("#playbackAudio").src = item.audioUrl;
-    $("#playbackAudio").currentTime = 0;
-    $("#playbackAudio").play();
+    playAudioUrl(item.audioUrl);
     playTone("play");
   });
   $("#uploadAudioBtn")?.addEventListener("click", () => $("#audioUploadInput")?.click());
@@ -236,8 +234,9 @@ function bindEvents() {
     const tab = event.target.closest("[data-result-feature-tab]");
     if (!tab) return;
     state.resultFeatureTab = tab.dataset.resultFeatureTab || "raw";
-    renderResultFeatureTabs();
     const item = getSelectedResultItem();
+    if (item?.report) item.report.featureTab = state.resultFeatureTab;
+    renderResultFeatureTabs();
     if (item) drawResultFeatureCanvases(item);
     playTone("tab");
   });
@@ -1151,7 +1150,7 @@ async function handleRecordingStop() {
   try {
     const blob = new Blob(state.chunks, { type: state.mediaRecorder.mimeType || "audio/webm" });
     const audioUrl = URL.createObjectURL(blob);
-    $("#playbackAudio").src = audioUrl;
+    setPlaybackSource(audioUrl);
     const arrayBuffer = await blob.arrayBuffer();
     const decodeContext = new AudioContext();
     const audioBuffer = await decodeContext.decodeAudioData(arrayBuffer.slice(0));
@@ -1205,7 +1204,7 @@ async function handleAudioUpload(event) {
     $("#recHint").textContent = "Decoding uploaded audio file...";
     const blob = file.slice(0, file.size, file.type || "audio/wav");
     const audioUrl = URL.createObjectURL(blob);
-    $("#playbackAudio").src = audioUrl;
+    setPlaybackSource(audioUrl);
     const arrayBuffer = await blob.arrayBuffer();
     const decodeContext = new AudioContext();
     const audioBuffer = await decodeContext.decodeAudioData(arrayBuffer.slice(0));
@@ -2023,6 +2022,8 @@ function renderSelectedResult() {
   const item = getSelectedResultItem();
   if (!item) return;
   const report = item.report;
+  if (report?.featureTab) state.resultFeatureTab = report.featureTab;
+  if (report?.featureSlides) state.resultFeatureSlides = { ...state.resultFeatureSlides, ...report.featureSlides };
   const pred = report.prediction;
   $("#resultTitle").textContent = `${formatTaskLabel(item.task)} report`;
   $("#predictedEmotion").textContent = capitalize(pred.emotion);
@@ -2099,6 +2100,8 @@ function stepResultFeatureSlide(direction) {
   if (!cards.length) return;
   const current = state.resultFeatureSlides[active] || 0;
   state.resultFeatureSlides[active] = (current + direction + cards.length) % cards.length;
+  const item = getSelectedResultItem();
+  if (item?.report) item.report.featureSlides = { ...state.resultFeatureSlides };
   renderFeatureSlideDeck();
   playTone("tab");
 }
@@ -2113,6 +2116,8 @@ function renderFeatureSlideDeck() {
   let current = state.resultFeatureSlides[active] || 0;
   if (current >= cards.length) current = 0;
   state.resultFeatureSlides[active] = current;
+  const item = getSelectedResultItem();
+  if (item?.report) item.report.featureSlides = { ...state.resultFeatureSlides };
   const previous = (current - 1 + cards.length) % cards.length;
   const next = (current + 1) % cards.length;
   cards.forEach((card, index) => {
@@ -2588,11 +2593,28 @@ function downloadSelectedAudio() {
 function playSelectedResultAudio() {
   const item = getSelectedResultItem() || getSelectedItem();
   if (!item?.audioUrl) return;
+  playAudioUrl(item.audioUrl);
+  playTone("play");
+}
+
+function setPlaybackSource(audioUrl) {
   const audio = $("#playbackAudio");
-  audio.src = item.audioUrl;
+  if (!audio || !audioUrl) return;
+  try {
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+  } catch {}
+  audio.src = audioUrl;
+  audio.load();
+}
+
+function playAudioUrl(audioUrl) {
+  if (!audioUrl) return;
+  const audio = $("#playbackAudio");
+  setPlaybackSource(audioUrl);
   audio.currentTime = 0;
   audio.play().catch(() => showToast("Cannot play this audio in the browser. Please use the saved file instead."));
-  playTone("play");
 }
 
 function analyzeAudio(samples, sampleRate) {
@@ -3118,7 +3140,7 @@ function drawFeatureTrendCanvas(canvas, report, label = "Feature trends") {
   }
   const ctx = canvas.getContext("2d");
   const { width, height } = canvas;
-  const pad = { left: 54, right: 18, top: 38, bottom: 34 };
+  const pad = { left: 92, right: 54, top: 42, bottom: 34 };
   const plot = {
     left: pad.left,
     right: width - pad.right,
@@ -3130,29 +3152,13 @@ function drawFeatureTrendCanvas(canvas, report, label = "Feature trends") {
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, width, height);
-  for (let i = 0; i <= 5; i++) {
-    const y = plot.top + (i / 5) * plot.height;
-    ctx.strokeStyle = i === 5 ? "rgba(19,32,51,0.28)" : "rgba(99,116,145,0.12)";
-    ctx.beginPath();
-    ctx.moveTo(plot.left, y);
-    ctx.lineTo(plot.right, y);
-    ctx.stroke();
-  }
-  for (let i = 0; i <= 6; i++) {
-    const x = plot.left + (i / 6) * plot.width;
-    ctx.strokeStyle = "rgba(99,116,145,0.10)";
-    ctx.beginPath();
-    ctx.moveTo(x, plot.top);
-    ctx.lineTo(x, plot.bottom);
-    ctx.stroke();
-  }
   ctx.fillStyle = "#172238";
   ctx.font = "900 15px Inter";
   ctx.textAlign = "left";
   ctx.fillText(label, plot.left, 23);
   ctx.fillStyle = "#65738a";
   ctx.font = "800 11px Inter";
-  ctx.fillText("normalized per signal for visual comparison", plot.left + 210, 23);
+  ctx.fillText("separate lanes, each signal uses its own scale", plot.left + 210, 23);
 
   const series = [
     {
@@ -3194,24 +3200,69 @@ function drawFeatureTrendCanvas(canvas, report, label = "Feature trends") {
     const safeMin = Number.isFinite(line.min) ? line.min : percentile(values, 5);
     let safeMax = Number.isFinite(line.max) ? line.max : percentile(values, 95);
     if (!Number.isFinite(safeMax) || safeMax <= safeMin) safeMax = safeMin + 1e-5;
+    const laneGap = 12;
+    const laneHeight = (plot.height - laneGap * (series.length - 1)) / series.length;
+    const laneTop = plot.top + lineIndex * (laneHeight + laneGap);
+    const laneBottom = laneTop + laneHeight;
+    fillRound(ctx, plot.left, laneTop, plot.width, laneHeight, 10, "rgba(248,251,255,0.96)");
+    ctx.strokeStyle = "rgba(99,116,145,0.16)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(plot.left, laneTop, plot.width, laneHeight);
+    for (let i = 1; i < 4; i++) {
+      const y = laneTop + (i / 4) * laneHeight;
+      ctx.strokeStyle = "rgba(99,116,145,0.09)";
+      ctx.beginPath();
+      ctx.moveTo(plot.left, y);
+      ctx.lineTo(plot.right, y);
+      ctx.stroke();
+    }
+    for (let i = 1; i <= 6; i++) {
+      const x = plot.left + (i / 6) * plot.width;
+      ctx.strokeStyle = "rgba(99,116,145,0.07)";
+      ctx.beginPath();
+      ctx.moveTo(x, laneTop);
+      ctx.lineTo(x, laneBottom);
+      ctx.stroke();
+    }
+    ctx.fillStyle = line.color;
+    ctx.font = "900 12px Inter";
+    ctx.textAlign = "right";
+    ctx.fillText(line.label, plot.left - 12, laneTop + laneHeight * 0.58);
+    ctx.fillStyle = "#738197";
+    ctx.font = "800 9px Inter";
+    const minLabel = formatFeatureAxisValue(safeMin, line.key);
+    const maxLabel = formatFeatureAxisValue(safeMax, line.key);
+    ctx.fillText(maxLabel, plot.left - 12, laneTop + 10);
+    ctx.fillText(minLabel, plot.left - 12, laneBottom - 3);
+
     ctx.strokeStyle = line.color;
-    ctx.lineWidth = 2.2;
+    ctx.lineWidth = 2.6;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.beginPath();
     values.forEach((value, index) => {
       const x = plot.left + (index / Math.max(1, values.length - 1)) * plot.width;
-      const y = plot.bottom - clamp(normalize(value, safeMin, safeMax), 0, 1) * plot.height;
+      const y = laneBottom - clamp(normalize(value, safeMin, safeMax), 0, 1) * laneHeight;
       if (index === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     });
     ctx.stroke();
-    const lx = plot.left + lineIndex * 118;
-    fillRound(ctx, lx, height - 24, 10, 10, 999, line.color);
-    ctx.fillStyle = "#344258";
-    ctx.font = "900 11px Inter";
-    ctx.fillText(line.label, lx + 16, height - 15);
   });
+  ctx.fillStyle = "#53647c";
+  ctx.font = "800 11px Inter";
+  ctx.textAlign = "center";
+  ctx.fillText("Time frames", plot.left + plot.width / 2, height - 10);
+  ctx.textAlign = "left";
+  ctx.fillText("0", plot.left, height - 10);
+  ctx.textAlign = "right";
+  ctx.fillText(String(Math.max(0, frames.length - 1)), plot.right, height - 10);
+}
+
+function formatFeatureAxisValue(value, key = "") {
+  const numeric = Number(value || 0);
+  if (key === "pitch" || key === "centroid") return `${Math.round(numeric)}`;
+  if (Math.abs(numeric) < 1) return numeric.toFixed(3);
+  return numeric.toFixed(1);
 }
 
 function resolvedTranscriptSegments(item, report) {
