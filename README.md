@@ -128,21 +128,21 @@ Acoustic token construction:
 
 $$
 Z_A = [z_{\text{temporal}};\;z_{\text{spectral}};\;z_{\text{stats}};\;z_{\text{e2v}}], \qquad
-A = \operatorname{SelfAttention}(Z_A)
+A = \mathrm{SelfAttention}(Z_A)
 $$
 
 Text token construction:
 
 $$
-Z_T = \operatorname{Proj}(\operatorname{RoBERTa}(x, m)), \qquad
-T = \operatorname{SelfAttention}(Z_T)
+Z_T = \mathrm{Proj}(\mathrm{RoBERTa}(x, m)), \qquad
+T = \mathrm{SelfAttention}(Z_T)
 $$
 
 Bridge cross-attention:
 
 $$
-\operatorname{Attention}(Q,K,V)=
-\operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+\mathrm{Attention}(Q,K,V)=
+\mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
 $$
 
 Balanced expert fusion:
@@ -155,7 +155,7 @@ $$
 Multi-task heads:
 
 $$
-p=\operatorname{softmax}(W_eh+b_e), \qquad
+p=\mathrm{softmax}(W_eh+b_e), \qquad
 \hat{y}_{VAD}=W_rh+b_r
 $$
 
@@ -163,7 +163,7 @@ Training objective:
 
 $$
 \mathcal{L}=\lambda_{CE}\mathcal{L}_{CE}
-+\lambda_{CCC}(1-\operatorname{CCC})
++\lambda_{CCC}(1-\mathrm{CCC})
 +\lambda_{MAE}\mathcal{L}_{MAE}
 $$
 
