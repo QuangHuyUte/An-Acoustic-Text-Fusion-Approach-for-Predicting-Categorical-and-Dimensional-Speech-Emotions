@@ -66,6 +66,15 @@ The model is evaluated under strict protocols because random speaker-mixed split
 | Midterm | RAVDESS, CREMA-D, TESS, SAVEE | Audio | 6-class emotion labels | Build acoustic-only baseline and study feature behavior |
 | Final | IEMOCAP | Audio + transcript | 4-class emotion labels + VAD | Strict multi-task benchmark and acoustic-text fusion |
 
+The midterm stage does not use a single generic "midterm dataset". It combines four public SER corpora with different speakers, recording styles, and acted-emotion settings:
+
+- **RAVDESS:** acted emotional speech and song recordings from multiple professional actors.
+- **CREMA-D:** acted emotional utterances from a larger and more diverse speaker set.
+- **TESS:** clean acted emotional speech from two female speakers, useful for observing dataset-specific feature behavior.
+- **SAVEE:** acted emotional speech from male speakers, smaller than the other corpora but useful for cross-dataset comparison.
+
+These four datasets are used to build and stress-test the acoustic-only 06D model under both easier random splits and stricter speaker-independent splits before moving to the final IEMOCAP benchmark.
+
 For IEMOCAP, the final setup uses the common four-class mapping:
 
 ```text
