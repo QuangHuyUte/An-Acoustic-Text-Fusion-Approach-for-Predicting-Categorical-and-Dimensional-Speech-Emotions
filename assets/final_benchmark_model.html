@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Final Benchmark Model</title>
+  <style>
+    :root {
+      --ink: #10213a;
+      --muted: #5d6e84;
+      --blue: #2d6cff;
+      --cyan: #16a5c8;
+      --green: #10a678;
+      --orange: #f08a2c;
+      --purple: #7857ff;
+      --line: rgba(22, 145, 188, 0.68);
+      --panel: rgba(255, 255, 255, 0.88);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      width: 2000px;
+      height: 800px;
+      overflow: hidden;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: #f4f8ff;
+    }
+
+    .figure {
+      width: 2000px;
+      height: 800px;
+      padding: 34px 38px;
+      background:
+        linear-gradient(rgba(26, 70, 120, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 70, 120, 0.045) 1px, transparent 1px),
+        radial-gradient(circle at 72% 22%, rgba(45, 108, 255, 0.075), transparent 32%),
+        linear-gradient(180deg, #ffffff, #f7fbff 62%, #eef7ff);
+      background-size: 34px 34px, 34px 34px, auto, auto;
+    }
+
+    .header {
+      height: 80px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.08;
+      letter-spacing: 0;
+      font-weight: 950;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .badge {
+      margin-top: 2px;
+      padding: 10px 16px;
+      border: 1px solid rgba(45, 108, 255, 0.18);
+      border-radius: 999px;
+      background: rgba(239, 246, 255, 0.92);
+      color: #1d4ed8;
+      font-size: 13px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .board {
+      position: relative;
+      width: 1924px;
+      height: 650px;
+      border: 1px solid rgba(35, 131, 187, 0.22);
+      border-radius: 14px;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(26, 70, 120, 0.036) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 70, 120, 0.036) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,0.92), rgba(247,251,255,0.96));
+      background-size: 32px 32px, 32px 32px, auto;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.92), 0 18px 48px rgba(24, 48, 78, 0.12);
+    }
+
+    .links {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .links path {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 3;
+      stroke-dasharray: 10 10;
+      marker-end: url(#arrow);
+      filter: drop-shadow(0 2px 1px rgba(255,255,255,0.8));
+    }
+
+    .node {
+      position: absolute;
+      z-index: 2;
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid rgba(93, 116, 154, 0.20);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: 0 12px 28px rgba(22, 43, 70, 0.09), inset 0 0 0 1px rgba(255,255,255,0.82);
+    }
+
+    .node .kicker,
+    .node-head span {
+      color: #63748c;
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .node-head strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 17px;
+      line-height: 1.1;
+      font-weight: 950;
+      color: #10213a;
+    }
+
+    .input-package {
+      left: 42px;
+      top: 196px;
+      width: 304px;
+      height: 474px;
+      border-style: dashed;
+      background: rgba(249, 252, 255, 0.82);
+      align-content: center;
+    }
+
+    .input-box {
+      display: grid;
+      overflow: hidden;
+      border: 2px dashed rgba(45, 108, 255, 0.28);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.72);
+    }
+
+    .media-tile {
+      min-height: 156px;
+      padding: 14px;
+      border-bottom: 2px dashed rgba(93, 116, 154, 0.18);
+      background: rgba(255,255,255,0.88);
+    }
+
+    .media-tile:last-child { border-bottom: 0; }
+    .tile-label {
+      display: block;
+      color: #53647c;
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .wave {
+      height: 86px;
+      margin-top: 12px;
+      border: 1px solid rgba(93,116,154,0.16);
+      border-radius: 10px;
+      background:
+        linear-gradient(90deg, transparent 0 8%, rgba(45,108,255,0.16) 8% 9%, transparent 9% 18%),
+        #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wave img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .wave::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      top: 41px;
+      height: 4px;
+      background: #7dd3fc;
+      border-radius: 999px;
+      box-shadow:
+        14px -12px 0 1px #38bdf8,
+        30px 10px 0 2px #38bdf8,
+        48px -22px 0 4px #38bdf8,
+        72px 19px 0 6px #38bdf8,
+        104px -27px 0 7px #38bdf8,
+        136px 23px 0 5px #38bdf8,
+        166px -14px 0 3px #38bdf8,
+        192px 12px 0 2px #38bdf8;
+      display: none;
+    }
+
+    .script-text {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid rgba(45, 108, 255, 0.12);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+    }
+
+    .script-text b {
+      width: max-content;
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .script-text span {
+      color: #24364f;
+      font-size: 12px;
+      line-height: 1.25;
+      font-weight: 850;
+    }
+
+    .acoustic-block {
+      left: 420px;
+      top: 58px;
+      width: 518px;
+      height: 566px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 9px;
+      padding: 5px;
+      border: 1px solid rgba(45,108,255,0.14);
+      border-radius: 999px;
+      background: rgba(244, 248, 255, 0.88);
+    }
+
+    .tabs span {
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: #38506c;
+      font-size: 11px;
+      font-weight: 950;
+      background: #fff;
+      border: 1px solid rgba(45,108,255,0.13);
+    }
+
+    .tabs span:first-child {
+      color: #fff;
+      background: #2d6cff;
+      border-color: #2d6cff;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .branch {
+      min-height: 146px;
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(45,108,255,0.18);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 8px 18px rgba(28,48,80,0.055);
+    }
+
+    .branch strong,
+    .encoder-step strong,
+    .token-set strong,
+    .bridge-step strong,
+    .head-card strong {
+      display: block;
+      color: #10213a;
+      font-size: 13px;
+      line-height: 1.15;
+      font-weight: 950;
+    }
+
+    .branch em,
+    .encoder-step em,
+    .token-set em,
+    .bridge-step em,
+    .head-card em,
+    .text-block p {
+      display: block;
+      margin-top: 4px;
+      color: #5c6d84;
+      font-size: 10.5px;
+      line-height: 1.25;
+      font-style: normal;
+      font-weight: 760;
+    }
+
+    .mini {
+      width: 112px;
+      height: 72px;
+      border: 1px solid rgba(96,118,151,0.14);
+      border-radius: 9px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .mini.real {
+      background: #fff;
+    }
+
+    .mini.real img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .mfcc {
+      background:
+        linear-gradient(180deg, rgba(245,159,84,0.14), rgba(255,255,255,0.2)),
+        repeating-linear-gradient(0deg, rgba(227,107,78,0.22) 0 2px, transparent 2px 5px),
+        linear-gradient(90deg, rgba(255,255,255,0.18), rgba(255,130,86,0.28));
+    }
+
+    .mel {
+      background:
+        radial-gradient(circle at 16% 70%, #fff176 0 5%, transparent 13%),
+        radial-gradient(circle at 42% 42%, #ff6b6b 0 7%, transparent 17%),
+        radial-gradient(circle at 72% 64%, #ffb86b 0 6%, transparent 16%),
+        linear-gradient(180deg, #22124d, #562478 45%, #101a4a);
+    }
+
+    .bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px;
+      background: linear-gradient(180deg, #f8fbff, #fff);
+    }
+
+    .bars i {
+      width: 9px;
+      border-radius: 8px 8px 2px 2px;
+      background: linear-gradient(180deg, #2d6cff, #20d6ff);
+    }
+
+    .bars i:nth-child(1) { height: 24px; }
+    .bars i:nth-child(2) { height: 42px; }
+    .bars i:nth-child(3) { height: 31px; }
+    .bars i:nth-child(4) { height: 48px; }
+    .bars i:nth-child(5) { height: 20px; }
+
+    .tokens {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #fff;
+    }
+
+    .tokens i {
+      width: 12px;
+      height: 34px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #b089ff, #5eead4);
+    }
+
+    .numbers {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .metric {
+      padding: 9px;
+      border: 1px solid rgba(45,108,255,0.12);
+      border-radius: 9px;
+      background: rgba(248,251,255,0.96);
+    }
+
+    .metric span {
+      display: block;
+      color: #6b7a91;
+      font-size: 9px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 14px;
+      color: #10213a;
+    }
+
+    .encoder-block {
+      left: 1030px;
+      top: 80px;
+      width: 362px;
+      height: 300px;
+    }
+
+    .encoder-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .encoder-step {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(45,108,255,0.16);
+      background: rgba(255,255,255,0.94);
+    }
+
+    .icon {
+      height: 38px;
+      border-radius: 9px;
+      background:
+        linear-gradient(135deg, rgba(45,108,255,0.85) 0 20%, transparent 20% 34%, rgba(32,214,255,0.8) 34% 50%, transparent 50%),
+        #eff6ff;
+    }
+
+    .self-attn {
+      left: 1500px;
+      top: 128px;
+      width: 360px;
+      height: 230px;
+    }
+
+    .token-set {
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(10,174,128,0.22);
+      background: rgba(236,253,245,0.9);
+    }
+
+    .dot-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .dot-row i {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2d6cff, #20d6ff);
+    }
+
+    .text-block {
+      left: 810px;
+      top: 690px;
+      width: 720px;
+      height: 186px;
+    }
+
+    .text-line {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .text-chip {
+      min-height: 54px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(45,108,255,0.16);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.96);
+      color: #10213a;
+      font-size: 12px;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .bridge-block {
+      left: 1960px;
+      top: 248px;
+      width: 390px;
+      height: 356px;
+    }
+
+    .bridge-step {
+      padding: 14px;
+      border: 1px solid rgba(45,108,255,0.17);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.96);
+    }
+
+    .bridge-step.balanced {
+      border-color: rgba(10,174,128,0.34);
+      background: rgba(236,253,245,0.95);
+    }
+
+    .output-block {
+      left: 2450px;
+      top: 230px;
+      width: 280px;
+      height: 430px;
+    }
+
+    .head-card {
+      min-height: 116px;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(45,108,255,0.17);
+      background: rgba(255,255,255,0.96);
+    }
+
+    .prob-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      height: 38px;
+      margin-bottom: 10px;
+    }
+
+    .prob-bars i {
+      width: 10px;
+      border-radius: 8px 8px 2px 2px;
+      background: linear-gradient(180deg, #20d6ff, #2d6cff);
+    }
+
+    .prob-bars i:nth-child(1) { height: 14px; }
+    .prob-bars i:nth-child(2) { height: 32px; }
+    .prob-bars i:nth-child(3) { height: 22px; }
+    .prob-bars i:nth-child(4) { height: 36px; }
+
+    .vad {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 68% 42%, #7857ff 0 14%, transparent 15%),
+        conic-gradient(from 20deg, #20d6ff, #10a678, #7857ff, #20d6ff);
+    }
+
+    .stage-tag {
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      color: #6a7890;
+      font-size: 10px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .legend {
+      position: absolute;
+      left: 420px;
+      right: 420px;
+      bottom: 34px;
+      padding: 11px 18px;
+      border: 1px solid rgba(45,108,255,0.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      color: #475569;
+      font-size: 13px;
+      font-weight: 850;
+      text-align: center;
+      z-index: 3;
+    }
+
+    .canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2920px;
+      height: 960px;
+      transform: translateX(-10px) scale(.68);
+      transform-origin: left top;
+    }
+  </style>
+</head>
+<body>
+  <main class="figure">
+    <header class="header">
+      <div>
+        <h1>Final Benchmark Model: Acoustic-Text Bridge Fusion for Emotion + VAD</h1>
+        <p>Static architecture board adapted from the live Processing tab: 06D acoustic evidence, transcript tokens, bridge cross-attention, balanced fusion, and two task heads.</p>
+      </div>
+      <div class="badge">Group 11 IEMOCAP benchmark</div>
+    </header>
+
+    <section class="board" aria-label="Final benchmark model architecture">
+      <div class="canvas">
+        <svg class="links" viewBox="0 0 2920 960" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="rgba(22,145,188,.82)"></path>
+            </marker>
+          </defs>
+          <path d="M350 390 C420 390 420 230 520 230"></path>
+          <path d="M350 520 C430 520 710 730 810 730"></path>
+          <path d="M938 270 C990 270 990 205 1030 205"></path>
+          <path d="M938 465 C990 465 990 330 1030 330"></path>
+          <path d="M1392 282 C1438 282 1460 282 1500 282"></path>
+          <path d="M1530 730 C1700 730 1810 500 1960 420"></path>
+          <path d="M1860 242 C1930 242 1905 335 1960 352"></path>
+          <path d="M2350 390 C2404 360 2406 295 2450 288"></path>
+          <path d="M2350 486 C2406 510 2408 490 2450 500"></path>
+        </svg>
+
+        <section class="node input-package">
+          <div class="kicker">01 Input package</div>
+          <div class="input-box">
+            <div class="media-tile">
+              <span class="tile-label">WAV audio</span>
+              <div class="wave"><img src="readme_feature_thumbnails/thumb_waveform.png" alt="Waveform preview"></div>
+              <em>recorded or uploaded waveform</em>
+            </div>
+            <div class="media-tile">
+              <span class="tile-label">Script / timestamp</span>
+              <div class="script-text">
+                <b>00:00.0 - 00:03.6</b>
+                <span>I do not know what happened, but I need to explain it clearly.</span>
+              </div>
+              <em>sample transcript / ASR text</em>
+            </div>
+          </div>
+        </section>
+
+        <section class="node acoustic-block">
+          <div class="node-head">
+            <span>02 Acoustic 4-branch feature block</span>
+            <strong>Raw waveform -> 06D acoustic features</strong>
+          </div>
+          <div class="tabs"><span>Temporal</span><span>Spectral</span><span>Stats</span><span>E2V</span></div>
+          <div class="feature-grid">
+            <div class="branch"><div class="mini real"><img src="readme_feature_thumbnails/thumb_temporal_mfcc.png" alt="MFCC temporal feature preview"></div><div><strong>X_temporal</strong><em>MFCC, delta, delta-delta, RMS, ZCR, pitch/F0, spectral LLD</em></div></div>
+            <div class="branch"><div class="mini real"><img src="readme_feature_thumbnails/thumb_logmel.png" alt="Log-Mel spectrogram preview"></div><div><strong>X_spectral</strong><em>log-Mel, delta log-Mel, delta-delta log-Mel</em></div></div>
+            <div class="branch"><div class="mini real"><img src="readme_feature_thumbnails/thumb_stats.png" alt="Statistical feature preview"></div><div><strong>X_stats</strong><em>mean, std, min, max, median, percentile, IQR</em></div></div>
+            <div class="branch"><div class="mini real"><img src="readme_feature_thumbnails/thumb_e2v.png" alt="emotion2vec embedding preview"></div><div><strong>X_e2v</strong><em>pretrained speech emotion embedding</em></div></div>
+          </div>
+          <div class="numbers">
+            <div class="metric"><span>Temporal</span><strong>13 LLD</strong></div>
+            <div class="metric"><span>Spectral</span><strong>40 Mel</strong></div>
+            <div class="metric"><span>Stats</span><strong>13 func.</strong></div>
+            <div class="metric"><span>E2V</span><strong>768-d</strong></div>
+          </div>
+        </section>
+
+        <section class="node encoder-block">
+          <div class="node-head">
+            <span>03 Acoustic encoders</span>
+            <strong>Branch tokens -> acoustic token set</strong>
+          </div>
+          <div class="encoder-list">
+            <div class="encoder-step"><div class="icon"></div><div><strong>1D-CNN / TCN</strong><em>temporal prosody dynamics</em></div></div>
+            <div class="encoder-step"><div class="icon"></div><div><strong>2D-CNN</strong><em>time-frequency pattern maps</em></div></div>
+            <div class="encoder-step"><div class="icon"></div><div><strong>Stats MLP</strong><em>global clip-level descriptors</em></div></div>
+            <div class="encoder-step"><div class="icon"></div><div><strong>E2V adapter</strong><em>speech emotion prior</em></div></div>
+          </div>
+        </section>
+
+        <section class="node self-attn">
+          <div class="node-head">
+            <span>04 Acoustic self-attention</span>
+            <strong>Acoustic tokens exchange evidence</strong>
+          </div>
+          <div class="token-set">
+            <div class="dot-row"><i></i><i></i><i></i><i></i></div>
+            <strong>SelfAttn([z_temporal, z_spectral, z_stats, z_e2v])</strong>
+            <em>this happens after four branch encoders emit tokens</em>
+          </div>
+        </section>
+
+        <section class="node text-block">
+          <div class="node-head">
+            <span>Text branch</span>
+            <strong>Transcript -> pretrained text tokens</strong>
+          </div>
+          <div class="text-line">
+            <div class="text-chip">Transcript</div>
+            <div class="text-chip">Tokenizer</div>
+            <div class="text-chip">RoBERTa encoder</div>
+            <div class="text-chip">Projection</div>
+            <div class="text-chip">Self-attention</div>
+          </div>
+          <p>Text tokens provide lexical context; acoustic tokens preserve how the sentence was spoken.</p>
+        </section>
+
+        <section class="node bridge-block">
+          <div class="node-head">
+            <span>05 Bridge cross-attention</span>
+            <strong>Controlled meeting point</strong>
+          </div>
+          <div class="bridge-step"><strong>Bridge A -> T</strong><em>Q from bridge/acoustic, K/V from text tokens</em></div>
+          <div class="bridge-step"><strong>Bridge T -> A</strong><em>Q from bridge/text, K/V from acoustic tokens</em></div>
+          <div class="bridge-step balanced"><strong>Balanced expert fusion</strong><em>combines acoustic evidence and transcript evidence</em></div>
+        </section>
+
+        <section class="node output-block">
+          <div class="node-head">
+            <span>06 Heads</span>
+            <strong>Emotion + VAD</strong>
+          </div>
+          <div class="head-card">
+            <div class="prob-bars"><i></i><i></i><i></i><i></i></div>
+            <strong>Emotion classifier</strong>
+            <em>softmax: neutral, happy/excited, sad, angry</em>
+          </div>
+          <div class="head-card">
+            <div class="vad"></div>
+            <strong>VAD regressor</strong>
+            <em>valence, arousal, dominance</em>
+          </div>
+        </section>
+
+        <div class="legend">Best benchmark profile: Expert-Level Acoustic-Text Fusion, 10-fold WA 74.02 / UAR 74.64 / Macro-F1 74.05 / CCC mean 0.661</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
