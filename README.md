@@ -330,6 +330,7 @@ Notebook 02 can regenerate the feature cache from raw audio. Notebook 03B/03C/03
 ## Web Demo
 
 The web demo is designed as an explainable inference route rather than a simple prediction form.
+It supports both uploaded audio and browser recording. When the user does not provide a transcript, the backend runs **speech-to-text (ASR)** to generate the transcript/timestamp stream before the acoustic-text model performs inference.
 
 ```text
 record/upload audio
